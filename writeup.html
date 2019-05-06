@@ -1,0 +1,115 @@
+<head>
+    <title> COS426 Assignment 3 Rendering &mdash; Ray Tracer &mdash; Writeup</title>
+    <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<script src="js/student.js"> </script>
+<script src="coursejs/writeup.js"> </script>
+<div class="top">
+<div class="main_div">
+
+<h1> <div class=assignment>COS426 Assignment 3 Rendering</div> Ray Tracer &mdash; Writeup</h1>
+<h2>Switch to: <a href='index.html'>Interactive Editor</a></h2>
+<div class='selectable'>
+<h2 id='student'></h2>
+
+<ul>
+<li>(2.0) <a href='#TraceRay'>TraceRay</a></li>
+<li>(2.0) <a href='#Triangle'>Triangle</a></li>
+<li>(2.0) <a href='#Sphere'>Sphere</a></li>
+<li>(2.5) <a href='#Box'>Box</a></li>
+<li>(3.0) <a href='#Cylinder'>Cylinder</a></li>
+<li>(3.0) <a href='#Cone'>Cone</a></li>
+<li>(1.0) <a href='#Shadows'>Shadows</a></li>
+<li>(3.0) <a href='#Soft+shadows'>Soft shadows</a></li>
+<li>(2.0) <a href='#Transmission'>Transmission</a></li>
+<li>(1.0) <a href='#Checkerboard'>Checkerboard</a></li>
+<li>(1.5) <a href='#Phong+material'>Phong material</a></li>
+<li>(1.5) <a href='#Special+material'>Special material</a></li>
+<li>(1.0) <a href='#Scene'>Scene</a></li>
+<li>(2.0) <a href='#Animate'>Animate</a></li>
+<li>(1.0) <a href='#Art+Contest'>Art Contest</a></li>
+<li>(0.0) <a href='#Feedback'>Feedback</a></li>
+</ul></div>
+
+<p><hr><p><a name='Default without Soft Shadows'></a><h2>Default without Soft Shadows</h2><p><hr><p>
+View the result<a href='http://localhost:8000'> here</a>.
+<br>
+<img src='results/default_without.png'>
+
+<p><hr><p><a name='Default with Soft Shadows'></a><h2>Default with Soft Shadows</h2><p><hr><p>
+<img src='results/default_with.png'>
+
+<p><hr><p><a name='Mesh without Soft Shadows'></a><h2>Mesh without Soft Shadows</h2><p><hr><p>
+View the result<a href='http://localhost:8000/?scene=mesh'> here</a>.
+<br>
+<img src='results/mesh_without.png'>
+
+<p><hr><p><a name='Mesh with Soft Shadows'></a><h2>Mesh with Soft Shadows</h2><p><hr><p>
+<img src='results/mesh_with.png'>
+
+<p><hr><p><a name='Ice Cream without Soft Shadows'></a><h2>Ice Cream (my scene) without Soft Shadows </h2><p><hr><p>
+View the result<a href='http://localhost:8000/?scene=ice_cream2'> here</a>.
+<br>
+<img src='results/ice_without.png'>
+
+<p><hr><p><a name='Ice Cream with Soft Shadows'></a><h2>Ice Cream (my scene) with Soft Shadows (my scene) </h2><p><hr><p>
+<img src='results/ice_with.png'>
+
+<p><hr><p><a name='TraceRay'></a><h2>TraceRay</h2><p><hr><p>
+<p>For the first part of the assignment, I followed the provided
+pseudocode to complete the <code>traceRay</code> and <code>calculateColor</code>
+functions.</p>
+
+<p><hr><p><a name='Triangle'></a><h2>Triangle</h2><p><hr><p>
+<p>For triangle intersection, I followed the provided pseudocode for the first implementation. I intersected the ray with a plane, and then I checked that the point was inside triangle algebraically. </p>
+
+<p><hr><p><a name='Sphere'></a><h2>Sphere</h2><p><hr><p>
+<p>For sphere intersection, I followed the provided pseudocode for the geometric implementation. </p>
+
+<p><hr><p><a name='Box'></a><h2>Box</h2><p><hr><p>
+<p>For axis-aligned box intersection, I used the following approach: (1) I created a helper function that took in the bounding points of the box as inputs and returned whether or not that point was inside the box. (2) I iterated over all of the box's sides. For each I intersected the ray with the relevant plane and determined if the intersection point lay inside the box. (3) I returned the closest of these intersections that was > EPS. </p>
+
+<p><hr><p><a name='Cylinder'></a><h2>Cylinder</h2><p><hr><p>
+<p>For cylinder intersection, I used the following approach: (1) I intersected the ray with the open cylinder using the provided equations. Then, I checked if the intersection was between the bounding planes. (2) I intersected the ray with the two caps (disks). (3) I returned the closest of these intersections that was > EPS. </p>
+
+<p><hr><p><a name='Cone'></a><h2>Cone</h2><p><hr><p>
+<p>For cone intersection, I used the following approach: (1) I intersected the ray with the open cone using the provided equations. Then, I checked if the intersection was between the bounding planes. (2) I intersected the ray with the two caps (disks). (3) I returned the closest of these intersections that was > EPS. </p>
+
+<p><hr><p><a name='Shadows'></a><h2>Shadows</h2><p><hr><p>
+<p>To implement hard shadows, I used the following approach: (1) I generated a ray from the position to the light. (2) I found the intersection distance. (3) I checked the distance length; if the length was positive and before hitting the light (i.e. < the length of lightVector), I returned true because this meant that the point was in the shadow.</p>
+
+<p><hr><p><a name='Soft+shadows'></a><h2>Soft shadows</h2><p><hr><p>
+<p>To implement soft shadows, I used the pseudocode provided in the precept slides. I randomly sampled points with uniform density on the surface of a sphere around the light (distance in one direction at most k = 5 from the source). For each of these randomly sampled points, I cast a ray from the point in question to the sampled point. I computed the fractional contribution of that light to the point in question (i.e. the fraction of rays that made it through to the point). To generate a random number, I used the formula from <a href='https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl'> the link provided in the assignment specification</a>.
+
+</p>
+
+<p><hr><p><a name='Transmission'></a><h2>Transmission</h2><p><hr><p>
+<p>I implemented transmission using Snell's Law and applying the formula for the resulting vector using the equation on the lecture slides.</p>
+
+<p><hr><p><a name='Checkerboard'></a><h2>Checkerboard</h2><p><hr><p>
+<p>I implemented checkerboard by computing a value for the given point using the equation on the precept slides and tile size = 8. If the value was even, I returned black instead of mat.color. </p>
+
+<p><hr><p><a name='Phong+material'></a><h2>Phong material</h2><p><hr><p>
+<p>I implemented phong material using the equation provided in the lecture slides. </p>
+
+<p><hr><p><a name='Special+material'></a><h2>Special material</h2><p><hr><p>
+<p> I created my special material using an <a href='https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83'> implementation of noise that I found on GitHub</a> (cited in my code). </p>
+
+<p><hr><p><a name='Scene'></a><h2>Scene</h2><p><hr><p>
+<p> I'm a huge fan of ice cream, and it's finally ice cream weather... so for my scene, I created an ice cream cone in an ice cream shop. I used mesh.json and default.json as examples as I designed my scene. </p>
+
+<p><hr><p><a name='Animate'></a><h2>Animate</h2><p><hr><p>
+<p> <a href='http://localhost:8000/?scene=ice_cream2&animated=1'> This is my animation.</a> I added animation to spheres and cylinders to create the illusion of the ice cream falling into the cone. To do so, I added the code provided in the precept slides and played around with the constants to achieve my favorite distance moved & speed. </p>
+
+<p><hr><p><a name='Art+Contest'></a><h2>Art Contest</h2><p><hr><p>
+<p> Please include my animated scene (above) in the art contest. See above for a description. </p>
+
+<p><hr><p><a name='Feedback'></a><h2>Feedback</h2><p><hr><p>
+<p>This was my favorite assignment so far. I think that the past two assignments were really long and tedious, but this one was shorter, and I enjoyed completing it. Piazza was super helpful when I needed clarification; thanks for that! I probably spent about 10-12 hours on this assignment, which is a lot of time but signficantly more reasonable that the amount of time I spent on the others (probably 25-30 hours). That said, there were a few features that were difficult to implement because the instructions were somewhat unclear (especially checkerboard and phong, in my opinion). </p>
+
+</div>
+</div>
+</body>
+</html>
