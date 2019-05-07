@@ -24,6 +24,7 @@
                 ballMesh       = undefined,
                 ballRadius     = 0.1,
                 keyAxis        = [0, 0],
+                keyAxis2        = [0, 0],
                 ironTexture    = THREE.ImageUtils.loadTexture('/ball.png'),
                 planeTexture   = THREE.ImageUtils.loadTexture('/concrete.png'),
                 brickTexture   = THREE.ImageUtils.loadTexture('/brick.png'),
@@ -179,10 +180,11 @@
                 
                 // Apply user-directed force.
                 var f = new b2Vec2(keyAxis[0]*wBall.GetMass()*0.25, keyAxis[1]*wBall.GetMass()*0.25);
-                var f2 = new b2Vec2(keyAxis[0]*wBall2.GetMass()*0.25, keyAxis[1]*wBall2.GetMass()*0.25);
+                var f2 = new b2Vec2(keyAxis2[0]*wBall2.GetMass()*0.25, keyAxis2[1]*wBall2.GetMass()*0.25);
                 wBall.ApplyImpulse(f, wBall.GetPosition());          
                 wBall2.ApplyImpulse(f2, wBall2.GetPosition()); 
                 keyAxis = [0,0];
+                keyAxis2 = [0,0];
 
                 // Take a time step.
                 wWorld.Step(1/60, 8, 3);
@@ -305,6 +307,9 @@
                 keyAxis = axis.slice(0);
             }
 
+            function onMoveKey2(axis) {
+                keyAxis2 = axis.slice(0);
+            }
             
             jQuery.fn.centerv = function () {
                 wh = window.innerHeight;
@@ -347,6 +352,7 @@
                 // Bind keyboard and resize events.
                 KeyboardJS.bind.axis('left', 'right', 'down', 'up', onMoveKey);
                 KeyboardJS.bind.axis('h', 'l', 'j', 'k', onMoveKey);
+                KeyboardJS.bind.axis('a','d','s','w', onMoveKey2)
                 $(window).resize(onResize);
                 
 
