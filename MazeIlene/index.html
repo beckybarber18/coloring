@@ -26,6 +26,7 @@
                 keyAxis        = [0, 0],
                 keyAxis2        = [0, 0],
                 ironTexture    = THREE.ImageUtils.loadTexture('/ball.png'),
+                ironTexture2    = THREE.ImageUtils.loadTexture('/ball2.png'),
                 planeTexture   = THREE.ImageUtils.loadTexture('/concrete.png'),
                 brickTexture   = THREE.ImageUtils.loadTexture('/brick.png'),
                 gameState      = undefined,
@@ -140,7 +141,8 @@
                 ballMesh.position.set(1.5, 1, ballRadius);
                 scene.add(ballMesh);
 
-                ballMesh2 = new THREE.Mesh(g, m);
+                m2 = new THREE.MeshPhongMaterial({map:ironTexture2});
+                ballMesh2 = new THREE.Mesh(g, m2);
                 ballMesh2.position.set(0.5, 1, ballRadius);
                 scene.add(ballMesh2);
 
