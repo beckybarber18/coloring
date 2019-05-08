@@ -1,4 +1,5 @@
 function createPhysicsWorld() {
+
     /*
     // Create the world object.
     wWorld = new b2World(new b2Vec2(0, 0), true);
@@ -29,6 +30,25 @@ function createPhysicsWorld() {
         }
     }
     */
+
+
+    world = new CANNON.World();
+    //world.gravity.set(0,0,-9.82);
+    world.broadphase = new CANNON.NaiveBroadphase();
+    world.solver.iterations = 10;
+
+    // create the first ball
+    let ballShape = new CANNON.Sphere(ballRadius);
+    let mass = 1;
+    ball1 = new CANNON.Body({
+      mass: mass
+    });
+    ball1.addShape(ballShape);
+    // ball1.velocity.set(0,10,0);
+    ball1.friction = 0.25;
+    world.addBody(ball1);
+    //console.log(ball1);
+
 }
 
 function updatePhysicsWorld() {
@@ -47,4 +67,19 @@ function updatePhysicsWorld() {
     // Take a time step.
     wWorld.Step(1/60, 8, 3);
     */
+
+    world.step(1/60);
+    // Copy coordinates from Cannon.js to Three.js
+    //console.log(ball1);
+
+    //console.log(keyAxis[0]*ball1.mass*ball1.friction);
+    let force1 = new CANNON.Vec3(keyAxis[0]*ball1.mass*ball1.friction, 
+        keyAxis[1]*ball1.mass*ball1.friction, 0);
+    var force = new CANNON.Vec3(500,0,0);
+    var worldpoint = new CANNON.Vec3(0,0,ballRadius);
+    ball1.applyForce(force, worldpoint);
+    keyAxis = [0,0];
+
+    ballMesh.position.copy(ball1.position);
+    ballMesh.quaternion.copy(ball1.quaternion);
 }

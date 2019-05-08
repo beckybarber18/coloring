@@ -23,7 +23,12 @@ let camera			= undefined,
     ironTexture2   	= new THREE.TextureLoader().load('/images/ball2.png'),
     canvasTexture  	= new THREE.TextureLoader().load('/images/canvas.png'),
     brickTexture   	= new THREE.TextureLoader().load('/images/brick.png'),
-    gameState      	= undefined;
+    gameState      	= undefined,
+
+    // physics world variables
+    world         = undefined,
+    ball1         = undefined,
+    ball2         = undefined;
 
 init();
 animate();
@@ -52,23 +57,29 @@ function animate() {
         case 'initialize':
             // arena = generateSquareMaze(arenaDimension);
             // arena[arenaDimension-1][arenaDimension-2] = false;
-            // createPhysicsWorld();
+            createPhysicsWorld();
             createRenderWorld();
-            gameState = 'fade in';
+            //gameState = 'fade in';
+            gameState = 'play';
             break;
 
         case 'fade in':
+            light.intensity += 0.1 * (1.0 - light.intensity);
             renderer.render(scene, camera);
+            if (Math.abs(light.intensity - 1.0) < 0.05) {
+                light.intensity = 1.0;
+                gameState = 'play'
+            }
             break;
 
         case 'play':
-            // updatePhysicsWorld();
+            updatePhysicsWorld();
             updateRenderWorld();
             renderer.render(scene, camera);
             break;
 
         case 'fade out':
-            // updatePhysicsWorld();
+            updatePhysicsWorld();
             updateRenderWorld();
             renderer.render(scene, camera);
             break;
