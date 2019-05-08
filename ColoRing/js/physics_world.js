@@ -27,19 +27,19 @@ function createPhysicsWorld() {
     fixDef2.shape = new b2CircleShape(ballRadius);
     wBall2.CreateFixture(fixDef2);
 
-    // Create the maze.
+    // Create the arena.
     bodyDef.type = b2Body.b2_staticBody;
     fixDef.shape = new b2PolygonShape();
-    fixDef.shape.SetAsBox(mazeWidth/2, mazeWidth/2);
-    for (var i = 0; i < maze.dimension; i+=mazeWidth) {
-        for (var j = 0; j < maze.dimension; j+=maze.dimension - mazeWidth) {
+    fixDef.shape.SetAsBox(arenaDimension/2, arenaDimension/2);
+    for (var i = 0; i < arenaDimension; i+=arenaDimension) {
+        for (var j = 0; j < arenaDimension; j+=arenaDimension - arenaDimension) {
             bodyDef.position.x = i;
             bodyDef.position.y = j;
             wWorld.CreateBody(bodyDef).CreateFixture(fixDef);
         }
     }
-    for (var j = 0; j < maze.dimension; j+=mazeWidth) {
-        for (var i = 0; i < maze.dimension; i+=maze.dimension - mazeWidth) {
+    for (var j = 0; j < arenaDimension; j+=arenaDimension) {
+        for (var i = 0; i < arenaDimension; i+=arenaDimension - arenaDimension) {
             bodyDef.position.x = i;
             bodyDef.position.y = j;
             wWorld.CreateBody(bodyDef).CreateFixture(fixDef);
@@ -49,19 +49,19 @@ function createPhysicsWorld() {
 
 function updatePhysicsWorld() {
 
-    // Apply "friction". 
+    // Apply "friction".
     var lv = wBall.GetLinearVelocity();
     var lv2 = wBall2.GetLinearVelocity();
     lv.Multiply(0.95);
     lv2.Multiply(0.95);
     wBall.SetLinearVelocity(lv);
     wBall2.SetLinearVelocity(lv2);
-    
+
     // Apply user-directed force.
     var f = new b2Vec2(keyAxis[0]*wBall.GetMass()*0.25, keyAxis[1]*wBall.GetMass()*0.25);
     var f2 = new b2Vec2(keyAxis2[0]*wBall2.GetMass()*0.25, keyAxis2[1]*wBall2.GetMass()*0.25);
-    wBall.ApplyImpulse(f, wBall.GetPosition());          
-    wBall2.ApplyImpulse(f2, wBall2.GetPosition()); 
+    wBall.ApplyImpulse(f, wBall.GetPosition());
+    wBall2.ApplyImpulse(f2, wBall2.GetPosition());
     keyAxis = [0,0];
     keyAxis2 = [0,0];
 

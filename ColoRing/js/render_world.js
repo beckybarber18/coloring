@@ -4,47 +4,46 @@ function createRenderWorld() {
     scene = new THREE.Scene();
 
     // Add the light.
-    light= new THREE.PointLight(0xffffff, 1);
-    light.position.set(1, 1, 7);
+    light = new THREE.AmbientLight(0xff0000);
     scene.add(light);
-    
-    // Add the ball.
-    g = new THREE.SphereGeometry(ballRadius, 32, 16);
-    m = new THREE.MeshPhongMaterial({map:ironTexture});
-    ballMesh = new THREE.Mesh(g, m);
-    ballMesh.position.set(1.5, 1, ballRadius);
-    scene.add(ballMesh);
-
-    m2 = new THREE.MeshPhongMaterial({map:ironTexture2});
-    ballMesh2 = new THREE.Mesh(g, m2);
-    ballMesh2.position.set(0.5, 1, ballRadius);
-    scene.add(ballMesh2);
 
     // Add the camera.
-    var aspect = window.innerWidth/window.innerHeight;
-    camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
-    console.log(camera.view);
-    // camera = new THREE.OrthographicCamera(-10*aspect, 10*aspect, -10, 10, 1, 1000);
-    // camera.position.set(0, -100, -100);
-    // camera.position.x = -10000;
-    // camera.position.y = -10000;
-    // camera.position.z = -10000;
-    // camera.setViewOffset(aspect*50, 50, 20, 10, aspect*50, 50);
+    var aspect = window.innerWidth / window.innerHeight;
+    camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
+    camera.position.z = 100;
     scene.add(camera);
 
-    // Add the maze.
-    mazeMesh = generate_maze_mesh(maze);
-    scene.add(mazeMesh);
+    // Add the ball.
+    const ballGeo = new THREE.CubeGeometry(ballRadius, 32, 32, 1, 1, 1);
 
+    const ballMat1 = new THREE.MeshPhongMaterial({map:ironTexture});
+    ballMesh1 = new THREE.Mesh(ballGeo, ballMat1);
+    // ballMesh1.position.set(1.5, 1, ballRadius);
+    scene.add(ballMesh1);
+
+    const ballMat2 = new THREE.MeshPhongMaterial({map:ironTexture2});
+    ballMesh2 = new THREE.Mesh(ballGeo, ballMat2);
+    // ballMesh2.position.set(1.5, 1, ballRadius);
+    scene.add(ballMesh2);
+
+    // Add the arena.
+    arenaMesh = generateArena();
+    scene.add(arenaMesh);
+
+    // Add arena floor.
+    arenaFloorMeshes = generateArenaFloor();
+
+    /*
     // Add the ground.
-    g = new THREE.PlaneGeometry(mazeDimension*10, mazeDimension*10, mazeDimension, mazeDimension);
+    g = new THREE.PlaneGeometry(arenaDimension*10, arenaDimension*10, arenaDimension, arenaDimension);
     planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
-    planeTexture.repeat.set(mazeDimension*5, mazeDimension*5);
+    planeTexture.repeat.set(arenaDimension*5, arenaDimension*5);
     // m = new THREE.MeshPhongMaterial({map:planeTexture});
     planeMesh = new THREE.Mesh(g);
-    planeMesh.position.set((mazeDimension-1)/2, (mazeDimension-1)/2, 0);
+    planeMesh.position.set((arenaDimension-1)/2, (arenaDimension-1)/2, 0);
     planeMesh.rotation.set(Math.PI/2, 0, 0);
-    scene.add(planeMesh);                
+    scene.add(planeMesh);
+    */
 }
 
 
@@ -84,7 +83,7 @@ function updateRenderWorld() {
     tempMat2.multiplySelf(ballMesh2.matrix);
     ballMesh2.matrix = tempMat2;
     ballMesh2.rotation.getRotationFromMatrix(ballMesh2.matrix);
-    
+
     // // Update camera and light positions.
     // camera.position.x += (ballMesh.position.x - camera.position.x) * 0.1;
     // camera.position.y += (ballMesh.position.y - camera.position.y) * 0.1;
@@ -95,38 +94,50 @@ function updateRenderWorld() {
 }
 
 
-function generate_maze_mesh(field) {
-    var dummy = new THREE.Geometry();
-    for (var i = 0; i < mazeDimension; i+=mazeWidth) {
-        for (var j = 0; j < mazeDimension; j+=mazeDimension - mazeWidth) {
-            var geometry = new THREE.CubeGeometry(mazeWidth,mazeWidth,mazeWidth,1,1,1);
-            var mesh_ij = new THREE.Mesh(geometry);
-            mesh_ij.position.x = i;
-            mesh_ij.position.y = j;
-            mesh_ij.position.z = 0.05;
-            THREE.GeometryUtils.merge(dummy, mesh_ij);
-        }
+function generateArena() {
+    const dummy = new THREE.Geometry();
+
+    const geo = new THREE.CubeGeometry(arenaSize, arenaSize, arenaSize, 1, 1, 1);
+    const mat = new THREE.MeshPhongMaterial({color: 0xf7cb15});
+
+    for (let x = -arenaDimension; x < arenaDimension + 1; x += arenaWidth) {
+        const mesh1 = new THREE.Mesh(geo, mat);
+        mesh1.position.x = x;
+        mesh1.position.y = -arenaDimension;
+        mesh1.position.z = arenaSize / 2;
+        THREE.GeometryUtils.merge(dummy, mesh1);
+
+
+        const mesh2 = new THREE.Mesh(geo, mat);
+        mesh2.position.x = x;
+        mesh2.position.y = arenaDimension;
+        mesh2.position.z = arenaSize / 2;
+        THREE.GeometryUtils.merge(dummy, mesh2);
     }
-    for (var j = 0; j < mazeDimension; j+=mazeWidth) {
-        for (var i = 0; i < mazeDimension; i+=mazeDimension - mazeWidth) {
-            var geometry = new THREE.CubeGeometry(mazeWidth,mazeWidth,mazeWidth,1,1,1);
-            var mesh_ij = new THREE.Mesh(geometry);
-            mesh_ij.position.x = i;
-            mesh_ij.position.y = j;
-            mesh_ij.position.z = 0.05;
-            THREE.GeometryUtils.merge(dummy, mesh_ij);
-        }
+
+    for (let y = -arenaDimension; y < arenaDimension + 1; y += arenaWidth) {
+        const mesh1 = new THREE.Mesh(geo, mat);
+        mesh1.position.x = -arenaDimension;
+        mesh1.position.y = y;
+        mesh1.position.z = arenaSize / 2;
+        THREE.GeometryUtils.merge(dummy, mesh1);
+
+
+        const mesh2 = new THREE.Mesh(geo, mat);
+        mesh2.position.x = arenaDimension;
+        mesh2.position.y = y;
+        mesh2.position.z = arenaSize / 2;
+        THREE.GeometryUtils.merge(dummy, mesh2);
     }
-    // var material = new THREE.MeshPhongMaterial({map: brickTexture});
-    var mesh = new THREE.Mesh(dummy)
-    return mesh;
+
+    return new THREE.Mesh(dummy);
 }
 
-function generate_maze_floor() {
+function generateArenaFloor() {
   let floor = [];
-  for (x = 0; x < mazeDimension; x += 0.05) {
+  for (x = -arenaDimension; x < arenaDimension + 1; x += arenaSize) {
     floor[x * 20] = [];
-    for (y = 0; y < mazeDimension; y += 0.05) {
+    for (y = 0; y < arenaDimension; y += 0.05) {
       geo = new THREE.CubeGeometry(0.05, 0.05, 0.005, 1, 1, 1);
       mat = new THREE.MeshPhongMaterial({color: 0x878e88, shading: THREE.FlatShading});
       mesh = new THREE.Mesh(geo, mat);

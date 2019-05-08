@@ -4,35 +4,29 @@
 
         <script src='Box2dWeb.min.js'></script>
         <script src="Three.js"></script>
-        <script src="js/physics_world.js"></script>
-        <script src="js/render_world.js"></script>
         <script src="keyboard.js"></script>
         <script src="jquery.js"></script>
         <script src="maze.js"></script>
 
         <script>
 
-            let camera         = undefined,
+            var camera         = undefined,
                 scene          = undefined,
                 renderer       = undefined,
                 light          = undefined,
                 mouseX         = undefined,
                 mouseY         = undefined,
-                arena          = undefined,
-                arenaMesh      = undefined,
-                arenaFloorMesh = undefined,
-                arenaDimension = 50,
-				arenaWidth     = 75,
-				arenaSize      = 5,
-				tileSize	   = 1,
+                maze           = undefined,
+                mazeMesh       = undefined,
+                mazeDimension  = 100,
+                mazeWidth      = 5;
                 planeMesh      = undefined,
-                ballMesh1      = undefined,
-                ballMesh2      = undefined,
+                ballMesh       = undefined,
                 ballRadius     = 2,
                 keyAxis        = [0, 0],
-                keyAxis2       = [0, 0],
+                keyAxis2        = [0, 0],
                 ironTexture    = THREE.ImageUtils.loadTexture('/ball.png'),
-                ironTexture2   = THREE.ImageUtils.loadTexture('/ball2.png'),
+                ironTexture2    = THREE.ImageUtils.loadTexture('/ball2.png'),
                 planeTexture   = THREE.ImageUtils.loadTexture('/concrete.png'),
                 brickTexture   = THREE.ImageUtils.loadTexture('/brick.png'),
                 gameState      = undefined,
@@ -57,10 +51,15 @@
                 switch(gameState) {
 
                     case 'initialize':
-                        // arena = generateSquareMaze(arenaDimension);
-                        // arena[arenaDimension-1][arenaDimension-2] = false;
-                        // createPhysicsWorld();
+                        maze = generateSquareMaze(mazeDimension);
+                        maze[mazeDimension-1][mazeDimension-2] = false;
+                        createPhysicsWorld();
                         createRenderWorld();
+                        // camera.position.set(1, 1, 5);
+                        light.position.set(1, 1, 1.3);
+                        light.intensity = 0;
+                        var level = Math.floor((mazeDimension-1)/2 - 4);
+                        $('#level').html('Level ' + level);
                         gameState = 'fade in';
                         break;
 
@@ -74,21 +73,21 @@
                         break;
 
                     case 'play':
-                        // updatePhysicsWorld();
+                        updatePhysicsWorld();
                         updateRenderWorld();
                         renderer.render(scene, camera);
 
                         // Check for victory.
-                        // var arenaX = Math.floor(ballMesh.position.x + 0.5);
-                        // var arenaY = Math.floor(ballMesh.position.y + 0.5);
-                        // if (arenaX == arenaDimension && arenaY == arenaDimension - 2) {
-                        //     arenaDimension += 2;
+                        // var mazeX = Math.floor(ballMesh.position.x + 0.5);
+                        // var mazeY = Math.floor(ballMesh.position.y + 0.5);
+                        // if (mazeX == mazeDimension && mazeY == mazeDimension - 2) {
+                        //     mazeDimension += 2;
                         //     gameState = 'fade out';
                         // }
                         break;
 
                     case 'fade out':
-                        // updatePhysicsWorld();
+                        updatePhysicsWorld();
                         updateRenderWorld();
                         light.intensity += 0.1 * (0.0 - light.intensity);
                         renderer.render(scene, camera);
@@ -223,7 +222,7 @@
     <div id='instructions'>
         How to play Astray:
         <br><br>
-        Use the arrow keys to move the ball and find the exit to the arena.
+        Use the arrow keys to move the ball and find the exit to the maze.
         <br><br>
         Vim trainees: h, j, k, l
     </div>

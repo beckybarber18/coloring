@@ -2,15 +2,19 @@ function createRenderWorld() {
 
     // Create the scene object.
     scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0xffffff );
+	scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
 
     // Add the light.
     light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+    light.position.set(0, 0, 150);
     scene.add(light);
 
     // Add the camera.
     const aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
-    camera.position.z = 140;
+    camera.position.set(0, -20, 140);
+    camera.rotation.x = 10 * Math.PI / 180;
     scene.add(camera);
 
     // Add the ball.
@@ -30,6 +34,8 @@ function createRenderWorld() {
     arenaMesh = generateArena();
     scene.add(arenaMesh);
 
+    // Add the arena floor.
+    // arenaFloorMesh = generateArenaFloor();
 }
 
 function updateRenderWorld() {
@@ -82,7 +88,7 @@ function generateArena() {
     const dummy = new THREE.Geometry();
 
     const geo = new THREE.BoxGeometry(arenaSize, arenaSize, arenaSize);
-    const mat = new THREE.MeshPhongMaterial({color: 0xf7cb15});
+    const mat = new THREE.MeshPhongMaterial({color: 0xf55d3e});
 
     for (let x = -arenaWidth; x < arenaWidth + 1; x += arenaSize) {
         const mesh1 = new THREE.Mesh(geo, mat);
@@ -114,28 +120,24 @@ function generateArena() {
         dummy.mergeMesh(mesh2);
     }
 
-    /*
-
-    for (let i = -arenaDimension; i < arenaDimension; i += arenaWidth) {
-        for (let j = -arenaDimension; j < arenaDimension; j += arenaDimension - arenaWidth) {
-            const mesh_ij = new THREE.Mesh(geometry);
-            mesh_ij.position.x = i;
-            mesh_ij.position.y = j;
-            mesh_ij.position.z = 0.05;
-            dummy.mergeMesh(mesh_ij);
-        }
-    }
-    for (let j = -arenaDimension; j < arenaDimension; j+=arenaWidth) {
-        for (let i = -arenaDimension; i < arenaDimension; i+=arenaDimension - arenaWidth) {
-            const mesh_ij = new THREE.Mesh(geometry);
-            mesh_ij.position.x = i;
-            mesh_ij.position.y = j;
-            mesh_ij.position.z = arenaWidth / 2;
-            dummy.mergeMesh(mesh_ij);
-        }
-    }
-
-    // var material = new THREE.MeshPhongMaterial({map: brickTexture});
-    */
     return new THREE.Mesh(dummy);
+}
+
+function generateArenaFloor() {
+    let floor = [];
+
+    const geo = new THREE.BoxGeometry(tileSize, tileSize, tileSize / 2);
+    const mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
+
+    for (x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
+        for (y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.x = x;
+            mesh.position.y = y;
+            mesh.position.z = -tileSize / 4;
+            floor.push(mesh);
+            scene.add(mesh);
+        }
+     }
+     return floor;
 }
