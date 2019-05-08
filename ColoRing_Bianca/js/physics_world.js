@@ -110,9 +110,9 @@ function updatePhysicsWorld() {
     ball2.velocity.set(lv.x*(1-ball2.friction), lv.y*(1-ball2.friction), lv.z*(1-ball2.friction));
 
     //console.log(keyAxis[0]*ball1.mass*ball1.friction);
-    let force1 = new CANNON.Vec3(keyAxis[0]*ball1.mass*12, 
+    let force1 = new CANNON.Vec3(keyAxis[0]*ball1.mass*12,
         keyAxis[1]*ball1.mass*12, 0);
-    let force2 = new CANNON.Vec3(keyAxis2[0]*ball2.mass*12, 
+    let force2 = new CANNON.Vec3(keyAxis2[0]*ball2.mass*12,
         keyAxis2[1]*ball2.mass*12, 0);
     // var force = new CANNON.Vec3(500,0,0);
     // var worldpoint = new CANNON.Vec3(0,0,ballRadius);
@@ -124,9 +124,4 @@ function updatePhysicsWorld() {
     // handle wall collisions
     handleWallCollisions(ball1);
     handleWallCollisions(ball2);
-
-    ballMesh.position.copy(ball1.position);
-    ballMesh.quaternion.copy(ball1.quaternion);
-    ballMesh2.position.copy(ball2.position);
-    ballMesh2.quaternion.copy(ball2.quaternion);
 }

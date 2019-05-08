@@ -36,6 +36,11 @@ function createRenderWorld() {
 }
 
 function updateRenderWorld() {
+    // Update ball position
+    ballMesh.position.copy(ball1.position);
+    ballMesh.quaternion.copy(ball1.quaternion);
+    ballMesh2.position.copy(ball2.position);
+    ballMesh2.quaternion.copy(ball2.quaternion);
     /*
     // Update ball position.
     var stepX = wBall.GetPosition().x - ballMesh.position.x;
