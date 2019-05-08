@@ -16,6 +16,17 @@ function createRenderWorld() {
     light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
     scene.add(light);
 
+    // const box = new THREE.SphereGeometry(ballRadius, 32, 32);
+    // const box = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
+    // const boxMat = new THREE.MeshBasicMaterial({color: 0x76bed0});
+    // const blah = new THREE.Mesh(box, boxMat);
+    // blah.position.set(50, 50, 0);
+    // scene.add(blah);
+
+    // Add the arena.
+    arenaMesh = generate_arena();
+    scene.add(arenaMesh);
+
     // Add the balls
     const sphereGeo = new THREE.SphereGeometry(ballRadius, 32, 32);
 
@@ -31,21 +42,14 @@ function createRenderWorld() {
     // ballMesh2.position.set(0.5, 1, ballRadius);
     scene.add(ballMesh2);
 
-    // const box = new THREE.SphereGeometry(ballRadius, 32, 32);
-    const box = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
-    const boxMat = new THREE.MeshBasicMaterial({color: 0x76bed0});
-    const blah = new THREE.Mesh(box, boxMat);
-    blah.position.set(50, 50, 0);
-    scene.add(blah);
+    
 
 
     /*
 
 
 
-    // Add the arena.
-    // arenaMesh = generate_arena();
-    // scene.add(arenaMesh);
+    
 
     // Add floor of arena.
     // arenaFloorMeshes = generate_arena_floor();
@@ -119,19 +123,19 @@ function updateRenderWorld() {
 }
 
 function generate_arena() {
-  /*
+  
     let dummy = new THREE.Geometry();
 
-    const geometry = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
-    const mat = new THREE.MeshPhongMaterial({map: ironTexture});
+    // const geometry = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
+    // const mat = new THREE.MeshPhongMaterial({map: ironTexture});
 
-    for (let x = -arenaDimension / 2; x < arenaDimension / 2; x += arenaWidth) {
+    // for (let x = -arenaDimension / 2; x < arenaDimension / 2; x += arenaWidth) {
 
-      const mesh_ij = new THREE.Mesh(geometry, mat);
-      mesh_ij.position.x = x;
-      mesh_ij.position.y = arenaDimension / 2;
-      dummy.mergeMesh(mesh_ij);
-    }
+    //   const mesh_ij = new THREE.Mesh(geometry, mat);
+    //   mesh_ij.position.x = x;
+    //   mesh_ij.position.y = arenaDimension / 2;
+    //   dummy.mergeMesh(mesh_ij);
+    // }
 
 
 
@@ -158,7 +162,7 @@ function generate_arena() {
     // var material = new THREE.MeshPhongMaterial({map: brickTexture});
     var mesh = new THREE.Mesh(dummy)
     return mesh;
-    */
+    
 }
 
 function generate_arena_floor() {
