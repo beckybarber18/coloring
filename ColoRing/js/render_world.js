@@ -2,54 +2,46 @@ function createRenderWorld() {
 
     // Create the scene object.
     scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0xffffff );
+	scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
 
-    // Add the light.
-    light = new THREE.AmbientLight(0xff0000);
-    scene.add(light);
+    createLights();
 
     // Add the camera.
-    var aspect = window.innerWidth / window.innerHeight;
+    const aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
-    camera.position.z = 100;
+    camera.position.set(0, -20, 130);
+    camera.rotation.x = 10 * Math.PI / 180;
     scene.add(camera);
 
     // Add the ball.
-    const ballGeo = new THREE.CubeGeometry(ballRadius, 32, 32, 1, 1, 1);
+    const ballGeo = new THREE.SphereGeometry(ballRadius, 32, 16);
 
-    const ballMat1 = new THREE.MeshPhongMaterial({map:ironTexture});
-    ballMesh1 = new THREE.Mesh(ballGeo, ballMat1);
-    // ballMesh1.position.set(1.5, 1, ballRadius);
-    scene.add(ballMesh1);
+    const ballMat1 = new THREE.MeshPhongMaterial({map: ironTexture});
+    ballMesh = new THREE.Mesh(ballGeo, ballMat1);
+    ballMesh.position.set(-65, 0, ballRadius);
+    scene.add(ballMesh);
 
-    const ballMat2 = new THREE.MeshPhongMaterial({map:ironTexture2});
+    const ballMat2 = new THREE.MeshPhongMaterial({map: ironTexture2});
     ballMesh2 = new THREE.Mesh(ballGeo, ballMat2);
-    // ballMesh2.position.set(1.5, 1, ballRadius);
+    ballMesh2.position.set(65, 0, ballRadius);
     scene.add(ballMesh2);
 
     // Add the arena.
     arenaMesh = generateArena();
     scene.add(arenaMesh);
 
-    // Add arena floor.
-    arenaFloorMeshes = generateArenaFloor();
-
-    /*
-    // Add the ground.
-    g = new THREE.PlaneGeometry(arenaDimension*10, arenaDimension*10, arenaDimension, arenaDimension);
-    planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
-    planeTexture.repeat.set(arenaDimension*5, arenaDimension*5);
-    // m = new THREE.MeshPhongMaterial({map:planeTexture});
-    planeMesh = new THREE.Mesh(g);
-    planeMesh.position.set((arenaDimension-1)/2, (arenaDimension-1)/2, 0);
-    planeMesh.rotation.set(Math.PI/2, 0, 0);
-    scene.add(planeMesh);
-    */
+    // Add the arena floor.
+    arenaFloorMesh = generateArenaFloor();
 }
 
-
-
 function updateRenderWorld() {
-
+    // Update ball position
+    ballMesh.position.copy(ball1.position);
+    ballMesh.quaternion.copy(ball1.quaternion);
+    ballMesh2.position.copy(ball2.position);
+    ballMesh2.quaternion.copy(ball2.quaternion);
+    /*
     // Update ball position.
     var stepX = wBall.GetPosition().x - ballMesh.position.x;
     var stepY = wBall.GetPosition().y - ballMesh.position.y;
@@ -91,61 +83,74 @@ function updateRenderWorld() {
     // light.position.x = camera.position.x;
     // light.position.y = camera.position.y;
     // light.position.z = camera.position.z - 3.7;
+    */
 }
 
+function createLights() {
+    const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9);
+
+    const shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+    shadowLight.position.set(150, 350, 350);
+    shadowLight.castShadow = true;
+    shadowLight.shadow.camera.left = -400;
+    shadowLight.shadow.camera.right = 400;
+    shadowLight.shadow.camera.top = 400;
+    shadowLight.shadow.camera.bottom = -400;
+    shadowLight.shadow.camera.near = 1;
+    shadowLight.shadow.camera.far = 1000;
+    shadowLight.shadow.mapSize.width = 4096;
+    shadowLight.shadow.mapSize.height = 4096;
+
+    var ch = new THREE.CameraHelper(shadowLight.shadow.camera);
+
+    scene.add(hemisphereLight);
+    scene.add(shadowLight);
+}
 
 function generateArena() {
     const dummy = new THREE.Geometry();
 
-    const geo = new THREE.CubeGeometry(arenaSize, arenaSize, arenaSize, 1, 1, 1);
-    const mat = new THREE.MeshPhongMaterial({color: 0xf7cb15});
+    const geo = new THREE.BoxGeometry(arenaSize, arenaSize, arenaSize);
+    const mat = new THREE.MeshPhongMaterial({color: Colors.arena});
 
-    for (let x = -arenaDimension; x < arenaDimension + 1; x += arenaWidth) {
-        const mesh1 = new THREE.Mesh(geo, mat);
-        mesh1.position.x = x;
-        mesh1.position.y = -arenaDimension;
-        mesh1.position.z = arenaSize / 2;
-        THREE.GeometryUtils.merge(dummy, mesh1);
+    for (let x = -arenaWidth; x < arenaWidth + 1; x += arenaSize) {
+        const mesh1 = new THREE.Mesh(geo);
+        mesh1.position.set(x, -arenaHeight, arenaSize / 2);
+        dummy.mergeMesh(mesh1);
 
-
-        const mesh2 = new THREE.Mesh(geo, mat);
-        mesh2.position.x = x;
-        mesh2.position.y = arenaDimension;
-        mesh2.position.z = arenaSize / 2;
-        THREE.GeometryUtils.merge(dummy, mesh2);
+        const mesh2 = new THREE.Mesh(geo);
+        mesh2.position.set(x, arenaHeight, arenaSize / 2);
+        dummy.mergeMesh(mesh2);
     }
 
-    for (let y = -arenaDimension; y < arenaDimension + 1; y += arenaWidth) {
-        const mesh1 = new THREE.Mesh(geo, mat);
-        mesh1.position.x = -arenaDimension;
-        mesh1.position.y = y;
-        mesh1.position.z = arenaSize / 2;
-        THREE.GeometryUtils.merge(dummy, mesh1);
+    for (let y = -arenaHeight; y < arenaHeight + 1; y += arenaSize) {
+        const mesh1 = new THREE.Mesh(geo);
+        mesh1.position.set(-arenaWidth, y, arenaSize / 2);
+        dummy.mergeMesh(mesh1);
 
 
-        const mesh2 = new THREE.Mesh(geo, mat);
-        mesh2.position.x = arenaDimension;
-        mesh2.position.y = y;
-        mesh2.position.z = arenaSize / 2;
-        THREE.GeometryUtils.merge(dummy, mesh2);
+        const mesh2 = new THREE.Mesh(geo);
+        mesh2.position.set(arenaWidth, y, arenaSize / 2);
+        dummy.mergeMesh(mesh2);
     }
 
-    return new THREE.Mesh(dummy);
+    return new THREE.Mesh(dummy, mat);
 }
 
 function generateArenaFloor() {
-  let floor = [];
-  for (x = -arenaDimension; x < arenaDimension + 1; x += arenaSize) {
-    floor[x * 20] = [];
-    for (y = 0; y < arenaDimension; y += 0.05) {
-      geo = new THREE.CubeGeometry(0.05, 0.05, 0.005, 1, 1, 1);
-      mat = new THREE.MeshPhongMaterial({color: 0x878e88, shading: THREE.FlatShading});
-      mesh = new THREE.Mesh(geo, mat);
-      mesh.position.x = x;
-      mesh.position.y = y;
-      floor[x * 20][y * 20] = mesh;
-      scene.add(mesh);
-    }
-  }
-  return floor;
+    let floor = [];
+
+    const geo = new THREE.BoxGeometry(tileSize, tileSize, tileSize / 2);
+    const mat = new THREE.MeshPhongMaterial({color: Colors.floor, flatShading: true});
+    const mat2 = new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true});
+
+    for (let x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
+        for (let y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, y, -tileSize / 4);
+            floor.push(mesh);
+            scene.add(mesh);
+        }
+     }
+     return floor;
 }
