@@ -28,8 +28,9 @@ let camera			= undefined,
     gameState      	= undefined,
 
     // Box2D world variables
-    wWorld         = undefined,
-    wBall          = undefined;
+    world         = undefined,
+    ball1         = undefined,
+    ball2         = undefined;
 
 init();
 animate();
@@ -58,23 +59,29 @@ function animate() {
         case 'initialize':
             // arena = generateSquareMaze(arenaDimension);
             // arena[arenaDimension-1][arenaDimension-2] = false;
-            // createPhysicsWorld();
+            createPhysicsWorld();
             createRenderWorld();
-            gameState = 'fade in';
+            //gameState = 'fade in';
+            gameState = 'play';
             break;
 
         case 'fade in':
+            light.intensity += 0.1 * (1.0 - light.intensity);
             renderer.render(scene, camera);
+            if (Math.abs(light.intensity - 1.0) < 0.05) {
+                light.intensity = 1.0;
+                gameState = 'play'
+            }
             break;
 
         case 'play':
-            // updatePhysicsWorld();
+            updatePhysicsWorld();
             updateRenderWorld();
             renderer.render(scene, camera);
             break;
 
         case 'fade out':
-            // updatePhysicsWorld();
+            updatePhysicsWorld();
             updateRenderWorld();
             renderer.render(scene, camera);
             break;
