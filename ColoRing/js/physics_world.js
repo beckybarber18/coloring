@@ -31,15 +31,15 @@ function createPhysicsWorld() {
     bodyDef.type = b2Body.b2_staticBody;
     fixDef.shape = new b2PolygonShape();
     fixDef.shape.SetAsBox(arenaWidth/2, arenaWidth/2);
-    for (var i = 0; i < arenaDimension; i+=arenaWidth) {
-        for (var j = 0; j < arenaDimension; j+=arenaDimension - arenaWidth) {
+    for (var i = 0; i < arena.dimension; i += arenaWidth) {
+        for (var j = 0; j < arena.dimension; j += arena.dimension - arenaWidth) {
             bodyDef.position.x = i;
             bodyDef.position.y = j;
             wWorld.CreateBody(bodyDef).CreateFixture(fixDef);
         }
     }
-    for (var j = 0; j < arenaDimension; j+=arenaWidth) {
-        for (var i = 0; i < arenaDimension; i+=arenaDimension - arenaWidth) {
+    for (var j = 0; j < arena.dimension; j+=arenaWidth) {
+        for (var i = 0; i < arena.dimension; i+=arena.dimension - arenaWidth) {
             bodyDef.position.x = i;
             bodyDef.position.y = j;
             wWorld.CreateBody(bodyDef).CreateFixture(fixDef);
@@ -57,9 +57,11 @@ function updatePhysicsWorld() {
     wBall.SetLinearVelocity(lv);
     wBall2.SetLinearVelocity(lv2);
 
+    const scale = 4;
+
     // Apply user-directed force.
-    var f = new b2Vec2(keyAxis[0]*wBall.GetMass()*0.25, keyAxis[1]*wBall.GetMass()*0.25);
-    var f2 = new b2Vec2(keyAxis2[0]*wBall2.GetMass()*0.25, keyAxis2[1]*wBall2.GetMass()*0.25);
+    var f = new b2Vec2(keyAxis[0]*wBall.GetMass() * scale, keyAxis[1]*wBall.GetMass()* scale);
+    var f2 = new b2Vec2(keyAxis2[0]*wBall2.GetMass()* scale, keyAxis2[1]*wBall2.GetMass()* scale);
     wBall.ApplyImpulse(f, wBall.GetPosition());
     wBall2.ApplyImpulse(f2, wBall2.GetPosition());
     keyAxis = [0,0];

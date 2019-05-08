@@ -3,43 +3,61 @@ function createRenderWorld() {
     // Create the scene object
     scene = new THREE.Scene();
 
+    // Add the camera
+    const aspect = window.innerWidth / window.innerHeight;
+    camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+    camera.rotation.x = 10 * Math.PI / 180;
+    camera.position.x = arenaDimension / 2;
+    camera.position.y = arenaDimension / 2;
+    camera.position.z = 100;
+    scene.add(camera);
+
     // Add the light
     light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
     scene.add(light);
 
     // Add the balls
-    const sphereGeo = new THREE.SphereGeometry(ballRadius, 32, 16);
+    const sphereGeo = new THREE.SphereGeometry(ballRadius, 32, 32);
+
+    // Ball 1
     const sphereMat = new THREE.MeshPhongMaterial({map:ironTexture});
     ballMesh = new THREE.Mesh(sphereGeo, sphereMat);
     // ballMesh.position.set(1.5, 1, ballRadius);
     scene.add(ballMesh);
 
+    // Ball 2
     const sphereMat2 = new THREE.MeshPhongMaterial({map:ironTexture2});
     ballMesh2 = new THREE.Mesh(sphereGeo, sphereMat2);
     // ballMesh2.position.set(0.5, 1, ballRadius);
     scene.add(ballMesh2);
 
-    // Add the camera.
-    const aspect = window.innerWidth / window.innerHeight;
-    camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
-    camera.rotation.x = 10 * Math.PI / 180;
-    camera.position.x = 100;
-    scene.add(camera);
+    const box = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
+    const boxMat = new THREE.MeshPhongMaterial({map: brickTexture});
+    const blah = new THREE.Mesh(box, boxMat);
+    blah.position.set(50, 50, 0);
+    scene.add(blah);
+
+
+    /*
+
+
 
     // Add the arena.
-    arenaMesh = generate_arena();
-    scene.add(arenaMesh);
+    // arenaMesh = generate_arena();
+    // scene.add(arenaMesh);
 
     // Add floor of arena.
     // arenaFloorMeshes = generate_arena_floor();
 
     // Add the ground.
+
     g = new THREE.PlaneGeometry(arenaDimension*10, arenaDimension*10, arenaDimension, arenaDimension);
     m = new THREE.MeshPhongMaterial();
     planeMesh = new THREE.Mesh(g, m);
     planeMesh.position.set((arenaDimension-1)/2, (arenaDimension-1)/2, 0);
     planeMesh.rotation.set(Math.PI/2, 0, 0);
     scene.add(planeMesh);
+    */
 
 }
 
@@ -100,18 +118,22 @@ function updateRenderWorld() {
 }
 
 function generate_arena() {
+  /*
     let dummy = new THREE.Geometry();
 
+    const geometry = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
+    const mat = new THREE.MeshPhongMaterial({map: ironTexture});
+
     for (let x = -arenaDimension / 2; x < arenaDimension / 2; x += arenaWidth) {
-      var geometry = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
-      var mesh_ij = new THREE.Mesh(geometry);
+
+      const mesh_ij = new THREE.Mesh(geometry, mat);
       mesh_ij.position.x = x;
       mesh_ij.position.y = arenaDimension / 2;
       dummy.mergeMesh(mesh_ij);
     }
 
 
-    /*
+
     for (var i = 0; i < arenaDimension; i+=arenaWidth) {
         for (var j = 0; j < arenaDimension; j+=arenaDimension - arenaWidth) {
             var geometry = new THREE.BoxGeometry(arenaWidth,arenaWidth,arenaWidth);
@@ -131,13 +153,15 @@ function generate_arena() {
             mesh_ij.position.z = 0.05;
             dummy.mergeMesh(mesh_ij);
         }
-    }*/
+    }
     // var material = new THREE.MeshPhongMaterial({map: brickTexture});
     var mesh = new THREE.Mesh(dummy)
     return mesh;
+    */
 }
 
 function generate_arena_floor() {
+  /*
   let floor = [];
   for (x = 0; x < arenaDimension; x += 0.05) {
     for (y = 0; y < arenaDimension; y += 0.05) {
@@ -151,4 +175,5 @@ function generate_arena_floor() {
     }
   }
   return floor;
+  */
 }
