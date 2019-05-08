@@ -27,10 +27,10 @@
                 ballRadius     = 0.1,
                 keyAxis        = [0, 0],
                 keyAxis2        = [0, 0],
-                ironTexture    = THREE.ImageUtils.loadTexture('/ball.png'),
-                ironTexture2    = THREE.ImageUtils.loadTexture('/ball2.png'),
-                planeTexture   = THREE.ImageUtils.loadTexture('/concrete.png'),
-                brickTexture   = THREE.ImageUtils.loadTexture('/brick.png'),
+                ironTexture    = new THREE.TextureLoader().load('/ball.png'),
+                ironTexture2    = new THREE.TextureLoader().load('/ball2.png'),
+                planeTexture   = new THREE.TextureLoader().load('/concrete.png'),
+                brickTexture   = new THREE.TextureLoader().load('/brick.png'),
                 gameState      = undefined,
 
             // Box2D shortcuts
@@ -51,22 +51,22 @@
                 var dummy = new THREE.Geometry();
                 for (var i = 0; i < mazeDimension; i+=mazeWidth) {
                     for (var j = 0; j < mazeDimension; j+=mazeDimension - mazeWidth) {
-                        var geometry = new THREE.CubeGeometry(mazeWidth,mazeWidth,mazeWidth,1,1,1);
+                        var geometry = new THREE.BoxGeometry(mazeWidth,mazeWidth,mazeWidth);
                         var mesh_ij = new THREE.Mesh(geometry);
                         mesh_ij.position.x = i;
                         mesh_ij.position.y = j;
                         mesh_ij.position.z = 0.05;
-                        THREE.GeometryUtils.merge(dummy, mesh_ij);
+                        dummy.mergeMesh(mesh_ij);
                     }
                 }
                 for (var j = 0; j < mazeDimension; j+=mazeWidth) {
                     for (var i = 0; i < mazeDimension; i+=mazeDimension - mazeWidth) {
-                        var geometry = new THREE.CubeGeometry(mazeWidth,mazeWidth,mazeWidth,1,1,1);
+                        var geometry = new THREE.BoxGeometry(mazeWidth,mazeWidth,mazeWidth);
                         var mesh_ij = new THREE.Mesh(geometry);
                         mesh_ij.position.x = i;
                         mesh_ij.position.y = j;
                         mesh_ij.position.z = 0.05;
-                        THREE.GeometryUtils.merge(dummy, mesh_ij);
+                        dummy.mergeMesh(mesh_ij);
                     }
                 }
                 // var material = new THREE.MeshPhongMaterial({map: brickTexture});
@@ -78,8 +78,8 @@
               let floor = [];
               for (x = 0; x < mazeDimension; x += 0.05) {
                 for (y = 0; y < mazeDimension; y += 0.05) {
-                  geo = new THREE.CubeGeometry(0.05, 0.05, 0.005, 1, 1, 1);
-                  mat = new THREE.MeshPhongMaterial({color: 0x878e88, shading: THREE.FlatShading});
+                  geo = new THREE.BoxGeometry(0.05, 0.05, 0.005);
+                  mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
                   mesh = new THREE.Mesh(geo, mat);
                   mesh.position.x = x;
                   mesh.position.y = y;

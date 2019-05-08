@@ -4,7 +4,7 @@ function createRenderWorld() {
     scene = new THREE.Scene();
 
     // Add the light.
-    light= new THREE.PointLight(0xffffff, 1);
+    light= new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
     light.position.set(1, 1, 1.3);
     scene.add(light);
 
@@ -33,7 +33,6 @@ function createRenderWorld() {
 
     // Add floor of maze.
     arenaFloorMeshes = generate_maze_floor();
-    scene.add(arenaFloorMeshes);
 
     // Add the ground.
     g = new THREE.PlaneGeometry(mazeDimension*10, mazeDimension*10, mazeDimension, mazeDimension);
@@ -69,28 +68,29 @@ function updateRenderWorld() {
     ballMesh2.position.y += stepY2;
 
     // Update ball rotation.
+    /*
     var tempMat = new THREE.Matrix4();
     tempMat.makeRotationAxis(new THREE.Vector3(0,1,0), stepX/ballRadius);
-    tempMat.multiplySelf(ballMesh.matrix);
+    tempMat.multiply(ballMesh.matrix);
     ballMesh.matrix = tempMat;
 
     var tempMat2 = new THREE.Matrix4();
     tempMat2.makeRotationAxis(new THREE.Vector3(0,1,0), stepX2/ballRadius);
-    tempMat2.multiplySelf(ballMesh2.matrix);
+    tempMat2.multiply(ballMesh2.matrix);
     ballMesh2.matrix = tempMat2;
 
     tempMat = new THREE.Matrix4();
     tempMat.makeRotationAxis(new THREE.Vector3(1,0,0), -stepY/ballRadius);
-    tempMat.multiplySelf(ballMesh.matrix);
+    tempMat.multiply(ballMesh.matrix);
     ballMesh.matrix = tempMat;
     ballMesh.rotation.getRotationFromMatrix(ballMesh.matrix);
 
     tempMat2 = new THREE.Matrix4();
     tempMat2.makeRotationAxis(new THREE.Vector3(1,0,0), -stepY2/ballRadius);
-    tempMat2.multiplySelf(ballMesh2.matrix);
+    tempMat2.multiply(ballMesh2.matrix);
     ballMesh2.matrix = tempMat2;
     ballMesh2.rotation.getRotationFromMatrix(ballMesh2.matrix);
-
+*/
 
 
     // // Update camera and light positions.
