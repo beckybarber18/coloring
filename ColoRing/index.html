@@ -6,7 +6,7 @@
         <script src="js/three.js"></script>
         <script src="keyboard.js"></script>
         <script src="jquery.js"></script>
-        <script src="maze.js"></script>
+        <script src="arena.js"></script>
         <script src="js/render_world.js"></script>
         <script src="js/physics_world.js"></script>
 
@@ -18,10 +18,10 @@
                 light          = undefined,
                 mouseX         = undefined,
                 mouseY         = undefined,
-                maze           = undefined,
-                mazeMesh       = undefined,
-                mazeDimension  = 3,
-                mazeWidth      = 0.1;
+                arena           = undefined,
+                arenaMesh       = undefined,
+                arenaDimension  = 3,
+                arenaWidth      = 0.1;
                 planeMesh      = undefined,
                 ballMesh       = undefined,
                 ballRadius     = 0.1,
@@ -45,63 +45,19 @@
                 wWorld         = undefined,
                 wBall          = undefined;
 
-            function generate_maze_mesh(field) {
-                var dummy = new THREE.Geometry();
-                for (var i = 0; i < mazeDimension; i+=mazeWidth) {
-                    for (var j = 0; j < mazeDimension; j+=mazeDimension - mazeWidth) {
-                        var geometry = new THREE.BoxGeometry(mazeWidth,mazeWidth,mazeWidth);
-                        var mesh_ij = new THREE.Mesh(geometry);
-                        mesh_ij.position.x = i;
-                        mesh_ij.position.y = j;
-                        mesh_ij.position.z = 0.05;
-                        dummy.mergeMesh(mesh_ij);
-                    }
-                }
-                for (var j = 0; j < mazeDimension; j+=mazeWidth) {
-                    for (var i = 0; i < mazeDimension; i+=mazeDimension - mazeWidth) {
-                        var geometry = new THREE.BoxGeometry(mazeWidth,mazeWidth,mazeWidth);
-                        var mesh_ij = new THREE.Mesh(geometry);
-                        mesh_ij.position.x = i;
-                        mesh_ij.position.y = j;
-                        mesh_ij.position.z = 0.05;
-                        dummy.mergeMesh(mesh_ij);
-                    }
-                }
-                // var material = new THREE.MeshPhongMaterial({map: brickTexture});
-                var mesh = new THREE.Mesh(dummy)
-                return mesh;
-            }
-
-            function generate_maze_floor() {
-              let floor = [];
-              for (x = 0; x < mazeDimension; x += 0.05) {
-                for (y = 0; y < mazeDimension; y += 0.05) {
-                  geo = new THREE.BoxGeometry(0.05, 0.05, 0.005);
-                  mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
-                  mesh = new THREE.Mesh(geo, mat);
-                  mesh.position.x = x;
-                  mesh.position.y = y;
-                  floor.push(mesh);
-                  scene.add(mesh);
-                }
-              }
-              return floor;
-            }
-
-
             function gameLoop() {
 
                 switch(gameState) {
 
                     case 'initialize':
-                        maze = generateSquareMaze(mazeDimension);
-                        maze[mazeDimension-1][mazeDimension-2] = false;
+                        // arena = generateSquareArena(arenaDimension);
+                        // arena[arenaDimension-1][arenaDimension-2] = false;
                         createPhysicsWorld();
                         createRenderWorld();
                         camera.position.set(1, 1, 5);
                         light.position.set(1, 1, 1.3);
                         light.intensity = 0;
-                        var level = Math.floor((mazeDimension-1)/2 - 4);
+                        var level = Math.floor((arenaDimension-1)/2 - 4);
                         $('#level').html('Level ' + level);
                         gameState = 'fade in';
                         break;
@@ -121,10 +77,10 @@
                         renderer.render(scene, camera);
 
                         // Check for victory.
-                        // var mazeX = Math.floor(ballMesh.position.x + 0.5);
-                        // var mazeY = Math.floor(ballMesh.position.y + 0.5);
-                        // if (mazeX == mazeDimension && mazeY == mazeDimension - 2) {
-                        //     mazeDimension += 2;
+                        // var arenaX = Math.floor(ballMesh.position.x + 0.5);
+                        // var arenaY = Math.floor(ballMesh.position.y + 0.5);
+                        // if (arenaX == arenaDimension && arenaY == arenaDimension - 2) {
+                        //     arenaDimension += 2;
                         //     gameState = 'fade out';
                         // }
                         break;
@@ -265,7 +221,7 @@
     <div id='instructions'>
         How to play Astray:
         <br><br>
-        Use the arrow keys to move the ball and find the exit to the maze.
+        Use the arrow keys to move the ball and find the exit to the arena.
         <br><br>
         Vim trainees: h, j, k, l
     </div>

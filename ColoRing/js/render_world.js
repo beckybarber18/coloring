@@ -1,45 +1,43 @@
 function createRenderWorld() {
 
-    // Create the scene object.
+    // Create the scene object
     scene = new THREE.Scene();
 
-    // Add the light.
+    // Add the light
     light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-    light.position.set(1, 1, 1.3);
     scene.add(light);
 
-    // Add the ball.
-    g = new THREE.SphereGeometry(ballRadius, 32, 16);
-    m = new THREE.MeshPhongMaterial({map:ironTexture});
-    ballMesh = new THREE.Mesh(g, m);
-    ballMesh.position.set(1.5, 1, ballRadius);
+    // Add the balls
+    const sphereGeo = new THREE.SphereGeometry(ballRadius, 32, 16);
+    const sphereMat = new THREE.MeshPhongMaterial({map:ironTexture});
+    ballMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    // ballMesh.position.set(1.5, 1, ballRadius);
     scene.add(ballMesh);
 
-    m2 = new THREE.MeshPhongMaterial({map:ironTexture2});
-    ballMesh2 = new THREE.Mesh(g, m2);
-    ballMesh2.position.set(0.5, 1, ballRadius);
+    const sphereMat2 = new THREE.MeshPhongMaterial({map:ironTexture2});
+    ballMesh2 = new THREE.Mesh(sphereGeo, sphereMat2);
+    // ballMesh2.position.set(0.5, 1, ballRadius);
     scene.add(ballMesh2);
 
     // Add the camera.
-    var aspect = window.innerWidth/window.innerHeight;
+    const aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
     camera.rotation.x = 10 * Math.PI / 180;
-    // camera = new THREE.OrthographicCamera(-10*aspect, 10*aspect, -10, 10, 1, 1000);
-    // camera.position.set(100, 0, 0);
+    camera.position.x = 100;
     scene.add(camera);
 
-    // Add the maze.
-    mazeMesh = generate_maze_mesh(maze);
-    scene.add(mazeMesh);
+    // Add the arena.
+    arenaMesh = generate_arena();
+    scene.add(arenaMesh);
 
-    // Add floor of maze.
-    arenaFloorMeshes = generate_maze_floor();
+    // Add floor of arena.
+    // arenaFloorMeshes = generate_arena_floor();
 
     // Add the ground.
-    g = new THREE.PlaneGeometry(mazeDimension*10, mazeDimension*10, mazeDimension, mazeDimension);
+    g = new THREE.PlaneGeometry(arenaDimension*10, arenaDimension*10, arenaDimension, arenaDimension);
     m = new THREE.MeshPhongMaterial();
     planeMesh = new THREE.Mesh(g, m);
-    planeMesh.position.set((mazeDimension-1)/2, (mazeDimension-1)/2, 0);
+    planeMesh.position.set((arenaDimension-1)/2, (arenaDimension-1)/2, 0);
     planeMesh.rotation.set(Math.PI/2, 0, 0);
     scene.add(planeMesh);
 
@@ -53,7 +51,7 @@ function updateRenderWorld() {
     let x2 = Math.floor(ballMesh2.position.x / 0.05);
     let y2 = Math.floor(ballMesh2.position.y / 0.05);
 
-    arenaFloorMeshes[x1 * (mazeDimension / 0.05) + y1].material.color = 0xf7cb15;
+    // arenaFloorMeshes[x1 * (arenaDimension / 0.05) + y1].material.color = 0xf7cb15;
 
     // Update ball position.
     var stepX = wBall.GetPosition().x - ballMesh.position.x;
@@ -99,4 +97,58 @@ function updateRenderWorld() {
     // light.position.x = camera.position.x;
     // light.position.y = camera.position.y;
     // light.position.z = camera.position.z - 3.7;
+}
+
+function generate_arena() {
+    let dummy = new THREE.Geometry();
+
+    for (let x = -arenaDimension / 2; x < arenaDimension / 2; x += arenaWidth) {
+      var geometry = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
+      var mesh_ij = new THREE.Mesh(geometry);
+      mesh_ij.position.x = x;
+      mesh_ij.position.y = arenaDimension / 2;
+      dummy.mergeMesh(mesh_ij);
+    }
+
+
+    /*
+    for (var i = 0; i < arenaDimension; i+=arenaWidth) {
+        for (var j = 0; j < arenaDimension; j+=arenaDimension - arenaWidth) {
+            var geometry = new THREE.BoxGeometry(arenaWidth,arenaWidth,arenaWidth);
+            var mesh_ij = new THREE.Mesh(geometry);
+            mesh_ij.position.x = i;
+            mesh_ij.position.y = j;
+            mesh_ij.position.z = 0.05;
+            dummy.mergeMesh(mesh_ij);
+        }
+    }
+    for (var j = 0; j < arenaDimension; j+=arenaWidth) {
+        for (var i = 0; i < arenaDimension; i+=arenaDimension - arenaWidth) {
+            var geometry = new THREE.BoxGeometry(arenaWidth,arenaWidth,arenaWidth);
+            var mesh_ij = new THREE.Mesh(geometry);
+            mesh_ij.position.x = i;
+            mesh_ij.position.y = j;
+            mesh_ij.position.z = 0.05;
+            dummy.mergeMesh(mesh_ij);
+        }
+    }*/
+    // var material = new THREE.MeshPhongMaterial({map: brickTexture});
+    var mesh = new THREE.Mesh(dummy)
+    return mesh;
+}
+
+function generate_arena_floor() {
+  let floor = [];
+  for (x = 0; x < arenaDimension; x += 0.05) {
+    for (y = 0; y < arenaDimension; y += 0.05) {
+      geo = new THREE.BoxGeometry(0.05, 0.05, 0.005);
+      mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.x = x;
+      mesh.position.y = y;
+      floor.push(mesh);
+      scene.add(mesh);
+    }
+  }
+  return floor;
 }

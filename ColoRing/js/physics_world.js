@@ -27,19 +27,19 @@ function createPhysicsWorld() {
     fixDef2.shape = new b2CircleShape(ballRadius);
     wBall2.CreateFixture(fixDef2);
 
-    // Create the maze.
+    // Create the arena.
     bodyDef.type = b2Body.b2_staticBody;
     fixDef.shape = new b2PolygonShape();
-    fixDef.shape.SetAsBox(mazeWidth/2, mazeWidth/2);
-    for (var i = 0; i < maze.dimension; i+=mazeWidth) {
-        for (var j = 0; j < maze.dimension; j+=maze.dimension - mazeWidth) {
+    fixDef.shape.SetAsBox(arenaWidth/2, arenaWidth/2);
+    for (var i = 0; i < arenaDimension; i+=arenaWidth) {
+        for (var j = 0; j < arenaDimension; j+=arenaDimension - arenaWidth) {
             bodyDef.position.x = i;
             bodyDef.position.y = j;
             wWorld.CreateBody(bodyDef).CreateFixture(fixDef);
         }
     }
-    for (var j = 0; j < maze.dimension; j+=mazeWidth) {
-        for (var i = 0; i < maze.dimension; i+=maze.dimension - mazeWidth) {
+    for (var j = 0; j < arenaDimension; j+=arenaWidth) {
+        for (var i = 0; i < arenaDimension; i+=arenaDimension - arenaWidth) {
             bodyDef.position.x = i;
             bodyDef.position.y = j;
             wWorld.CreateBody(bodyDef).CreateFixture(fixDef);
