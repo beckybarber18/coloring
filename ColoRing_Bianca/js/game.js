@@ -1,7 +1,6 @@
 let camera			= undefined,
     scene          	= undefined,
     renderer		= undefined,
-    light			= undefined,
     mouseX         	= undefined,
     mouseY         	= undefined,
     arena           = undefined,
@@ -46,7 +45,7 @@ function init() {
 }
 
 function animate() {
-    
+
     requestAnimationFrame(animate);
 
     switch(gameState) {
@@ -60,12 +59,7 @@ function animate() {
             break;
 
         case 'fade in':
-            light.intensity += 0.1 * (1.0 - light.intensity);
             renderer.render(scene, camera);
-            if (Math.abs(light.intensity - 1.0) < 0.05) {
-                light.intensity = 1.0;
-                gameState = 'play'
-            }
             break;
 
         case 'play':
@@ -77,13 +71,7 @@ function animate() {
         case 'fade out':
             // updatePhysicsWorld();
             updateRenderWorld();
-            light.intensity += 0.1 * (0.0 - light.intensity);
             renderer.render(scene, camera);
-            if (Math.abs(light.intensity - 0.0) < 0.1) {
-                light.intensity = 0.0;
-                renderer.render(scene, camera);
-                gameState = 'initialize'
-            }
             break;
 
     }

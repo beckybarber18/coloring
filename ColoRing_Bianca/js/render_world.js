@@ -6,9 +6,13 @@ function createRenderWorld() {
 	scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
 
     // Add the light.
-    light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+    /*
+    const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
     light.position.set(0, 0, 150);
     scene.add(light);
+    */
+
+    createLights();
 
     // Add the camera.
     const aspect = window.innerWidth / window.innerHeight;
@@ -35,7 +39,7 @@ function createRenderWorld() {
     scene.add(arenaMesh);
 
     // Add the arena floor.
-    // arenaFloorMesh = generateArenaFloor();
+    arenaFloorMesh = generateArenaFloor();
 }
 
 function updateRenderWorld() {
@@ -84,6 +88,27 @@ function updateRenderWorld() {
     */
 }
 
+function createLights() {
+    const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9);
+
+    const shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+    shadowLight.position.set(150, 350, 350);
+    shadowLight.castShadow = true;
+    shadowLight.shadow.camera.left = -400;
+    shadowLight.shadow.camera.right = 400;
+    shadowLight.shadow.camera.top = 400;
+    shadowLight.shadow.camera.bottom = -400;
+    shadowLight.shadow.camera.near = 1;
+    shadowLight.shadow.camera.far = 1000;
+    shadowLight.shadow.mapSize.width = 4096;
+    shadowLight.shadow.mapSize.height = 4096;
+
+    var ch = new THREE.CameraHelper(shadowLight.shadow.camera);
+
+    scene.add(hemisphereLight);
+    scene.add(shadowLight);
+}
+
 function generateArena() {
     const dummy = new THREE.Geometry();
 
@@ -91,14 +116,14 @@ function generateArena() {
     const mat = new THREE.MeshPhongMaterial({color: 0xf55d3e});
 
     for (let x = -arenaWidth; x < arenaWidth + 1; x += arenaSize) {
-        const mesh1 = new THREE.Mesh(geo, mat);
+        const mesh1 = new THREE.Mesh(geo);
         mesh1.position.x = x;
         mesh1.position.y = -arenaHeight;
         mesh1.position.z = arenaSize / 2;
         dummy.mergeMesh(mesh1);
 
 
-        const mesh2 = new THREE.Mesh(geo, mat);
+        const mesh2 = new THREE.Mesh(geo);
         mesh2.position.x = x;
         mesh2.position.y = arenaHeight;
         mesh2.position.z = arenaSize / 2;
@@ -106,32 +131,32 @@ function generateArena() {
     }
 
     for (let y = -arenaHeight; y < arenaHeight + 1; y += arenaSize) {
-        const mesh1 = new THREE.Mesh(geo, mat);
+        const mesh1 = new THREE.Mesh(geo);
         mesh1.position.x = -arenaWidth;
         mesh1.position.y = y;
         mesh1.position.z = arenaSize / 2;
         dummy.mergeMesh(mesh1);
 
 
-        const mesh2 = new THREE.Mesh(geo, mat);
+        const mesh2 = new THREE.Mesh(geo);
         mesh2.position.x = arenaWidth;
         mesh2.position.y = y;
         mesh2.position.z = arenaSize / 2;
         dummy.mergeMesh(mesh2);
     }
 
-    return new THREE.Mesh(dummy);
+    return new THREE.Mesh(dummy, mat);
 }
 
 function generateArenaFloor() {
     let floor = [];
 
     const geo = new THREE.BoxGeometry(tileSize, tileSize, tileSize / 2);
-    // const mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
+    const mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
 
-    for (x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
-        for (y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
-            const mesh = new THREE.Mesh(geo);
+    for (let x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
+        for (let y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
+            const mesh = new THREE.Mesh(geo, mat);
             mesh.position.x = x;
             mesh.position.y = y;
             mesh.position.z = -tileSize / 4;
