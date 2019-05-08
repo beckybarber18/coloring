@@ -45,10 +45,42 @@ function createPhysicsWorld() {
     });
     ball1.addShape(ballShape);
     // ball1.velocity.set(0,10,0);
-    ball1.friction = 0.25;
+    ball1.friction = 0.1;
+    ball1.position.set(-arenaWidth + 2*arenaSize, -arenaHeight + 2*arenaSize, 0);
     world.addBody(ball1);
-    //console.log(ball1);
 
+    // create the second ball
+    ball2 = new CANNON.Body({
+        mass: mass
+      });
+    ball2.addShape(ballShape);
+    // ball1.velocity.set(0,10,0);
+    ball2.friction = 0.1;
+    ball2.position.set(arenaWidth - 2*arenaSize, arenaHeight - 2*arenaSize, 0);
+    world.addBody(ball2);
+}
+
+function handleWallCollisions(ball) {
+    if(ball.position.x < -arenaWidth + arenaSize) {
+        ball.position.x = -arenaWidth + arenaSize;
+        let v = ball.velocity;
+        ball.velocity.set(-v.x, -v.y, -v.z);
+    }
+    else if(ball.position.x > arenaWidth - arenaSize) {
+        ball.position.x = arenaWidth - arenaSize;
+        let v = ball.velocity;
+        ball.velocity.set(-v.x, -v.y, -v.z);
+    }
+    else if(ball.position.y < -arenaHeight + arenaSize) {
+        ball.position.y = -arenaHeight + arenaSize;
+        let v = ball.velocity;
+        ball.velocity.set(-v.x, -v.y, -v.z);
+    }
+    else if(ball.position.y > arenaHeight - arenaSize) {
+        ball.position.y = arenaHeight - arenaSize;
+        let v = ball.velocity;
+        ball.velocity.set(-v.x, -v.y, -v.z);
+    }
 }
 
 function updatePhysicsWorld() {
@@ -72,14 +104,29 @@ function updatePhysicsWorld() {
     // Copy coordinates from Cannon.js to Three.js
     //console.log(ball1);
 
+    let lv = ball1.velocity;
+    ball1.velocity.set(lv.x*(1-ball1.friction), lv.y*(1-ball1.friction), lv.z*(1-ball1.friction));
+    lv = ball2.velocity;
+    ball2.velocity.set(lv.x*(1-ball2.friction), lv.y*(1-ball2.friction), lv.z*(1-ball2.friction));
+
     //console.log(keyAxis[0]*ball1.mass*ball1.friction);
-    let force1 = new CANNON.Vec3(keyAxis[0]*ball1.mass*ball1.friction, 
-        keyAxis[1]*ball1.mass*ball1.friction, 0);
-    var force = new CANNON.Vec3(500,0,0);
-    var worldpoint = new CANNON.Vec3(0,0,ballRadius);
-    ball1.applyForce(force, worldpoint);
+    let force1 = new CANNON.Vec3(keyAxis[0]*ball1.mass*12, 
+        keyAxis[1]*ball1.mass*12, 0);
+    let force2 = new CANNON.Vec3(keyAxis2[0]*ball2.mass*12, 
+        keyAxis2[1]*ball2.mass*12, 0);
+    // var force = new CANNON.Vec3(500,0,0);
+    // var worldpoint = new CANNON.Vec3(0,0,ballRadius);
+    ball1.applyImpulse(force1, ball1.position);
+    ball2.applyImpulse(force2, ball2.position);
     keyAxis = [0,0];
+    keyAxis2 = [0,0];
+
+    // handle wall collisions
+    handleWallCollisions(ball1);
+    handleWallCollisions(ball2);
 
     ballMesh.position.copy(ball1.position);
     ballMesh.quaternion.copy(ball1.quaternion);
+    ballMesh2.position.copy(ball2.position);
+    ballMesh2.quaternion.copy(ball2.quaternion);
 }
