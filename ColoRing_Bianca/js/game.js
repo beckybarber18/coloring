@@ -6,8 +6,6 @@ const Colors = {
 let camera			= undefined,
     scene          	= undefined,
     renderer		= undefined,
-    mouseX         	= undefined,
-    mouseY         	= undefined,
     arena           = undefined,
     arenaMesh       = undefined,
     arenaFloorMesh  = undefined,
@@ -23,11 +21,11 @@ let camera			= undefined,
     keyAxis2       	= [0, 0],
     ironTexture    	= new THREE.TextureLoader().load('/images/ball.png'),
     ironTexture2   	= new THREE.TextureLoader().load('/images/ball2.png'),
-    planeTexture   	= new THREE.TextureLoader().load('/images/concrete.png'),
+    canvasTexture  	= new THREE.TextureLoader().load('/images/canvas.png'),
     brickTexture   	= new THREE.TextureLoader().load('/images/brick.png'),
     gameState      	= undefined,
 
-    // Box2D world variables
+    // physics world variables
     world         = undefined,
     ball1         = undefined,
     ball2         = undefined;
