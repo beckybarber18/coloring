@@ -127,11 +127,11 @@ function generateArenaFloor() {
     let floor = [];
 
     const geo = new THREE.BoxGeometry(tileSize, tileSize, tileSize / 2);
-    const mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
+    // const mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
 
     for (x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
         for (y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
-            const mesh = new THREE.Mesh(geo, mat);
+            const mesh = new THREE.Mesh(geo);
             mesh.position.x = x;
             mesh.position.y = y;
             mesh.position.z = -tileSize / 4;
