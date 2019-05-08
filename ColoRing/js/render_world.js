@@ -49,16 +49,13 @@ function createRenderWorld() {
 
 function updateRenderWorld() {
     // Update floor color
-    console.log(ballMesh.position.y);
     let x1 = Math.floor(ballMesh.position.x / 0.05);
     let y1 = Math.floor(ballMesh.position.y / 0.05);
-    console.log(y1);
-    console.log(x1);
 
     let x2 = Math.floor(ballMesh2.position.x / 0.05);
     let y2 = Math.floor(ballMesh2.position.y / 0.05);
 
-    arenaFloorMeshes[x1][y1].material.color = 0xf55d3e;
+    arenaFloorMeshes[x1 * (mazeDimension / 0.05) + y1].material.color = 0xf7cb15;
 
     // Update ball position.
     var stepX = wBall.GetPosition().x - ballMesh.position.x;
