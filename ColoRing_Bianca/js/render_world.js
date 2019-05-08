@@ -4,14 +4,7 @@ function createRenderWorld() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xffffff );
 	scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
-
-    // Add the light.
-    /*
-    const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-    light.position.set(0, 0, 150);
-    scene.add(light);
-    */
-
+    
     createLights();
 
     // Add the camera.
@@ -113,7 +106,7 @@ function generateArena() {
     const dummy = new THREE.Geometry();
 
     const geo = new THREE.BoxGeometry(arenaSize, arenaSize, arenaSize);
-    const mat = new THREE.MeshPhongMaterial({color: 0xf55d3e});
+    const mat = new THREE.MeshPhongMaterial({color: Colors.arena});
 
     for (let x = -arenaWidth; x < arenaWidth + 1; x += arenaSize) {
         const mesh1 = new THREE.Mesh(geo);
@@ -152,14 +145,12 @@ function generateArenaFloor() {
     let floor = [];
 
     const geo = new THREE.BoxGeometry(tileSize, tileSize, tileSize / 2);
-    const mat = new THREE.MeshPhongMaterial({color: 0x878e88, flatShading: true});
+    const mat = new THREE.MeshPhongMaterial({color: Colors.floor, flatShading: true});
 
     for (let x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
         for (let y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
             const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.x = x;
-            mesh.position.y = y;
-            mesh.position.z = -tileSize / 4;
+            mesh.position.set(x, y, -tileSize / 4);
             floor.push(mesh);
             scene.add(mesh);
         }

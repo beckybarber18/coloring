@@ -1,3 +1,8 @@
+const Colors = {
+    arena: 0x99c5b5,
+    floor: 0x899e8b,
+}
+
 let camera			= undefined,
     scene          	= undefined,
     renderer		= undefined,
