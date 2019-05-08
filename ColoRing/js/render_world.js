@@ -4,7 +4,7 @@ function createRenderWorld() {
     scene = new THREE.Scene();
 
     // Add the light.
-    light= new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+    light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
     light.position.set(1, 1, 1.3);
     scene.add(light);
 
@@ -23,6 +23,7 @@ function createRenderWorld() {
     // Add the camera.
     var aspect = window.innerWidth/window.innerHeight;
     camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
+    camera.rotation.x = 10 * Math.PI / 180;
     // camera = new THREE.OrthographicCamera(-10*aspect, 10*aspect, -10, 10, 1, 1000);
     // camera.position.set(100, 0, 0);
     scene.add(camera);
@@ -36,9 +37,7 @@ function createRenderWorld() {
 
     // Add the ground.
     g = new THREE.PlaneGeometry(mazeDimension*10, mazeDimension*10, mazeDimension, mazeDimension);
-    planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
-    planeTexture.repeat.set(mazeDimension*5, mazeDimension*5);
-    m = new THREE.MeshPhongMaterial({map:planeTexture});
+    m = new THREE.MeshPhongMaterial();
     planeMesh = new THREE.Mesh(g, m);
     planeMesh.position.set((mazeDimension-1)/2, (mazeDimension-1)/2, 0);
     planeMesh.rotation.set(Math.PI/2, 0, 0);
