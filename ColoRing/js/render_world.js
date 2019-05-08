@@ -176,5 +176,5 @@ function generate_arena_floor() {
     }
   }
   return floor;
-  */
+  */ 
 }
