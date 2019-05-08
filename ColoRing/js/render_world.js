@@ -31,8 +31,9 @@ function createRenderWorld() {
     // ballMesh2.position.set(0.5, 1, ballRadius);
     scene.add(ballMesh2);
 
+    // const box = new THREE.SphereGeometry(ballRadius, 32, 32);
     const box = new THREE.BoxGeometry(arenaWidth, arenaWidth, arenaWidth);
-    const boxMat = new THREE.MeshPhongMaterial({map: brickTexture});
+    const boxMat = new THREE.MeshBasicMaterial({color: 0x76bed0});
     const blah = new THREE.Mesh(box, boxMat);
     blah.position.set(50, 50, 0);
     scene.add(blah);
