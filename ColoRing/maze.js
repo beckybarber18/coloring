@@ -1,4 +1,4 @@
-function generateSquareArena(dimension) {
+function generateSquareMaze(dimension) {
 
     function iterate(field, x, y) {
         field[x][y] = false;
@@ -37,7 +37,9 @@ function generateSquareArena(dimension) {
 
     // Generate the maze recursively.
     field = iterate(field, 1, 1);
-
+    
     return field;
 
 }
+
+
