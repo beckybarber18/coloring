@@ -70,12 +70,35 @@
 		<script src="js/render_world.js"></script>
 		<script src="js/physics_world.js"></script>
 		<script>
+
+			jQuery.fn.centerv = function () {
+                wh = window.innerHeight;
+                h = this.outerHeight();
+                this.css("position", "absolute");
+                this.css("top", Math.max(0, (wh - h)/2) + "px");
+                return this;
+            }            
+            
+            jQuery.fn.centerh = function () {
+                ww = window.innerWidth;
+                w = this.outerWidth();
+                this.css("position", "absolute");
+                this.css("left", Math.max(0, (ww - w)/2) + "px");
+                return this;
+            }            
+            
+            jQuery.fn.center = function () {
+                this.centerv();
+                this.centerh();
+                return this;
+			} 
+			
 			$(document).ready(function() {
 	
 				// Prepare the instructions.
-				// $('#instructions1').center();
+				$('#instructions1').center();
 				$('#instructions1').hide();
-				// $('#instructions2').center();
+				$('#instructions2').center();
 				$('#instructions2').hide();
 			})
 	

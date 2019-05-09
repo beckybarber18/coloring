@@ -84,18 +84,32 @@ function init() {
     KeyboardJS.bind.axis('left', 'right', 'down', 'up', onMoveKey2);
 
     // Set the initial game state.
-    gameState = 'initialize';
+    gameState = 'start';
 
 }
 
 function animate() {
 
+    switch(gameState) {
+        case 'play':
+            updatePhysicsWorld();
+            updateRenderWorld();
+            render();
+            break;
+
+        case 'start':
+            createRenderWorld();
+            createPhysicsWorld();
+            gameState = 'play';
+            countdown();
+            break;
+    
+        case 'end':
+            displayResult();
+            break;
+    }
+
     requestAnimationFrame(animate);
-
-    updatePhysicsWorld();
-    updateRenderWorld();
-    render();
-
 }
 
 function render() {
@@ -131,4 +145,44 @@ function onMoveKey(axis) {
 
 function onMoveKey2(axis) {
     ball2.keyAxis = axis.slice(0);
+}
+
+function displayResult() {
+    $('#counter').hide();
+    if (true) {
+        $('#instructions1').show();
+    }
+    else {
+        $('#instructions2').show();
+    }
+    KeyboardJS.bind.key('space', 
+                             function(){hideResult()});
+}
+
+function hideResult() {
+    if (true) {
+        $('#instructions1').hide();
+    }
+    else {
+        $('#instructions2').hide();
+    }
+    gameState = 'start';
+    KeyboardJS.unbind.key('space', 
+                             function(){hideResult()});
+}
+
+function countdown() {
+    $('#counter').show();
+    var seconds = 5;
+    function tick() {
+        var counter = document.getElementById("counter");
+        seconds--;
+        counter.innerHTML = (seconds < 10 ? "0" : "") + String(seconds);
+        if( seconds > 0 ) {
+            setTimeout(tick, 1000);
+        } else {
+            gameState = 'end';
+        }
+    }
+    tick();
 }
