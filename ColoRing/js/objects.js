@@ -6,18 +6,18 @@ function createArena(height, width, wallSize, tileSize) {
     arena.tileSize = tileSize;
     arena.walls = undefined;
     arena.floor = undefined;
-
     return arena;
 }
 
 function createBall(color, radius, position, direction) {
     let ball = new Object();
-    ball.radius = radius;
     ball.color = color;
+    ball.radius = radius;
     ball.position = position;
+    ball.direction = direction;
+    ball.keyAxis = [0, 0, 0];
     ball.mesh = undefined;
     ball.physical = undefined;
-    ball.keyAxis = [0, 0, 0];
-    ball.direction = direction;
+    ball.camera = undefined;
     return ball;
 }
