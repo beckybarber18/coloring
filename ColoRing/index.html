@@ -3,19 +3,83 @@
 	<head>
 		<title>ColoRing</title>
 		<style>
-			body { margin: 0; }
-			canvas { width: 100%; height: 100% }
+			body {
+				margin: 0; 
+				padding: 0;
+				font-family: 'Avenir';
+                font-size: 20px;
+			}
+
+			canvas {
+				width: 100%;
+				height: 100%
+			}
+
+			#instructions1 {
+                background-color: white;
+                color: black;
+                text-align: center;
+                padding: 32px;
+                margin: 0px;
+                display: inline;
+                border: 2px solid white;
+            }
+
+            #instructions2 {
+                background-color: white;
+                color: black;
+                text-align: center;
+                padding: 32px;
+                margin: 0px;
+                display: inline;
+                border: 2px solid white;
+            }
+
+			#counter {
+                position: absolute;
+                color: white;
+                top: 10px;
+                left: 10px;
+            }
 		</style>
 	</head>
 	<body>
-		<div id="container"</div>
+		<div id="container"></div>
+
+		<div id='instructions1'>
+			Player 1 wins!
+			<br><br>
+			Press the space bar to play again.
+		</div>
+		
+		<div id='instructions2'>
+			Player 2 wins!
+			<br><br>
+			Press the space bar to play again.
+		</div>
+		
+		<div id='counter'>
+		</div>
+		
 		<script src="js/three.js"></script>
+		<script src="js/jquery.js"></script>
 		<script src="js/cannon.js"></script>
 		<script src="js/cannon.min.js"></script>
 		<script src="js/keyboard.js"></script>
 		<script src="js/objects.js"></script>
 		<script src="js/render_world.js"></script>
 		<script src="js/physics_world.js"></script>
+		<script>
+			$(document).ready(function() {
+	
+				// Prepare the instructions.
+				// $('#instructions1').center();
+				$('#instructions1').hide();
+				// $('#instructions2').center();
+				$('#instructions2').hide();
+			})
+	
+		</script>
 		<script src="js/game.js"></script>
 	</body>
 </html>
