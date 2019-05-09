@@ -61,15 +61,22 @@ function updatePhysicsWorld() {
         lv.y * (1 - ball2.physical.friction),
         lv.z * (1 - ball2.physical.friction));
 
-    let force1 = new CANNON.Vec3(ball1.keyAxis[0] * ball1.physical.mass * 12,
-        ball1.keyAxis[1] * ball1.physical.mass * 12, 0);
-    let force2 = new CANNON.Vec3(ball2.keyAxis[0] * ball2.physical.mass * 12,
-        ball2.keyAxis[1] * ball2.physical.mass * 12, 0);
+    // let force1 = new CANNON.Vec3(ball1.keyAxis[0] * ball1.physical.mass * 12,
+    //     ball1.keyAxis[1] * ball1.physical.mass * 12, 0);
+    // let force2 = new CANNON.Vec3(ball2.keyAxis[0] * ball2.physical.mass * 12,
+    //     ball2.keyAxis[1] * ball2.physical.mass * 12, 0);
 
+    let factor1 = ball1.keyAxis[0] * ball1.physical.mass * 12;
+    let force1 = new CANNON.Vec3(factor1 * ball1.direction.x, factor1 * ball1.direction.y, 0);
     ball1.physical.applyImpulse(force1, ball1.physical.position);
+
+    let factor2 = ball2.keyAxis[0] * ball2.physical.mass * 12;
+    let force2 = new CANNON.Vec3(factor2 * ball2.direction.x, factor2 * ball2.direction.y, 0);
     ball2.physical.applyImpulse(force2, ball2.physical.position);
-    ball1.keyAxis = [0,0];
-    ball2.keyAxis = [0,0];
+
+
+    ball1.keyAxis = [0,0,0];
+    ball2.keyAxis = [0,0,0];
 
     // Handles wall collisions.
     handleWallCollisions(ball1.physical);
