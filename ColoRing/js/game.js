@@ -98,6 +98,8 @@ function animate() {
             break;
 
         case 'start':
+            ball1.score = 0;
+            ball2.score = 0;
             createRenderWorld();
             createPhysicsWorld();
             gameState = 'play';
@@ -149,22 +151,41 @@ function onMoveKey2(axis) {
 
 function displayResult() {
     $('#counter').hide();
-    if (true) {
+    let s1 = 0;
+    let s2 = 0;
+
+    // calculate scores
+    for (let i = 0; i < arena.floor.length; i++) {
+        if (arena.floor[i].material.color === ball1.color) {
+            s1++;
+        }
+        else if (arena.floor[i].material.color === ball2.color) {
+            s2++;
+        }
+    }
+    // console.log(s1, s2);
+    if (s1 > s2) {
         $('#instructions1').show();
     }
-    else {
+    else if (s1 < s2) {
         $('#instructions2').show();
+    }
+    else {
+        $('#instructions3').show();
     }
     KeyboardJS.bind.key('space', 
                              function(){hideResult()});
 }
 
 function hideResult() {
-    if (true) {
+    if (ball1.score > ball2.score) {
         $('#instructions1').hide();
     }
-    else {
+    else if (ball1.score < ball2.score) {
         $('#instructions2').hide();
+    }
+    else {
+        $('#instructions3').hide();
     }
     gameState = 'start';
     KeyboardJS.unbind.key('space', 
