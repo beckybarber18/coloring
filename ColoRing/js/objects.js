@@ -1,9 +1,9 @@
-function createArena() {
+function createArena(height, width, wallSize, tileSize) {
     let arena = new Object();
-    arena.height = 50;
-    arena.width = 75;
-    arena.wallSize = 5;
-    arena.tileSize = 1;
+    arena.height = height;
+    arena.width = width;
+    arena.wallSize = wallSize;
+    arena.tileSize = tileSize;
     arena.walls = undefined;
     arena.floor = undefined;
 
