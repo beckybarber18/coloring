@@ -169,7 +169,7 @@ function animate() {
             gameState = 'play';
             countdown();
             break;
-    
+
         case 'end':
             displayResult();
             break;
@@ -234,7 +234,7 @@ function displayResult() {
     else {
         $('#instructions2').show();
     }
-    KeyboardJS.bind.key('space', 
+    KeyboardJS.bind.key('space',
                              function(){hideResult()});
 }
 
@@ -246,13 +246,13 @@ function hideResult() {
         $('#instructions2').hide();
     }
     gameState = 'start';
-    KeyboardJS.unbind.key('space', 
+    KeyboardJS.unbind.key('space',
                              function(){hideResult()});
 }
 
 function countdown() {
     $('#counter').show();
-    var seconds = 5;
+    var seconds = 60;
     function tick() {
         var counter = document.getElementById("counter");
         seconds--;

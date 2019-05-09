@@ -44,7 +44,6 @@ function updateRenderWorld() {
     ball1.mesh.position.copy(ball1.position);
     ball1.mesh.quaternion.copy(ball1.physical.quaternion);
 
-
     ball2.position.copy(ball2.physical.position);
     ball2.mesh.position.copy(ball2.position);
     ball2.mesh.quaternion.copy(ball2.physical.quaternion);
@@ -55,9 +54,15 @@ function updateRenderWorld() {
     views[1].camera.position.set(ball2.position.x + 1.5 * ballRadius, ball2.position.y,
         ball2.position.z + 1.5 * ballRadius);
 
+    // Updates rotation.
+    updateRotation(ball1, views[0]);
+    updateRotation(ball2, views[1]);
+
     // Updates tile colors.
     updateTile(ball1.position, ball1.color);
     updateTile(ball2.position, ball2.color);
+
+
 
 }
 
@@ -125,6 +130,23 @@ function generateArenaFloor() {
         }
      }
      return floor;
+}
+
+function updateRotation(ball, camera) {
+
+    const rotation =  new THREE.Euler(0, 0, 0, 'XYZ');
+
+    if (ball.keyAxis[1] == 1) {
+        rotation.set(0, 0, 10 * Math.PI / 180, 'XYZ');
+        camera.rotation.z += 10 * Math.PI / 180;
+    }
+
+    if (ball.keyAxis[2] == 1) {
+        rotation.set(0, 0, rotation.z - 10 * Math.PI / 180, 'XYZ');
+        camera.rotation.z += -10 * Math.PI / 180;
+    }
+
+    ball.direction.applyEuler(rotation);
 }
 
 function updateTile(position, color) {

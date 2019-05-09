@@ -74,10 +74,6 @@ function updatePhysicsWorld() {
     let force2 = new CANNON.Vec3(factor2 * ball2.direction.x, factor2 * ball2.direction.y, 0);
     ball2.physical.applyImpulse(force2, ball2.physical.position);
 
-
-    ball1.keyAxis = [0,0,0];
-    ball2.keyAxis = [0,0,0];
-
     // Handles wall collisions.
     handleWallCollisions(ball1.physical);
     handleWallCollisions(ball2.physical);
