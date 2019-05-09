@@ -20,19 +20,24 @@ animate();
 function init() {
     container = document.getElementById( 'container' );
 
-    // Create objects
+    // Create objects.
+
+    // Creates arena object.
     arena = createArena(50, 75, 5, 5);
 
+    // Creates ball1 object.
     let ball1pos = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
         -arena.height + 2 * arena.wallSize, ballRadius);
     let ball1dir = new THREE.Vector3(1,0,0);
     ball1 = createBall(Colors.ball1, ballRadius, ball1pos, ball1dir);
 
+    // Creates ball2 object.
     let ball2pos = new THREE.Vector3(arena.width - 2 * arena.wallSize,
         arena.height - 2 * arena.wallSize, ballRadius);
     let ball2dir = new THREE.Vector3(-1,0,0);
     ball2 = createBall(Colors.ball2, ballRadius, ball2pos, ball2dir);
 
+    // Specifies different view windows
     views = [
         {
             left: 0,
