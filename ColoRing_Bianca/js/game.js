@@ -7,16 +7,8 @@ const Colors = {
 
 let camera, scene, renderer, views, gameState,
     windowWidth, windowHeight,
-    world, ball1, ball2,
-    arena, arenaMesh, arenaFloorMesh,
-    arenaHeight		= 50,
-    arenaWidth		= 75,
-    arenaSize      	= 5,
-    tileSize		= 5,
-    ballMesh, ballMesh2,
+    arena, ball1, ball2, world,
     ballRadius     	= 3,
-    keyAxis        	= [0, 0],
-    keyAxis2       	= [0, 0],
     ironTexture    	= new THREE.TextureLoader().load('/images/ball.png'),
     ironTexture2   	= new THREE.TextureLoader().load('/images/ball2.png'),
     canvasTexture  	= new THREE.TextureLoader().load('/images/canvas.png'),
@@ -27,6 +19,19 @@ animate();
 
 function init() {
     container = document.getElementById( 'container' );
+
+    // Create objects
+    arena = createArena(50, 75, 5, 5);
+
+    let ball1pos = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
+        -arena.height + 2 * arena.wallSize, ballRadius);
+    let ball1dir = new THREE.Vector3(1,0,0);
+    ball1 = createBall(Colors.ball1, ballRadius, ball1pos, ball1dir);
+
+    let ball2pos = new THREE.Vector3(arena.width - 2 * arena.wallSize,
+        arena.height - 2 * arena.wallSize, ballRadius);
+    let ball2dir = new THREE.Vector3(-1,0,0);
+    ball2 = createBall(Colors.ball2, ballRadius, ball2pos, ball2dir);
 
     views = [
         {
@@ -114,9 +119,9 @@ function updateSize() {
 }
 
 function onMoveKey(axis) {
-    keyAxis = axis.slice(0);
+    ball1.keyAxis = axis.slice(0);
 }
 
 function onMoveKey2(axis) {
-    keyAxis2 = axis.slice(0);
+    ball2.keyAxis = axis.slice(0);
 }

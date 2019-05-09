@@ -18,40 +18,41 @@ function createRenderWorld() {
     }
 
     // Creats the balls.
-    const ballGeo = new THREE.SphereGeometry(ballRadius, 32, 16);
+    const ballGeo = new THREE.SphereGeometry(ballRadius, 32, 32);
 
-    const ballMat1 = new THREE.MeshPhongMaterial({color: Colors.ball1});
-    ballMesh = new THREE.Mesh(ballGeo, ballMat1);
-    ballMesh.position.set(-arenaWidth + 2 * arenaSize, -arenaHeight + 2 * arenaSize, ballRadius);
-    scene.add(ballMesh);
+    const ballMat1 = new THREE.MeshPhongMaterial({color: ball1.color});
+    ball1.mesh = new THREE.Mesh(ballGeo, ballMat1);
+    ball1.mesh.position.copy(ball1.position);
+    scene.add(ball1.mesh);
 
-    const ballMat2 = new THREE.MeshPhongMaterial({color: Colors.ball2});
-    ballMesh2 = new THREE.Mesh(ballGeo, ballMat2);
-    ballMesh2.position.set(arenaWidth - 2 * arenaSize, arenaHeight - 2 * arenaSize, ballRadius);
-    scene.add(ballMesh2);
+    const ballMat2 = new THREE.MeshPhongMaterial({color: ball2.color});
+    ball2.mesh = new THREE.Mesh(ballGeo, ballMat2);
+    ball2.mesh.position.copy(ball2.position);
+    scene.add(ball2.mesh);
 
     // Creates arena.
-    arenaMesh = generateArena();
-    scene.add(arenaMesh);
+    arena.walls = generateArena();
+    scene.add(arena.walls);
 
     // Creates arena floor.
-    arenaFloorMesh = generateArenaFloor();
+    arena.floor = generateArenaFloor();
 }
 
 function updateRenderWorld() {
     // Updates ball positions.
-    ballMesh.position.copy(ball1.position);
-    ballMesh.quaternion.copy(ball1.quaternion);
+    ball1.position.copy(ball1.physical.position);
+    ball1.mesh.position.copy(ball1.position);
+    ball1.mesh.quaternion.copy(ball1.physical.quaternion);
     views[0].camera.position.copy(ball1.position);
 
-
-    ballMesh2.position.copy(ball2.position);
-    ballMesh2.quaternion.copy(ball2.quaternion);
+    ball2.position.copy(ball2.physical.position);
+    ball2.mesh.position.copy(ball2.position);
+    ball2.mesh.quaternion.copy(ball2.physical.quaternion);
     views[1].camera.position.copy(ball2.position);
 
     // Updates tile colors.
-    updateTile(ballMesh.position, Colors.ball1);
-    updateTile(ballMesh2.position, Colors.ball2);
+    updateTile(ball1.position, ball1.color);
+    updateTile(ball2.position, ball2.color);
 
     /*
 
@@ -110,27 +111,27 @@ function createLights() {
 function generateArena() {
     const dummy = new THREE.Geometry();
 
-    const geo = new THREE.BoxGeometry(arenaSize, arenaSize, arenaSize);
+    const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize, arena.wallSize);
     const mat = new THREE.MeshPhongMaterial({color: Colors.arena});
 
-    for (let x = -arenaWidth; x < arenaWidth + 1; x += arenaSize) {
+    for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
         const mesh1 = new THREE.Mesh(geo);
-        mesh1.position.set(x, -arenaHeight, arenaSize / 2);
+        mesh1.position.set(x, -arena.height, arena.wallSize / 2);
         dummy.mergeMesh(mesh1);
 
         const mesh2 = new THREE.Mesh(geo);
-        mesh2.position.set(x, arenaHeight, arenaSize / 2);
+        mesh2.position.set(x, arena.height, arena.wallSize / 2);
         dummy.mergeMesh(mesh2);
     }
 
-    for (let y = -arenaHeight; y < arenaHeight + 1; y += arenaSize) {
+    for (let y = -arena.height; y < arena.height + 1; y += arena.wallSize) {
         const mesh1 = new THREE.Mesh(geo);
-        mesh1.position.set(-arenaWidth, y, arenaSize / 2);
+        mesh1.position.set(-arena.width, y, arena.wallSize / 2);
         dummy.mergeMesh(mesh1);
 
 
         const mesh2 = new THREE.Mesh(geo);
-        mesh2.position.set(arenaWidth, y, arenaSize / 2);
+        mesh2.position.set(arena.width, y, arena.wallSize / 2);
         dummy.mergeMesh(mesh2);
     }
 
@@ -140,13 +141,13 @@ function generateArena() {
 function generateArenaFloor() {
     let floor = [];
 
-    const geo = new THREE.BoxGeometry(tileSize, tileSize, tileSize / 2);
+    const geo = new THREE.BoxGeometry(arena.tileSize, arena.tileSize, arena.tileSize / 2);
 
-    for (let x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
-        for (let y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
+    for (let x = -arena.width; x < arena.width + 1; x += arena.tileSize) {
+        for (let y = -arena.height; y < arena.height + 1; y += arena.tileSize) {
             const mat = new THREE.MeshPhongMaterial({color: Colors.floor, flatShading: true});
             const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.set(x, y, -tileSize / 4);
+            mesh.position.set(x, y, -arena.tileSize / 4);
             floor.push(mesh);
             scene.add(mesh);
         }
@@ -155,8 +156,8 @@ function generateArenaFloor() {
 }
 
 function updateTile(position, color) {
-    const x = Math.floor((position.x + arenaWidth) / tileSize);
-    const y = Math.floor((position.y + arenaHeight) / tileSize);
-    const index = y + ((arenaHeight / tileSize) * 2 + 1) * x;
-    arenaFloorMesh[index].material.color.set(color);
+    const x = Math.floor((position.x + arena.width) / arena.tileSize);
+    const y = Math.floor((position.y + arena.height) / arena.tileSize);
+    const index = y + ((arena.height / arena.tileSize) * 2 + 1) * x;
+    arena.floor[index].material.color.set(color);
 }
