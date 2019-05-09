@@ -2,56 +2,58 @@ function createRenderWorld() {
 
     // Create the scene object.
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xffffff );
-	scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
+    scene.background = new THREE.Color( 0xfff8f3 );
+	scene.fog = new THREE.Fog( 0xfff8f3, 0, 750 );
 
+    // Creates lights.
     createLights();
 
-    // Add the camera.
-    const aspect = window.innerWidth / window.innerHeight;
-    camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
-    camera.position.set(0, -20, 130);
-    camera.rotation.x = 10 * Math.PI / 180;
-    scene.add(camera);
+    // Creates cameras.
+    for ( var ii = 0; ii < views.length; ++ ii ) {
+        var view = views[ ii ];
+        var camera = new THREE.PerspectiveCamera( view.fov, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.rotation.fromArray( view.rotation );
+        camera.position.fromArray( view.eye );
+        view.camera = camera;
+    }
 
-    // Add the ball.
+    // Creats the balls.
     const ballGeo = new THREE.SphereGeometry(ballRadius, 32, 16);
 
-    const ballMat1 = new THREE.MeshPhongMaterial({map: ironTexture});
+    const ballMat1 = new THREE.MeshPhongMaterial({color: Colors.ball1});
     ballMesh = new THREE.Mesh(ballGeo, ballMat1);
-    ballMesh.position.set(-65, 0, ballRadius);
+    ballMesh.position.set(-arenaWidth + 2 * arenaSize, -arenaHeight + 2 * arenaSize, ballRadius);
     scene.add(ballMesh);
 
-    const ballMat2 = new THREE.MeshPhongMaterial({map: ironTexture2});
+    const ballMat2 = new THREE.MeshPhongMaterial({color: Colors.ball2});
     ballMesh2 = new THREE.Mesh(ballGeo, ballMat2);
-    ballMesh2.position.set(65, 0, ballRadius);
+    ballMesh2.position.set(arenaWidth - 2 * arenaSize, arenaHeight - 2 * arenaSize, ballRadius);
     scene.add(ballMesh2);
 
-    // Add the arena.
+    // Creates arena.
     arenaMesh = generateArena();
     scene.add(arenaMesh);
 
-    // Add the arena floor.
+    // Creates arena floor.
     arenaFloorMesh = generateArenaFloor();
 }
 
 function updateRenderWorld() {
-    // Update ball position
+    // Updates ball positions.
     ballMesh.position.copy(ball1.position);
     ballMesh.quaternion.copy(ball1.quaternion);
+    views[0].camera.position.copy(ball1.position);
+
+
     ballMesh2.position.copy(ball2.position);
     ballMesh2.quaternion.copy(ball2.quaternion);
-    /*
-    // Update ball position.
-    var stepX = wBall.GetPosition().x - ballMesh.position.x;
-    var stepY = wBall.GetPosition().y - ballMesh.position.y;
-    ballMesh.position.x += stepX;
-    ballMesh.position.y += stepY;
+    views[1].camera.position.copy(ball2.position);
 
-    var stepX2 = wBall2.GetPosition().x - ballMesh2.position.x;
-    var stepY2 = wBall2.GetPosition().y - ballMesh2.position.y;
-    ballMesh2.position.x += stepX2;
-    ballMesh2.position.y += stepY2;
+    // Updates tile colors.
+    updateTile(ballMesh.position, Colors.ball1);
+    updateTile(ballMesh2.position, Colors.ball2);
+
+    /*
 
     // Update ball rotation.
     var tempMat = new THREE.Matrix4();
@@ -101,8 +103,6 @@ function createLights() {
     shadowLight.shadow.mapSize.width = 4096;
     shadowLight.shadow.mapSize.height = 4096;
 
-    var ch = new THREE.CameraHelper(shadowLight.shadow.camera);
-
     scene.add(hemisphereLight);
     scene.add(shadowLight);
 }
@@ -141,11 +141,10 @@ function generateArenaFloor() {
     let floor = [];
 
     const geo = new THREE.BoxGeometry(tileSize, tileSize, tileSize / 2);
-    const mat = new THREE.MeshPhongMaterial({color: Colors.floor, flatShading: true});
-    const mat2 = new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true});
 
     for (let x = -arenaWidth; x < arenaWidth + 1; x += tileSize) {
         for (let y = -arenaHeight; y < arenaHeight + 1; y += tileSize) {
+            const mat = new THREE.MeshPhongMaterial({color: Colors.floor, flatShading: true});
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.set(x, y, -tileSize / 4);
             floor.push(mesh);
@@ -153,4 +152,11 @@ function generateArenaFloor() {
         }
      }
      return floor;
+}
+
+function updateTile(position, color) {
+    const x = Math.floor((position.x + arenaWidth) / tileSize);
+    const y = Math.floor((position.y + arenaHeight) / tileSize);
+    const index = y + ((arenaHeight / tileSize) * 2 + 1) * x;
+    arenaFloorMesh[index].material.color.set(color);
 }

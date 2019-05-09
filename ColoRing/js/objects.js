@@ -10,14 +10,14 @@ function createArena() {
     return arena;
 }
 
-function createBall(color) {
+function createBall(color, radius, position, direction) {
     let ball = new Object();
-    ball.radius = 2;
+    ball.radius = radius;
     ball.color = color;
-    ball.position = undefined;
+    ball.position = position;
     ball.mesh = undefined;
     ball.physical = undefined;
     ball.keyAxis = [0, 0];
-    ball.direction = new THREE.Vec3(0,0,0);
+    ball.direction = direction;
     return ball;
 }
