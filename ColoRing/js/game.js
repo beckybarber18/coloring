@@ -80,8 +80,74 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // Bind keyboard and resize events.
-    KeyboardJS.bind.axis('a','d','s','w', onMoveKey);
-    KeyboardJS.bind.axis('left', 'right', 'down', 'up', onMoveKey2);
+    // KeyboardJS.bind.axis('a','d','s','w', onMoveKey);
+    // KeyboardJS.bind.axis('left', 'right', 'down', 'up', onMoveKey2);
+    // document.addEventListener("keydown", onKeyDown, false);
+    // document.addEventListener("keyup", onKeyUp, false);
+
+    document.addEventListener('keydown', function(event){
+
+        switch (event.keyCode) {
+
+            case 38: // up
+                ball2.keyAxis[0] = 1;
+                break;
+
+            case 87: // w
+                ball1.keyAxis[0] = 1;
+                break;
+
+            case 37: // left
+                ball2.keyAxis[1] = 1;
+                break;
+
+            case 65: // a
+                ball1.keyAxis[1] = 1;
+                break;
+
+            case 39: // right
+                ball2.keyAxis[2] = 1;
+                break;
+
+            case 68: // d
+                ball1.keyAxis[2] = 1;
+                break;
+
+        }
+
+    } );
+
+    document.addEventListener('keyup', function(event){
+
+        switch (event.keyCode) {
+
+            case 38: // up
+                ball2.keyAxis[0] = 0;
+                break;
+
+            case 87: // w
+                ball1.keyAxis[0] = 0;
+                break;
+
+            case 37: // left
+                ball2.keyAxis[1] = 0;
+                break;
+
+            case 65: // a
+                ball1.keyAxis[1] = 0;
+                break;
+
+            case 39: // right
+                ball2.keyAxis[2] = 0;
+                break;
+
+            case 68: // d
+                ball1.keyAxis[2] = 0;
+                break;
+
+        }
+
+    } );
 
     // Set the initial game state.
     gameState = 'initialize';
@@ -125,10 +191,32 @@ function updateSize() {
     }
 }
 
-function onMoveKey(axis) {
-    ball1.keyAxis = axis.slice(0);
+var onKeyDown = function (event) {
+
+    switch (event.keyCode) {
+
+        case 38: // up
+            ball2.keyAxis[0] = 1;
+            break;
+    }
 }
 
-function onMoveKey2(axis) {
-    ball2.keyAxis = axis.slice(0);
+var onKeyUp = function (event) {
+
+    switch (event.keyCode) {
+
+        case 38: // up
+            ball2.keyAxis[0] = 0;
+            break;
+    }
 }
+
+
+
+// function onMoveKey(axis) {
+//     ball1.keyAxis = axis.slice(0);
+// }
+
+// function onMoveKey2(axis) {
+//     ball2.keyAxis = axis.slice(0);
+// }
