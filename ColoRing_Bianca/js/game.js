@@ -1,5 +1,5 @@
 const Colors = {
-    arena: 0x99c5b5,
+    arena: 0x99a1a6,
     floor: 0x99a1a6,
     ball1: 0xa8c69f,
     ball2: 0x5c5d8d
