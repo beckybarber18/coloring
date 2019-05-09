@@ -6,6 +6,7 @@ function createArena(height, width, wallSize, tileSize) {
     arena.tileSize = tileSize;
     arena.walls = undefined;
     arena.floor = undefined;
+    arena.score = undefined;
     return arena;
 }
 
@@ -16,6 +17,7 @@ function createBall(color, radius, position, direction) {
     ball.position = position;
     ball.direction = direction;
     ball.keys = [0, 0, 0];
+    ball.score = 0;
     ball.mesh = undefined;
     ball.physical = undefined;
     ball.camera = undefined;

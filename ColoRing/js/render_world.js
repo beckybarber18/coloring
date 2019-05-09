@@ -2,8 +2,8 @@ function createRenderWorld() {
 
     // Create the scene object.
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xfff8f3 );
-	scene.fog = new THREE.Fog( 0xfff8f3, 0, 750 );
+    scene.background = new THREE.Color( Colors.background );
+	scene.fog = new THREE.Fog( Colors.background, 0, 750 );
 
     // Creates lights.
     createLights();
@@ -11,7 +11,8 @@ function createRenderWorld() {
     // Creates cameras.
     for ( var ii = 0; ii < views.length; ++ ii ) {
         var view = views[ ii ];
-        var camera = new THREE.PerspectiveCamera( view.fov, window.innerWidth / window.innerHeight, 1, 10000 );
+        var camera = new THREE.PerspectiveCamera( view.fov,
+            window.innerWidth / window.innerHeight, 1, 10000 );
         camera.rotation.fromArray( view.rotation );
         camera.position.fromArray( view.eye );
         view.camera = camera;
@@ -28,37 +29,25 @@ function createRenderWorld() {
     scene.add(ball2.mesh);
 
     // Creates arena.
-    arena.walls = generateArena();
+    arena.walls = createArenaMesh();
     scene.add(arena.walls);
 
     // Creates arena floor.
-    arena.floor = generateArenaFloor();
+    arena.floor = createArenaFloorMesh();
 }
 
 function updateRenderWorld() {
-    // Updates ball positions.
-    updatePosition(ball1);
-    updatePosition(ball2);
-
-    // Updates camera positions.
-    ball1.camera.position.copy(ball1.position);
-    ball1.camera.position.sub(ball1.direction.clone().normalize().multiplyScalar(1.5 * ballRadius));
-    ball1.camera.position.z = ball1.position.z + 1.5 * ballRadius;
-
-    ball2.camera.position.copy(ball2.position);
-    ball2.camera.position.sub(ball2.direction.clone().normalize().multiplyScalar(1.5 * ballRadius));
-    ball2.camera.position.z = ball2.position.z + 1.5 * ballRadius;
-
     // Updates rotation.
-    updateRotation(ball1);
-    updateRotation(ball2);
+    updateRotations(ball1);
+    updateRotations(ball2);
+
+    // Updates ball positions.
+    updatePositions(ball1);
+    updatePositions(ball2);
 
     // Updates tile colors.
     updateTile(ball1);
     updateTile(ball2);
-
-
-
 }
 
 function createLights() {
@@ -88,9 +77,8 @@ function createBallMesh(ball) {
     return mesh;
 }
 
-function generateArena() {
+function createArenaMesh() {
     const dummy = new THREE.Geometry();
-
     const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize, arena.wallSize);
     const mat = new THREE.MeshPhongMaterial({color: Colors.arena});
 
@@ -109,7 +97,6 @@ function generateArena() {
         mesh1.position.set(-arena.width, y, arena.wallSize / 2);
         dummy.mergeMesh(mesh1);
 
-
         const mesh2 = new THREE.Mesh(geo);
         mesh2.position.set(arena.width, y, arena.wallSize / 2);
         dummy.mergeMesh(mesh2);
@@ -118,9 +105,8 @@ function generateArena() {
     return new THREE.Mesh(dummy, mat);
 }
 
-function generateArenaFloor() {
+function createArenaFloorMesh() {
     let floor = [];
-
     const geo = new THREE.BoxGeometry(arena.tileSize, arena.tileSize, arena.tileSize / 2);
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.tileSize) {
@@ -135,13 +121,20 @@ function generateArenaFloor() {
      return floor;
 }
 
-function updatePosition(ball) {
+function updatePositions(ball) {
+    // Updates ball position.
     ball.position.copy(ball.physical.position);
     ball.mesh.position.copy(ball.position);
     ball.mesh.quaternion.copy(ball.physical.quaternion);
+
+    // Updates camera position.
+    const pos = ball.position.clone()
+    pos.sub(ball.direction.clone().normalize().multiplyScalar(1.5 * ballRadius));
+    pos.z += 1.5 * ballRadius;
+    ball.camera.position.copy(pos);
 }
 
-function updateRotation(ball) {
+function updateRotations(ball) {
     const deg = 2;
     const angle = deg * Math.PI / 180;
     const rotation =  new THREE.Euler(0, 0, 0, 'XYZ');
@@ -149,15 +142,11 @@ function updateRotation(ball) {
     if (ball.keys[1] == 1) {
         rotation.set(0, 0, angle, 'XYZ');
         ball.camera.rotation.y += angle;
-        // ball.camera.position.x = 1.5 * Math.sqrt(2) * ballRadius * Math.cos(angle);
-        // ball.camera.position.z = 1.5 * Math.sqrt(2) * ballRadius * Math.sin(angle);
     }
 
     if (ball.keys[2] == 1) {
         rotation.set(0, 0, rotation.z - angle, 'XYZ');
         ball.camera.rotation.y += -angle;
-        // ball.camera.position.x = 1.5 * Math.sqrt(2) * ballRadius * Math.cos(-angle);
-        // ball.camera.position.z = 1.5 * Math.sqrt(2) * ballRadius * Math.sin(-angle);
     }
 
     ball.direction.applyEuler(rotation);

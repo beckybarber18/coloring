@@ -8,11 +8,7 @@ const Colors = {
 let camera, scene, renderer, views, gameState,
     windowWidth, windowHeight,
     arena, ball1, ball2, world,
-    ballRadius     	= 3,
-    ironTexture    	= new THREE.TextureLoader().load('/images/ball.png'),
-    ironTexture2   	= new THREE.TextureLoader().load('/images/ball2.png'),
-    canvasTexture  	= new THREE.TextureLoader().load('/images/canvas.png'),
-    brickTexture   	= new THREE.TextureLoader().load('/images/brick.png');
+    ballRadius = 3
 
 init();
 animate();
@@ -38,37 +34,7 @@ function init() {
     ball2 = createBall(Colors.ball2, ballRadius, ball2pos, ball2dir);
 
     // Specifies different view windows
-    views = [
-        {
-            left: 0,
-            bottom: 0,
-            width: 0.5,
-            height: 1.0,
-            eye: [ball1.position.x - 1.5 * ballRadius, ball1.position.y,
-                ball1.position.z + 1.5 * ballRadius],
-            rotation: [90 * Math.PI / 180, -90 * Math.PI / 180, 0],
-            fov: 60
-        },
-        {
-            left: 0.5,
-            bottom: 0,
-            width: 0.5,
-            height: 1.0,
-            eye: [ball2.position.x + 1.5 * ballRadius, ball2.position.y,
-                ball2.position.z + 1.5 * ballRadius],
-            rotation: [90 * Math.PI / 180, 90 * Math.PI / 180, 0],
-            fov: 60
-        },
-        {
-            left: 0.425,
-            bottom: 0.80,
-            width: 0.15,
-            height: 0.2,
-            eye: [0, 0, 100],
-            rotation: [0, 0, 0],
-            fov: 60
-        }
-    ]
+    views = createViews();
 
     // Creates worlds
     createRenderWorld();
@@ -79,75 +45,9 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Bind keyboard and resize events.
-    // KeyboardJS.bind.axis('a','d','s','w', onMoveKey);
-    // KeyboardJS.bind.axis('left', 'right', 'down', 'up', onMoveKey2);
-    // document.addEventListener("keydown", onKeyDown, false);
-    // document.addEventListener("keyup", onKeyUp, false);
-
-    document.addEventListener('keydown', function(event){
-
-        switch (event.keyCode) {
-
-            case 38: // up
-                ball2.keys[0] = 1;
-                break;
-
-            case 87: // w
-                ball1.keys[0] = 1;
-                break;
-
-            case 37: // left
-                ball2.keys[1] = 1;
-                break;
-
-            case 65: // a
-                ball1.keys[1] = 1;
-                break;
-
-            case 39: // right
-                ball2.keys[2] = 1;
-                break;
-
-            case 68: // d
-                ball1.keys[2] = 1;
-                break;
-
-        }
-
-    } );
-
-    document.addEventListener('keyup', function(event){
-
-        switch (event.keyCode) {
-
-            case 38: // up
-                ball2.keys[0] = 0;
-                break;
-
-            case 87: // w
-                ball1.keys[0] = 0;
-                break;
-
-            case 37: // left
-                ball2.keys[1] = 0;
-                break;
-
-            case 65: // a
-                ball1.keys[1] = 0;
-                break;
-
-            case 39: // right
-                ball2.keys[2] = 0;
-                break;
-
-            case 68: // d
-                ball1.keys[2] = 0;
-                break;
-
-        }
-
-    } );
+    // Key event listeners.
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
 
     // Set the initial game state.
     gameState = 'start';
@@ -207,22 +107,94 @@ function updateSize() {
     }
 }
 
-var onKeyDown = function (event) {
+function createViews() {
+    let canvases = [
+        {
+            left: 0,
+            bottom: 0,
+            width: 0.5,
+            height: 1.0,
+            eye: [ball1.position.x - 1.5 * ballRadius, ball1.position.y,
+                ball1.position.z + 1.5 * ballRadius],
+            rotation: [90 * Math.PI / 180, -90 * Math.PI / 180, 0],
+            fov: 60
+        },
+        {
+            left: 0.5,
+            bottom: 0,
+            width: 0.5,
+            height: 1.0,
+            eye: [ball2.position.x + 1.5 * ballRadius, ball2.position.y,
+                ball2.position.z + 1.5 * ballRadius],
+            rotation: [90 * Math.PI / 180, 90 * Math.PI / 180, 0],
+            fov: 60
+        },
+        {
+            left: 0.425,
+            bottom: 0.80,
+            width: 0.15,
+            height: 0.2,
+            eye: [0, 0, 100],
+            rotation: [0, 0, 0],
+            fov: 60
+        }
+    ]
 
+    return canvases;
+}
+
+function onKeyDown(event) {
     switch (event.keyCode) {
+        case 87: // w
+            ball1.keys[0] = 1;
+            break;
 
         case 38: // up
             ball2.keys[0] = 1;
             break;
+
+        case 65: // a
+            ball1.keys[1] = 1;
+            break;
+
+        case 37: // left
+            ball2.keys[1] = 1;
+            break;
+
+        case 68: // d
+            ball1.keys[2] = 1;
+            break;
+
+        case 39: // right
+            ball2.keys[2] = 1;
+            break;
     }
 }
 
-var onKeyUp = function (event) {
-
+function onKeyUp(event) {
     switch (event.keyCode) {
+        case 87: // w
+            ball1.keys[0] = 0;
+            break;
 
         case 38: // up
             ball2.keys[0] = 0;
+            break;
+
+        case 65: // a
+            ball1.keys[1] = 0;
+            break;
+
+        case 37: // left
+            ball2.keys[1] = 0;
+            break;
+
+        case 68: // d
+            ball1.keys[2] = 0;
+            break;
+
+        case 39: // right
+            ball2.keys[2] = 0;
             break;
     }
 }
@@ -230,23 +202,23 @@ var onKeyUp = function (event) {
 
 function displayResult() {
     $('#counter').hide();
-    let s1 = 0;
-    let s2 = 0;
 
     // calculate scores
     for (let i = 0; i < arena.floor.length; i++) {
         if (arena.floor[i].material.color === ball1.color) {
-            s1++;
+            console.log(arena.floor[i].material.color);
+            ball1.score++;
         }
         else if (arena.floor[i].material.color === ball2.color) {
-            s2++;
+            ball2.score++;
         }
     }
+
     // console.log(s1, s2);
-    if (s1 > s2) {
+    if (ball1.score > ball2.score) {
         $('#instructions1').show();
     }
-    else if (s1 < s2) {
+    else if (ball1.score < ball2.score) {
         $('#instructions2').show();
     }
     else {
