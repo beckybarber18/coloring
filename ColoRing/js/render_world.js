@@ -146,14 +146,14 @@ function updateRotation(ball) {
     const angle = deg * Math.PI / 180;
     const rotation =  new THREE.Euler(0, 0, 0, 'XYZ');
 
-    if (ball.keyAxis[1] == 1) {
+    if (ball.keys[1] == 1) {
         rotation.set(0, 0, angle, 'XYZ');
         ball.camera.rotation.y += angle;
         // ball.camera.position.x = 1.5 * Math.sqrt(2) * ballRadius * Math.cos(angle);
         // ball.camera.position.z = 1.5 * Math.sqrt(2) * ballRadius * Math.sin(angle);
     }
 
-    if (ball.keyAxis[2] == 1) {
+    if (ball.keys[2] == 1) {
         rotation.set(0, 0, rotation.z - angle, 'XYZ');
         ball.camera.rotation.y += -angle;
         // ball.camera.position.x = 1.5 * Math.sqrt(2) * ballRadius * Math.cos(-angle);

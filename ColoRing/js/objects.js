@@ -15,7 +15,7 @@ function createBall(color, radius, position, direction) {
     ball.radius = radius;
     ball.position = position;
     ball.direction = direction;
-    ball.keyAxis = [0, 0, 0];
+    ball.keys = [0, 0, 0];
     ball.mesh = undefined;
     ball.physical = undefined;
     ball.camera = undefined;

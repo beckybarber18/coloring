@@ -90,27 +90,27 @@ function init() {
         switch (event.keyCode) {
 
             case 38: // up
-                ball2.keyAxis[0] = 1;
+                ball2.keys[0] = 1;
                 break;
 
             case 87: // w
-                ball1.keyAxis[0] = 1;
+                ball1.keys[0] = 1;
                 break;
 
             case 37: // left
-                ball2.keyAxis[1] = 1;
+                ball2.keys[1] = 1;
                 break;
 
             case 65: // a
-                ball1.keyAxis[1] = 1;
+                ball1.keys[1] = 1;
                 break;
 
             case 39: // right
-                ball2.keyAxis[2] = 1;
+                ball2.keys[2] = 1;
                 break;
 
             case 68: // d
-                ball1.keyAxis[2] = 1;
+                ball1.keys[2] = 1;
                 break;
 
         }
@@ -122,27 +122,27 @@ function init() {
         switch (event.keyCode) {
 
             case 38: // up
-                ball2.keyAxis[0] = 0;
+                ball2.keys[0] = 0;
                 break;
 
             case 87: // w
-                ball1.keyAxis[0] = 0;
+                ball1.keys[0] = 0;
                 break;
 
             case 37: // left
-                ball2.keyAxis[1] = 0;
+                ball2.keys[1] = 0;
                 break;
 
             case 65: // a
-                ball1.keyAxis[1] = 0;
+                ball1.keys[1] = 0;
                 break;
 
             case 39: // right
-                ball2.keyAxis[2] = 0;
+                ball2.keys[2] = 0;
                 break;
 
             case 68: // d
-                ball1.keyAxis[2] = 0;
+                ball1.keys[2] = 0;
                 break;
 
         }
@@ -212,7 +212,7 @@ var onKeyDown = function (event) {
     switch (event.keyCode) {
 
         case 38: // up
-            ball2.keyAxis[0] = 1;
+            ball2.keys[0] = 1;
             break;
     }
 }
@@ -222,7 +222,7 @@ var onKeyUp = function (event) {
     switch (event.keyCode) {
 
         case 38: // up
-            ball2.keyAxis[0] = 0;
+            ball2.keys[0] = 0;
             break;
     }
 }
