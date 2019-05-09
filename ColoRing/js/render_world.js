@@ -159,5 +159,5 @@ function updateTile(position, color) {
     const x = Math.floor((position.x + arena.width) / arena.tileSize);
     const y = Math.floor((position.y + arena.height) / arena.tileSize);
     const index = y + ((arena.height / arena.tileSize) * 2 + 1) * x;
-    arenaFloorMesh[index].material.color.set(color);
+    arena.floor[index].material.color.set(color);
 }

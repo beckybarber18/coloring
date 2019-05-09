@@ -63,16 +63,16 @@ function updatePhysicsWorld() {
         lv.y*(1-ball2.physical.friction), lv.z*(1-ball2.physical.friction));
 
     //console.log(keyAxis[0]*ball1.mass*ball1.friction);
-    let force1 = new CANNON.Vec3(keyAxis[0]*ball1.physical.mass*12,
-        keyAxis[1]*ball1.mass*12, 0);
-    let force2 = new CANNON.Vec3(keyAxis2[0]*ball2.physical.mass*12,
-        keyAxis2[1]*ball2.physical.mass*12, 0);
+    let force1 = new CANNON.Vec3(ball1.keyAxis[0]*ball1.physical.mass*12,
+        ball1.keyAxis[1]*ball1.physical.mass*12, 0);
+    let force2 = new CANNON.Vec3(ball2.keyAxis[0]*ball2.physical.mass*12,
+        ball2.keyAxis[1]*ball2.physical.mass*12, 0);
     // var force = new CANNON.Vec3(500,0,0);
     // var worldpoint = new CANNON.Vec3(0,0,ballRadius);
     ball1.physical.applyImpulse(force1, ball1.physical.position);
     ball2.physical.applyImpulse(force2, ball2.physical.position);
-    keyAxis = [0,0];
-    keyAxis2 = [0,0];
+    ball1.keyAxis = [0,0];
+    ball2.keyAxis = [0,0];
 
     // handle wall collisions
     handleWallCollisions(ball1.physical);
