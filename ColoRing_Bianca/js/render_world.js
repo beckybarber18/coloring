@@ -22,12 +22,12 @@ function createRenderWorld() {
 
     const ballMat1 = new THREE.MeshPhongMaterial({color: Colors.ball1});
     ballMesh = new THREE.Mesh(ballGeo, ballMat1);
-    ballMesh.position.set(arenaWidth - 2 * arenaSize, arenaHeight - 2 * arenaSize, ballRadius);
+    ballMesh.position.set(-arenaWidth + 2 * arenaSize, -arenaHeight + 2 * arenaSize, ballRadius);
     scene.add(ballMesh);
 
     const ballMat2 = new THREE.MeshPhongMaterial({color: Colors.ball2});
     ballMesh2 = new THREE.Mesh(ballGeo, ballMat2);
-    ballMesh2.position.set(-arenaWidth + 2 * arenaSize, -arenaHeight + 2 * arenaSize, ballRadius);
+    ballMesh2.position.set(arenaWidth - 2 * arenaSize, arenaHeight - 2 * arenaSize, ballRadius);
     scene.add(ballMesh2);
 
     // Creates arena.

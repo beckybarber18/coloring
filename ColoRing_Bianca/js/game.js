@@ -1,8 +1,8 @@
 const Colors = {
-    arena: 0x99a1a6,
-    floor: 0x99a1a6,
-    ball1: 0xa8c69f,
-    ball2: 0x5c5d8d
+    arena: 0xf0b7a4,
+    floor: 0xf5e1da,
+    ball1: 0xfdd043,
+    ball2: 0xe2598b
 }
 
 let camera, scene, renderer, views, gameState,
@@ -34,8 +34,8 @@ function init() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [65 - ballRadius, 0, ballRadius],
-            rotation: [90 * Math.PI / 180, 90 * Math.PI / 180, 0],
+            eye: [-65 + ballRadius, 0, ballRadius],
+            rotation: [90 * Math.PI / 180, -90 * Math.PI / 180, 0],
             fov: 45
         },
         {
@@ -43,8 +43,8 @@ function init() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [-65 + ballRadius, 0, ballRadius],
-            rotation: [90 * Math.PI / 180, -90 * Math.PI / 180, 0],
+            eye: [65 - ballRadius, 0, ballRadius],
+            rotation: [90 * Math.PI / 180, 90 * Math.PI / 180, 0],
             fov: 45
         },
         {
@@ -68,8 +68,8 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // Bind keyboard and resize events.
-    KeyboardJS.bind.axis('left', 'right', 'down', 'up', onMoveKey);
-    KeyboardJS.bind.axis('a','d','s','w', onMoveKey2);
+    KeyboardJS.bind.axis('a','d','s','w', onMoveKey);
+    KeyboardJS.bind.axis('left', 'right', 'down', 'up', onMoveKey2);
 
     // Set the initial game state.
     gameState = 'initialize';

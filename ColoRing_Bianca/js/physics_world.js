@@ -46,7 +46,7 @@ function createPhysicsWorld() {
     ball1.addShape(ballShape);
     // ball1.velocity.set(0,10,0);
     ball1.friction = 0.1;
-    ball1.position.set(arenaWidth - 2 * arenaSize, arenaHeight - 2 * arenaSize, ballRadius);
+    ball1.position.set(-arenaWidth + 2 * arenaSize, -arenaHeight + 2 * arenaSize, ballRadius);
     world.addBody(ball1);
 
     // create the second ball
@@ -56,7 +56,7 @@ function createPhysicsWorld() {
     ball2.addShape(ballShape);
     // ball1.velocity.set(0,10,0);
     ball2.friction = 0.1;
-    ball2.position.set(-arenaWidth + 2 * arenaSize, -arenaHeight + 2 * arenaSize, ballRadius);
+    ball2.position.set(arenaWidth - 2 * arenaSize, arenaHeight - 2 * arenaSize, ballRadius);
     world.addBody(ball2);
 }
 
