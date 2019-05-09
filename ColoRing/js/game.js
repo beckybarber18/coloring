@@ -44,7 +44,8 @@ function init() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [-65 + ballRadius, 0, ballRadius],
+            eye: [ball1.position.x - 1.5 * ballRadius, ball1.position.y,
+                ball1.position.z + 1.5 * ballRadius],
             rotation: [90 * Math.PI / 180, -90 * Math.PI / 180, 0],
             fov: 45
         },
@@ -53,7 +54,8 @@ function init() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [65 - ballRadius, 0, ballRadius],
+            eye: [ball2.position.x + 1.5 * ballRadius, ball2.position.y,
+                ball2.position.z + 1.5 * ballRadius],
             rotation: [90 * Math.PI / 180, 90 * Math.PI / 180, 0],
             fov: 45
         },

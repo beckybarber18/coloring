@@ -1,9 +1,10 @@
 function createPhysicsWorld() {
+    // Creates physical world.
     world = new CANNON.World();
     world.broadphase = new CANNON.NaiveBroadphase();
     world.solver.iterations = 10;
 
-    // create the first ball
+    // Creates first physical ball.
     let ballShape = new CANNON.Sphere(ballRadius);
     let mass = 1;
     ball1.physical = new CANNON.Body({
@@ -14,7 +15,7 @@ function createPhysicsWorld() {
     ball1.physical.position.copy(ball1.position);
     world.addBody(ball1.physical);
 
-    // create the second ball
+    // Creates second physical ball.
     ball2.physical = new CANNON.Body({
         mass: mass
       });
@@ -25,6 +26,7 @@ function createPhysicsWorld() {
 }
 
 function handleWallCollisions(ball) {
+    // TODO: Decrease velocity of ball (rather then set to negative velocity)
     if(ball.position.x < -arena.width + arena.wallSize) {
         ball.position.x = -arena.width + arena.wallSize;
         let v = ball.velocity;
@@ -59,7 +61,6 @@ function updatePhysicsWorld() {
         lv.y * (1 - ball2.physical.friction),
         lv.z * (1 - ball2.physical.friction));
 
-    //console.log(keyAxis[0]*ball1.physical.mass*ball1.physical.friction);
     let force1 = new CANNON.Vec3(ball1.keyAxis[0] * ball1.physical.mass * 12,
         ball1.keyAxis[1] * ball1.physical.mass * 12, 0);
     let force2 = new CANNON.Vec3(ball2.keyAxis[0] * ball2.physical.mass * 12,
@@ -70,7 +71,7 @@ function updatePhysicsWorld() {
     ball1.keyAxis = [0,0];
     ball2.keyAxis = [0,0];
 
-    // handle wall collisions
+    // Handles wall collisions.
     handleWallCollisions(ball1.physical);
     handleWallCollisions(ball2.physical);
 }

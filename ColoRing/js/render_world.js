@@ -43,50 +43,22 @@ function updateRenderWorld() {
     ball1.position.copy(ball1.physical.position);
     ball1.mesh.position.copy(ball1.position);
     ball1.mesh.quaternion.copy(ball1.physical.quaternion);
-    views[0].camera.position.copy(ball1.position);
+
 
     ball2.position.copy(ball2.physical.position);
     ball2.mesh.position.copy(ball2.position);
     ball2.mesh.quaternion.copy(ball2.physical.quaternion);
-    views[1].camera.position.copy(ball2.position);
+
+    // Updates camera positions.
+    views[0].camera.position.set(ball1.position.x - 1.5 * ballRadius, ball1.position.y,
+        ball1.position.z + 1.5 * ballRadius);
+    views[1].camera.position.set(ball2.position.x + 1.5 * ballRadius, ball2.position.y,
+        ball2.position.z + 1.5 * ballRadius);
 
     // Updates tile colors.
     updateTile(ball1.position, ball1.color);
     updateTile(ball2.position, ball2.color);
 
-    /*
-
-    // Update ball rotation.
-    var tempMat = new THREE.Matrix4();
-    tempMat.makeRotationAxis(new THREE.Vector3(0,1,0), stepX/ballRadius);
-    tempMat.multiplySelf(ballMesh.matrix);
-    ballMesh.matrix = tempMat;
-
-    var tempMat2 = new THREE.Matrix4();
-    tempMat2.makeRotationAxis(new THREE.Vector3(0,1,0), stepX2/ballRadius);
-    tempMat2.multiplySelf(ballMesh2.matrix);
-    ballMesh2.matrix = tempMat2;
-
-    tempMat = new THREE.Matrix4();
-    tempMat.makeRotationAxis(new THREE.Vector3(1,0,0), -stepY/ballRadius);
-    tempMat.multiplySelf(ballMesh.matrix);
-    ballMesh.matrix = tempMat;
-    ballMesh.rotation.getRotationFromMatrix(ballMesh.matrix);
-
-    tempMat2 = new THREE.Matrix4();
-    tempMat2.makeRotationAxis(new THREE.Vector3(1,0,0), -stepY2/ballRadius);
-    tempMat2.multiplySelf(ballMesh2.matrix);
-    ballMesh2.matrix = tempMat2;
-    ballMesh2.rotation.getRotationFromMatrix(ballMesh2.matrix);
-
-    // // Update camera and light positions.
-    // camera.position.x += (ballMesh.position.x - camera.position.x) * 0.1;
-    // camera.position.y += (ballMesh.position.y - camera.position.y) * 0.1;
-    // camera.position.z += (5 - camera.position.z) * 0.1;
-    // light.position.x = camera.position.x;
-    // light.position.y = camera.position.y;
-    // light.position.z = camera.position.z - 3.7;
-    */
 }
 
 function createLights() {
