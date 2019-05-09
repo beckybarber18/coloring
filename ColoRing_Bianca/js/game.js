@@ -48,9 +48,9 @@ function init() {
             fov: 45
         },
         {
-            left: 0.4,
+            left: 0.425,
             bottom: 0.80,
-            width: 0.2,
+            width: 0.15,
             height: 0.2,
             eye: [0, 0, 100],
             rotation: [0, 0, 0],
