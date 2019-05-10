@@ -59,6 +59,12 @@ function animate() {
 
     switch(gameState) {
         case 'start':
+            createRenderWorld();
+            createPhysicsWorld();
+            ball1.position.copy(initialPosition);
+            ball2.position.copy(initialPosition.clone().multiplyScalar(-1));
+            ball1.direction.copy(initialDirection);
+            ball2.direction.copy(initialDirection.clone().multiplyScalar(-1));
             gameState = 'play';
             countdown();
             break;
