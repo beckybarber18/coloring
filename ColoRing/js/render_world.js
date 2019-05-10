@@ -37,6 +37,7 @@ function createRenderWorld() {
 }
 
 function updateRenderWorld() {
+
     // Updates rotation.
     updateRotations(ball1);
     updateRotations(ball2);
@@ -48,6 +49,10 @@ function updateRenderWorld() {
     // Updates tile colors.
     updateTile(ball1);
     updateTile(ball2);
+
+    // update the color of the arena walls
+    arena.walls = updateArenaColor();
+    scene.add(arena.walls);
 }
 
 function resetRenderWorld() {
@@ -65,6 +70,9 @@ function resetRenderWorld() {
         arena.floor[index].material.color.set(Colors.floor);
         arena.colors[index] = 0;
     }
+
+    arena.walls = updateArenaColor();
+    scene.add(arena.walls);
 }
 
 function createLights() {
@@ -98,7 +106,9 @@ function createArenaMesh() {
     const dummy = new THREE.Geometry();
     const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize,
         arena.wallSize);
-    const mat = new THREE.MeshPhongMaterial({color: Colors.arena});
+
+    let currArenaColor = parseInt(arenaColors[Math.floor(numArenaColors/2)]);
+    const mat = new THREE.MeshPhongMaterial({color: currArenaColor});
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
         const mesh1 = new THREE.Mesh(geo);
@@ -155,6 +165,28 @@ function updatePositions(ball) {
     ball.camera.position.copy(pos);
 }
 
+function updateArenaColor() {
+
+    let geom = arena.walls.geometry;
+
+    let colorIndex;
+    if (ball1.score + ball2.score == 0) {
+        colorIndex = parseInt(arenaColors[Math.floor(numArenaColors/2)]);
+    }
+    else {
+        let perc = ball2.score/(ball1.score + ball2.score);
+        colorIndex = Math.round(perc * numArenaColors);
+    }
+
+    //console.log(colorIndex);
+
+    let currArenaColor = parseInt(arenaColors[colorIndex]);
+    let mat = new THREE.MeshPhongMaterial({color: currArenaColor});
+
+    return new THREE.Mesh(geom, mat);
+
+}
+
 function updateRotations(ball) {
     const deg = 2;
     const angle = deg * Math.PI / 180;
@@ -177,6 +209,14 @@ function updateTile(ball) {
     const x = Math.round((ball.position.x + arena.width) / arena.tileSize);
     const y = Math.round((ball.position.y + arena.height) / arena.tileSize);
     const index = y + ((arena.height / arena.tileSize) * 2 + 1) * x;
+
+    // deal with scores
+    let oldColor = arena.colors[index];
+    if (oldColor == 1) ball1.score -= 1;
+    else if (oldColor == 2) ball2.score -= 1;
+    ball.score += 1;
+
     arena.floor[index].material.color.set(ball.color);
     arena.colors[index] = ball.num;
+
 }

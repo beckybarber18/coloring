@@ -1,15 +1,16 @@
 const Colors = {
     background: 0xfff8f3,
-    arena: 0xf0b7a4,
+    //arena: 0xf0b7a4,
     floor: 0xf5e1da,
-    ball1: 0xfdd043,
-    ball2: 0xe2598b
+    //ball1: 0xfdd043,
+    //ball2: 0xe2598b
 }
 
 let camera, scene, renderer, views, gameState,
     windowWidth, windowHeight,
-    arena, ball1, ball2, world,
-    initialPosition, initialDirection,
+    arena, arenaColors, numArenaColors, ball1, ball2, world,
+    initialPosition, initialDirection, ball1Color, ball2Color,
+    ball1ColorStr, ball2ColorStr,
     ballRadius = 3
 
 init();
@@ -17,9 +18,7 @@ animate();
 
 function init() {
     container = document.getElementById( 'container' );
-
-    // Create objects.
-
+    
     // Creates arena object.
     arena = createArena(50, 75, 5, 5);
 
@@ -28,18 +27,9 @@ function init() {
         -arena.height + 2 * arena.wallSize, ballRadius);
     initialDirection = new THREE.Vector3(1, 0, 0);
 
-    ball1 = createBall(Colors.ball1, ballRadius, initialPosition.clone(),
-        initialDirection.clone(), 1);
-    ball2 = createBall(Colors.ball2, ballRadius,
-        initialPosition.clone().multiplyScalar(-1),
-        initialDirection.clone().multiplyScalar(-1), 2);
-
-    // Specifies different view windows
-    views = createViews();
-
     // Creates worlds
-    createRenderWorld();
-    createPhysicsWorld();
+    // createRenderWorld();
+    // createPhysicsWorld();
 
     // Create the renderer.
     renderer = new THREE.WebGLRenderer();
@@ -51,14 +41,42 @@ function init() {
     document.addEventListener('keyup', onKeyUp);
 
     // Set the initial game state.
-    gameState = 'start';
+    gameState = 'beforeStart';
+    // gameState = 'start';
 
 }
 
 function animate() {
 
     switch(gameState) {
+        case 'beforeStart':
+            displayColor1Choose();
+            // gameState = 'start';
+            break;
         case 'start':
+
+            // create color gradient
+            numArenaColors = 100;
+
+            var myRainbow = new Rainbow();
+            myRainbow.setNumberRange(1, numArenaColors);
+            myRainbow.setSpectrum(ball1ColorStr, ball2ColorStr);
+            arenaColors = []
+            var s = '';
+            for (var i = 1; i <= numArenaColors; i++) {
+                arenaColors.push('0x' + myRainbow.colourAt(i));;
+            }
+
+            // create balls
+            ball1 = createBall(ball1Color, ballRadius, initialPosition.clone(),
+                initialDirection.clone(), 1);
+            ball2 = createBall(ball2Color, ballRadius,
+                initialPosition.clone().multiplyScalar(-1),
+                initialDirection.clone().multiplyScalar(-1), 2);
+
+            // Specifies different view windows
+            views = createViews();
+
             createRenderWorld();
             createPhysicsWorld();
             ball1.position.copy(initialPosition);
@@ -202,22 +220,63 @@ function onKeyUp(event) {
     }
 }
 
+function displayColor1Choose() {
+
+    $('#counter').hide();
+
+    $('#chooseColor1').show();
+}
+
+function hideColor1Choose() {
+
+    $('#chooseColor1').hide();
+
+    ball1ColorStr = document.getElementById("p1color").value;
+    let colorString = '0x' + ball1ColorStr.substring(1, ball1ColorStr.length);
+    ball1Color = parseInt(colorString);
+
+    displayColor2Choose();
+
+    
+}
+
+function displayColor2Choose() {
+
+    $('#counter').hide();
+
+    $('#chooseColor2').show();
+}
+
+function hideColor2Choose() {
+
+    $('#chooseColor1').hide();
+    $('#chooseColor2').hide();
+
+    ball2ColorStr = document.getElementById("p2color").value;
+    let colorString = '0x' + ball2ColorStr.substring(1, ball2ColorStr.length);
+    ball2Color = parseInt(colorString);
+
+    //console.log(colorString, ball2Color);
+    gameState = 'start';
+    // KeyboardJS.unbind.key('space',
+                             // function(){hideColorChoose()});
+}
 
 function displayResult() {
     $('#counter').hide();
 
-    const n = arena.colors.length;
-    ball1.score = 0;
-    ball2.score = 0;
+    // const n = arena.colors.length;
+    // ball1.score = 0;
+    // ball2.score = 0;
 
-    for (let i = 0; i < n; i++) {
-        if (arena.colors[i] == ball1.num) {
-            ball1.score += 1;
-        }
-        else if (arena.colors[i] == ball2.num) {
-            ball2.score += 1;
-        }
-    }
+    // for (let i = 0; i < n; i++) {
+    //     if (arena.colors[i] == ball1.num) {
+    //         ball1.score += 1;
+    //     }
+    //     else if (arena.colors[i] == ball2.num) {
+    //         ball2.score += 1;
+    //     }
+    // }
 
     // console.log(s1, s2);
     if (ball1.score > ball2.score) {
@@ -243,6 +302,8 @@ function hideResult() {
     else {
         $('#instructions3').hide();
     }
+    ball1.score = 1;
+    ball2.score = 1;
     gameState = 'start';
     KeyboardJS.unbind.key('space',
                              function(){hideResult()});
