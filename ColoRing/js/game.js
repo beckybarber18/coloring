@@ -10,17 +10,19 @@ const Colors = {
 }
 
 
-const TO_DEGREES = Math.PI / 180;
+const   TO_DEGREES = Math.PI / 180,
+        cameraX = 1.5,
+        cameraZ = 1.5,
+        ballRadius = 3,
+        maxPowers = 3;
 
 let camera, scene, renderer, composers = [], views, gameState,
     windowWidth, windowHeight,
     arena, numArenaColors, ball1, ball2, world,
-    initialPos1, initialDir1, initialPos2, initialDir2, 
+    initialPos1, initialDir1, initialPos2, initialDir2,
     ball1Color, ball2Color,
     ball1ColorStr, ball2ColorStr,
-    ballRadius = 3,
-    powers,
-    maxPowers = 3;
+    powers;
 
 var params = {
     exposure: 1,
@@ -30,7 +32,7 @@ var params = {
 };
 
 
-    
+
 init();
 animate();
 
@@ -127,7 +129,7 @@ function animate() {
         var height = Math.floor( window.innerHeight * view.height );
         renderer.setViewport( left, bottom, width, height );
         renderer.setScissor( left, bottom, width, height );
-        
+
         composers[ii].render();
     }
 
@@ -167,8 +169,8 @@ function createViews() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [initialPos1.x + 3 * ballRadius, initialPos1.y,
-                initialPos1.z + 5 * ballRadius],
+            eye: [initialPos1.x + cameraX * ballRadius, initialPos1.y,
+                initialPos1.z + cameraZ * ballRadius],
             rotation: [90 * TO_DEGREES, -90 * TO_DEGREES, 0],
             fov: 75
         },
@@ -177,8 +179,8 @@ function createViews() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [initialPos2.x + 3 * ballRadius, initialPos2.y,
-                initialPos2.z + 5 * ballRadius],
+            eye: [initialPos2.x + cameraX * ballRadius, initialPos2.y,
+                initialPos2.z + cameraZ * ballRadius],
             rotation: [90 * TO_DEGREES, 90 * TO_DEGREES, 0],
             fov: 75
         },
