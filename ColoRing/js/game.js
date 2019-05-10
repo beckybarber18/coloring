@@ -11,7 +11,7 @@ const Colors = {
 }
 
 
-const   TO_DEGREES = Math.PI / 180,
+const TO_DEGREES = Math.PI / 180,
         cameraX = 1.5,
         cameraZ = 1.5,
         ballRadius = 3,
@@ -73,7 +73,7 @@ function animate() {
             break;
         case 'start':
             // Creates arena object.
-            arena = createArena(50, 75, 5, 5);
+            arena = createArena(50, 75, 12, 5);
 
             // Set initial positions and directions of ball objects.
             initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
