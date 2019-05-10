@@ -53,11 +53,10 @@ function init() {
     // just so we dont have to pick a color every time
     gameState = 'start';
     ball1ColorStr = "fdd043";
-    let colorString = '0x' + ball1ColorStr.substring(1, ball1ColorStr.length);
-    ball1Color = parseInt(colorString);
+    ball1Color = 0xfdd043;
+
     ball2ColorStr = "e2598b";
-    colorString = '0x' + ball2ColorStr.substring(1, ball2ColorStr.length);
-    ball2Color = parseInt(colorString);
+    ball2Color =  0xe2598b;
 
 
 }
