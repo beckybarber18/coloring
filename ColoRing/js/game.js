@@ -114,7 +114,7 @@ function createViews() {
             eye: [ball1.position.x - 1.5 * ballRadius, ball1.position.y,
                 ball1.position.z + 1.5 * ballRadius],
             rotation: [90 * Math.PI / 180, -90 * Math.PI / 180, 0],
-            fov: 60
+            fov: 75
         },
         {
             left: 0.5,
@@ -124,7 +124,7 @@ function createViews() {
             eye: [ball2.position.x + 1.5 * ballRadius, ball2.position.y,
                 ball2.position.z + 1.5 * ballRadius],
             rotation: [90 * Math.PI / 180, 90 * Math.PI / 180, 0],
-            fov: 60
+            fov: 75
         },
         {
             left: 0.425,
@@ -244,7 +244,7 @@ function hideResult() {
 
 function countdown() {
     $('#counter').show();
-    var seconds = 10;
+    var seconds = 60;
     function tick() {
         var counter = document.getElementById("counter");
         seconds--;
