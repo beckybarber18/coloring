@@ -24,15 +24,16 @@ function createBall(color, radius, position, direction, num) {
     ball.mesh = undefined;
     ball.physical = undefined;
     ball.camera = undefined;
+    ball.canMove = true;
     return ball;
 }
 
-function createBomb(type, radius, position) {
-    let bomb = new Object();
-    bomb.type = type;
-    bomb.radius = radius;
-    bomb.position = position;
-    bomb.direction = new THREE.Vector3(0, 0, 0.1);
-    bomb.mesh = undefined;
-    return bomb;
+function createPower(type, position) {
+    let power = new Object();
+    power.type = type;
+    power.size = ballRadius / 2;
+    power.position = position;
+    power.direction = new THREE.Vector3(0, 0, 0.1);
+    power.mesh = undefined;
+    return power;
 }

@@ -24,9 +24,14 @@ function updatePhysicsWorld() {
         ball2.physical.velocity);
 
     // Updates impulse.
-    updateImpulse(ball1);
-    updateImpulse(ball2);
+    if (ball1.canMove) {
+        updateImpulse(ball1);
+    }
 
+    if (ball2.canMove) {
+        updateImpulse(ball2);
+    }
+    
     // Handles wall collisions.
     handleWallCollisions(ball1.physical);
     handleWallCollisions(ball2.physical);

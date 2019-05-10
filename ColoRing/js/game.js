@@ -6,7 +6,8 @@ const Colors = {
     floor: 0x000000,
     //ball1: 0xfdd043,
     //ball2: 0xe2598b
-    bomb: 0x000000
+    bomb: 0xffffff,
+    freeze: 0xb7fbff
 }
 
 
@@ -24,11 +25,11 @@ let camera, scene, renderer, composers = [], views, gameState,
     ball1ColorStr, ball2ColorStr,
     powers;
 
-var params = {
-    exposure: 1,
-    bloomStrength: .8,
+const params = {
+    exposure: 1.5,
+    bloomStrength: 2,
     bloomThreshold: 0,
-    bloomRadius: 0
+    bloomRadius: 0.5
 };
 
 
