@@ -288,6 +288,7 @@ function updatePowers() {
 }
 
 function updateBomb(bomb) {
+
     // Activates bomb if ball runs over it.
     if (intersectBomb(bomb, ball1)) {
         activateBomb(bomb, ball1);
@@ -295,7 +296,7 @@ function updateBomb(bomb) {
     }
     else if (intersectBomb(bomb, ball2)) {
         activateBomb(bomb, ball2);
-        returne true;
+        return true;
     }
 
     // Changes direction of motion of bomb.

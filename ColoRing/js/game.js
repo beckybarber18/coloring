@@ -101,24 +101,8 @@ function animate() {
                 arena.colors.push('0x' + myRainbow.colourAt(i));;
             }
 
-            // create balls
-            ball1 = createBall(ball1Color, ballRadius, initialPosition.clone(),
-                initialDirection.clone(), 1);
-            ball2 = createBall(ball2Color, ballRadius,
-                initialPosition.clone().multiplyScalar(-1),
-                initialDirection.clone().multiplyScalar(-1), 2);
-
-            // Specifies different view windows
-            views = createViews();
-            // var renderScene = new THREE.RenderPass( scene, camera );
-
             createRenderWorld();
             createPhysicsWorld();
-            ball1.position.copy(initialPosition);
-            ball2.position.copy(initialPosition.clone().multiplyScalar(-1));
-            ball1.direction.copy(initialDirection);
-            ball2.direction.copy(initialDirection.clone().multiplyScalar(-1));
-
 
             gameState = 'play';
             countdown();
