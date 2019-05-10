@@ -55,6 +55,9 @@ function createRenderWorld() {
 
     // Creates arena floor.
     arena.floor = createArenaFloorMesh();
+
+    // Initialiazes powers array.
+    powers = [];
 }
 
 function updateRenderWorld() {
@@ -71,25 +74,30 @@ function updateRenderWorld() {
     updateTile(ball1);
     updateTile(ball2);
 
-    // update the color of the arena walls
-    arena.walls = updateArenaColor();
-    scene.add(arena.walls);
+    // Updates the color of the arena walls.
+    updateArenaColor();
+
+    // Creates power ups/traps at random.
+    if (powers.length < maxPowers) {
+        createBomb();
+    }
+
+    // Updates power ups/traps.
+    updatePowers();
 }
 
 function resetRenderWorld() {
-    ball1.position = initialPosition.clone();
-    ball1.physical.position = initialPosition.clone();
-    ball1.direction = initialDirection.clone();
+    ball1.position = initialPos1.clone();
+    ball1.physical.position = initialPos1.clone();
+    ball1.direction = initialDir1.clone();
 
-    ball2.position = initialPosition.clone().multiplyScalar(-1);
-    ball2.position.z = ball2.radius;
-    ball2.physical.position = initialPosition.clone();
-    ball2.physical.position.z = ball2.radius;
-    ball2.direction = initialDirection.clone().multiplyScalar(-1);
+    ball2.position = initialPos2.clone().multiplyScalar(-1);
+    ball2.physical.position = initialPos2.clone();
+    ball2.direction = initialDir2.clone();
 
     for (let i = 0; i < arena.floor.length; i++) {
         arena.floor[index].material.color.set(Colors.floor);
-        arena.colors[index] = 0;
+        arena.tileColors[index] = 0;
     }
 
     arena.walls = updateArenaColor();
@@ -128,7 +136,7 @@ function createArenaMesh() {
     const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize,
         arena.wallSize);
 
-    let currArenaColor = parseInt(arenaColors[Math.floor(numArenaColors/2)]);
+    let currArenaColor = parseInt(arena.colors[Math.floor(numArenaColors/2)]);
     const mat = new THREE.MeshPhongMaterial({color: currArenaColor});
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
@@ -166,11 +174,44 @@ function createArenaFloorMesh() {
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.set(x, y, -arena.tileSize / 4);
             floor.push(mesh);
-            arena.colors.push(0);
+            arena.tileColors.push(0);
             scene.add(mesh);
         }
      }
      return floor;
+}
+
+function createBomb() {
+    // Determines if bomb will be made.
+    const random = Math.random();
+    if (random < 0.995) return;
+
+    // Randomly determine position of bomb.
+    const x = (Math.random() * 2 - 1) * (arena.width - arena.wallSize);
+    const y = (Math.random() * 2 - 1) * (arena.height - arena.wallSize);
+    const position = new THREE.Vector3(x, y, ballRadius);
+
+    const geo = new THREE.SphereGeometry(ballRadius / 2, 32, 32);
+    const mat = new THREE.MeshPhongMaterial({color: Colors.bomb});
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(position);
+    scene.add(mesh);
+    powers.push(createPower('bomb', mesh));
+}
+
+function updateArenaColor() {
+    let colorIndex;
+    if (ball1.score + ball2.score == 0) {
+        colorIndex = parseInt(arena.colors[Math.floor(numArenaColors/2)]);
+    }
+    else {
+        let perc = ball2.score/(ball1.score + ball2.score);
+        colorIndex = Math.round(perc * numArenaColors);
+    }
+
+    const currArenaColor = parseInt(arena.colors[colorIndex]);
+    arena.walls.material.color.set(currArenaColor);
+
 }
 
 function updatePositions(ball) {
@@ -181,31 +222,9 @@ function updatePositions(ball) {
 
     // Updates camera position.
     const pos = ball.position.clone()
-    pos.sub(ball.direction.clone().normalize().multiplyScalar(1.5 * ballRadius));
-    pos.z += 1.5 * ballRadius;
+    pos.sub(ball.direction.clone().normalize().multiplyScalar(3 * ballRadius));
+    pos.z += 5 * ballRadius;
     ball.camera.position.copy(pos);
-}
-
-function updateArenaColor() {
-
-    let geom = arena.walls.geometry;
-
-    let colorIndex;
-    if (ball1.score + ball2.score == 0) {
-        colorIndex = parseInt(arenaColors[Math.floor(numArenaColors/2)]);
-    }
-    else {
-        let perc = ball2.score/(ball1.score + ball2.score);
-        colorIndex = Math.round(perc * numArenaColors);
-    }
-
-    //console.log(colorIndex);
-
-    let currArenaColor = parseInt(arenaColors[colorIndex]);
-    let mat = new THREE.MeshPhongMaterial({color: currArenaColor});
-
-    return new THREE.Mesh(geom, mat);
-
 }
 
 function updateRotations(ball) {
@@ -232,12 +251,25 @@ function updateTile(ball) {
     const index = y + ((arena.height / arena.tileSize) * 2 + 1) * x;
 
     // deal with scores
-    let oldColor = arena.colors[index];
+    let oldColor = arena.tileColors[index];
     if (oldColor == 1) ball1.score -= 1;
     else if (oldColor == 2) ball2.score -= 1;
     ball.score += 1;
 
     arena.floor[index].material.color.set(ball.color);
-    arena.colors[index] = ball.num;
+    arena.tileColors[index] = ball.num;
+}
+
+function updatePowers() {
+    for (let i = 0; i < powers.length; i++) {
+
+    }
+}
+
+function updateBomb() {
+
+}
+
+function updateFreeze() {
 
 }
