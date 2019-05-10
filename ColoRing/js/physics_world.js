@@ -1,28 +1,54 @@
 function createPhysicsWorld() {
+
     // Creates physical world.
     world = new CANNON.World();
     world.broadphase = new CANNON.NaiveBroadphase();
     world.solver.iterations = 10;
 
-    // Creates first physical ball.
-    let ballShape = new CANNON.Sphere(ballRadius);
-    let mass = 1;
-    ball1.physical = new CANNON.Body({
-      mass: mass
-    });
-    ball1.physical.addShape(ballShape);
-    ball1.physical.friction = 0.1;
-    ball1.physical.position.copy(ball1.position);
+    // Creates physical balls.
+    ball1.physical = createBallPhysical(ball1);
     world.addBody(ball1.physical);
 
-    // Creates second physical ball.
-    ball2.physical = new CANNON.Body({
-        mass: mass
-      });
-    ball2.physical.addShape(ballShape);
-    ball2.physical.friction = 0.1;
-    ball2.physical.position.copy(ball2.position);
+    ball2.physical = createBallPhysical(ball2);
     world.addBody(ball2.physical);
+}
+
+function updatePhysicsWorld() {
+
+    world.step(1 / 60);
+
+    // Updates velocity.
+    ball1.physical.velocity.scale(1 - ball1.physical.friction,
+        ball1.physical.velocity);
+    ball2.physical.velocity.scale(1 - ball2.physical.friction,
+        ball2.physical.velocity);
+
+    // Updates impulse.
+    updateImpulse(ball1);
+    updateImpulse(ball2);
+
+    // Handles wall collisions.
+    handleWallCollisions(ball1.physical);
+    handleWallCollisions(ball2.physical);
+}
+
+function createBallPhysical(ball) {
+    const ballShape = new CANNON.Sphere(ball.radius);
+    const mass = 1;
+
+    const physical = new CANNON.Body({ mass: mass });
+    physical.addShape(ballShape);
+    physical.friction = 0.1;
+    physical.position.copy(ball.position);
+
+    return physical;
+}
+
+function updateImpulse(ball) {
+    const factor = ball.keys[0] * ball.physical.mass * 12;
+    const force = new CANNON.Vec3(factor * ball.direction.x,
+        factor * ball.direction.y, 0);
+    ball.physical.applyImpulse(force, ball.physical.position);
 }
 
 function handleWallCollisions(ball) {
@@ -47,34 +73,4 @@ function handleWallCollisions(ball) {
         let v = ball.velocity;
         ball.velocity.set(-v.x, -v.y, -v.z);
     }
-}
-
-function updatePhysicsWorld() {
-    world.step(1 / 60);
-
-    let lv = ball1.physical.velocity;
-    ball1.physical.velocity.set(lv.x * (1 - ball1.physical.friction),
-        lv.y * (1 - ball1.physical.friction),
-        lv.z * (1 - ball1.physical.friction));
-    lv = ball2.physical.velocity;
-    ball2.physical.velocity.set(lv.x * (1 - ball2.physical.friction),
-        lv.y * (1 - ball2.physical.friction),
-        lv.z * (1 - ball2.physical.friction));
-
-    // let force1 = new CANNON.Vec3(ball1.keys[0] * ball1.physical.mass * 12,
-    //     ball1.keys[1] * ball1.physical.mass * 12, 0);
-    // let force2 = new CANNON.Vec3(ball2.keys[0] * ball2.physical.mass * 12,
-    //     ball2.keys[1] * ball2.physical.mass * 12, 0);
-
-    let factor1 = ball1.keys[0] * ball1.physical.mass * 12;
-    let force1 = new CANNON.Vec3(factor1 * ball1.direction.x, factor1 * ball1.direction.y, 0);
-    ball1.physical.applyImpulse(force1, ball1.physical.position);
-
-    let factor2 = ball2.keys[0] * ball2.physical.mass * 12;
-    let force2 = new CANNON.Vec3(factor2 * ball2.direction.x, factor2 * ball2.direction.y, 0);
-    ball2.physical.applyImpulse(force2, ball2.physical.position);
-
-    // Handles wall collisions.
-    handleWallCollisions(ball1.physical);
-    handleWallCollisions(ball2.physical);
 }
