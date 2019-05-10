@@ -4,28 +4,25 @@ const Colors = {
     floor: 0xf5e1da,
     //ball1: 0xfdd043,
     //ball2: 0xe2598b
+    bomb: 0x000000
 }
+
+const TO_DEGREES = Math.PI / 180;
 
 let camera, scene, renderer, views, gameState,
     windowWidth, windowHeight,
-    arena, arenaColors, numArenaColors, ball1, ball2, world,
-    initialPosition, initialDirection, ball1Color, ball2Color,
+    arena, numArenaColors, ball1, ball2, world,
+    initialPos1, initialDir1, ball1Color, ball2Color,
     ball1ColorStr, ball2ColorStr,
-    ballRadius = 3
+    ballRadius = 3,
+    powers,
+    maxPowers = 3;
 
 init();
 animate();
 
 function init() {
     container = document.getElementById( 'container' );
-    
-    // Creates arena object.
-    arena = createArena(50, 75, 5, 5);
-
-    // Creates ball objects.
-    initialPosition = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
-        -arena.height + 2 * arena.wallSize, ballRadius);
-    initialDirection = new THREE.Vector3(1, 0, 0);
 
     // Creates worlds
     // createRenderWorld();
@@ -54,35 +51,41 @@ function animate() {
             // gameState = 'start';
             break;
         case 'start':
+            // Creates arena object.
+            arena = createArena(50, 75, 5, 5);
+
+            // Set initial positions and directions of ball objects.
+            initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
+                -arena.height + 2 * arena.wallSize, ballRadius);
+            initialDir1 = new THREE.Vector3(1, 0, 0);
+            initialPos2 = new THREE.Vector3(arena.width - 2 * arena.wallSize,
+                arena.height - 2 * arena.wallSize, ballRadius);
+            initialDir2 = new THREE.Vector3(-1, 0, 0);
+
+            // Create ball objects.
+            ball1 = createBall(ball1Color, ballRadius, initialPos1.clone(),
+                initialDir1.clone(), 1);
+            ball2 = createBall(ball2Color, ballRadius, initialPos2.clone(),
+                initialDir2.clone(), 2);
+
+            // Specifies different view windows.
+            views = createViews();
 
             // create color gradient
             numArenaColors = 100;
 
-            var myRainbow = new Rainbow();
+            const myRainbow = new Rainbow();
             myRainbow.setNumberRange(1, numArenaColors);
             myRainbow.setSpectrum(ball1ColorStr, ball2ColorStr);
-            arenaColors = []
-            var s = '';
+            const s = '';
             for (var i = 1; i <= numArenaColors; i++) {
-                arenaColors.push('0x' + myRainbow.colourAt(i));;
+                arena.colors.push('0x' + myRainbow.colourAt(i));;
             }
 
-            // create balls
-            ball1 = createBall(ball1Color, ballRadius, initialPosition.clone(),
-                initialDirection.clone(), 1);
-            ball2 = createBall(ball2Color, ballRadius,
-                initialPosition.clone().multiplyScalar(-1),
-                initialDirection.clone().multiplyScalar(-1), 2);
-
-            // Specifies different view windows
-            views = createViews();
-
+            // Creates worlds.
             createRenderWorld();
             createPhysicsWorld();
-            ball1.position.copy(initialPosition);
-            ball2.position.copy(initialPosition.clone().multiplyScalar(-1));
-            ball1.direction.copy(initialDirection);
-            ball2.direction.copy(initialDirection.clone().multiplyScalar(-1));
+
             gameState = 'play';
             countdown();
             break;
@@ -135,9 +138,9 @@ function createViews() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [ball1.position.x - 1.5 * ballRadius, ball1.position.y,
-                ball1.position.z + 1.5 * ballRadius],
-            rotation: [90 * Math.PI / 180, -90 * Math.PI / 180, 0],
+            eye: [initialPos1.x + 3 * ballRadius, initialPos1.y,
+                initialPos1.z + 5 * ballRadius],
+            rotation: [90 * TO_DEGREES, -90 * TO_DEGREES, 0],
             fov: 75
         },
         {
@@ -145,9 +148,9 @@ function createViews() {
             bottom: 0,
             width: 0.5,
             height: 1.0,
-            eye: [ball2.position.x + 1.5 * ballRadius, ball2.position.y,
-                ball2.position.z + 1.5 * ballRadius],
-            rotation: [90 * Math.PI / 180, 90 * Math.PI / 180, 0],
+            eye: [initialPos2.x + 3 * ballRadius, initialPos2.y,
+                initialPos2.z + 5 * ballRadius],
+            rotation: [90 * TO_DEGREES, 90 * TO_DEGREES, 0],
             fov: 75
         },
         {
@@ -237,7 +240,7 @@ function hideColor1Choose() {
 
     displayColor2Choose();
 
-    
+
 }
 
 function displayColor2Choose() {
@@ -265,15 +268,15 @@ function hideColor2Choose() {
 function displayResult() {
     $('#counter').hide();
 
-    // const n = arena.colors.length;
+    // const n = arena.tileColors.length;
     // ball1.score = 0;
     // ball2.score = 0;
 
     // for (let i = 0; i < n; i++) {
-    //     if (arena.colors[i] == ball1.num) {
+    //     if (arena.tileColors[i] == ball1.num) {
     //         ball1.score += 1;
     //     }
-    //     else if (arena.colors[i] == ball2.num) {
+    //     else if (arena.tileColors[i] == ball2.num) {
     //         ball2.score += 1;
     //     }
     // }
