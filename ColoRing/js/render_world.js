@@ -16,7 +16,28 @@ function createRenderWorld() {
         camera.rotation.fromArray( view.rotation );
         camera.position.fromArray( view.eye );
         view.camera = camera;
+
+        // console.log(camera);
+
+        var renderScene = new THREE.RenderPass( scene, camera );
+
+        let vec = new THREE.Vector2( window.innerWidth, window.innerHeight )
+        var bloomPass = new THREE.UnrealBloomPass(vec, 1.5, 0.4, 0.85 );
+        bloomPass.threshold = params.bloomThreshold;
+        bloomPass.strength = params.bloomStrength;
+        bloomPass.radius = params.bloomRadius;
+
+        
+        composer = new THREE.EffectComposer( renderer );
+        composer.setSize( window.innerWidth, window.innerHeight );
+        composer.addPass( renderScene );
+        composer.addPass( bloomPass );
+
+        composers.push(composer);
+
     }
+
+    //console.log(composers);
 
     ball1.camera = views[0].camera;
     ball2.camera = views[1].camera;

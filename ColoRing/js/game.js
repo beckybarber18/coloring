@@ -1,35 +1,44 @@
 const Colors = {
-    background: 0xfff8f3,
+    //background: 0xfff8f3,
+    background: 0x000000,
     //arena: 0xf0b7a4,
-    floor: 0xf5e1da,
+    //floor: 0xf5e1da,
+    floor: 0x000000,
     //ball1: 0xfdd043,
     //ball2: 0xe2598b
 }
 
-let camera, scene, renderer, views, gameState,
+let camera, scene, renderer, composers = [], views, gameState,
     windowWidth, windowHeight,
     arena, arenaColors, numArenaColors, ball1, ball2, world,
     initialPosition, initialDirection, ball1Color, ball2Color,
     ball1ColorStr, ball2ColorStr,
-    ballRadius = 3
+    ballRadius = 3, then = 0
+
+var params = {
+    exposure: 1,
+    bloomStrength: .8,
+    bloomThreshold: 0,
+    bloomRadius: 0
+};
+
+var clock = new THREE.Clock();
 
 init();
 animate();
 
 function init() {
+
     container = document.getElementById( 'container' );
+
     
     // Creates arena object.
-    arena = createArena(50, 75, 5, 5);
+    arena = createArena(50, 75, 12, 5);
 
     // Creates ball objects.
     initialPosition = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
         -arena.height + 2 * arena.wallSize, ballRadius);
     initialDirection = new THREE.Vector3(1, 0, 0);
-
-    // Creates worlds
-    // createRenderWorld();
-    // createPhysicsWorld();
 
     // Create the renderer.
     renderer = new THREE.WebGLRenderer();
@@ -41,8 +50,17 @@ function init() {
     document.addEventListener('keyup', onKeyUp);
 
     // Set the initial game state.
-    gameState = 'beforeStart';
-    // gameState = 'start';
+    // gameState = 'beforeStart';
+
+    // just so we dont have to pick a color every time
+    gameState = 'start';
+    ball1ColorStr = "fdd043";
+    let colorString = '0x' + ball1ColorStr.substring(1, ball1ColorStr.length);
+    ball1Color = parseInt(colorString);
+    ball2ColorStr = "e2598b";
+    colorString = '0x' + ball2ColorStr.substring(1, ball2ColorStr.length);
+    ball2Color = parseInt(colorString);
+
 
 }
 
@@ -76,6 +94,7 @@ function animate() {
 
             // Specifies different view windows
             views = createViews();
+            // var renderScene = new THREE.RenderPass( scene, camera );
 
             createRenderWorld();
             createPhysicsWorld();
@@ -83,6 +102,7 @@ function animate() {
             ball2.position.copy(initialPosition.clone().multiplyScalar(-1));
             ball1.direction.copy(initialDirection);
             ball2.direction.copy(initialDirection.clone().multiplyScalar(-1));
+
             gameState = 'play';
             countdown();
             break;
@@ -99,6 +119,18 @@ function animate() {
     }
 
     requestAnimationFrame(animate);
+    for ( var ii = 0; ii < composers.length; ++ ii ) {
+        var view = views[ ii ];
+        var left = Math.floor( window.innerWidth * view.left );
+        var bottom = Math.floor( window.innerHeight * view.bottom );
+        var width = Math.floor( window.innerWidth * view.width );
+        var height = Math.floor( window.innerHeight * view.height );
+        renderer.setViewport( left, bottom, width, height );
+        renderer.setScissor( left, bottom, width, height );
+        
+        composers[ii].render();
+    }
+
 }
 
 function render() {
@@ -106,10 +138,10 @@ function render() {
     for ( var ii = 0; ii < views.length; ++ ii ) {
         var view = views[ ii ];
         var camera = view.camera;
-        var left = Math.floor( windowWidth * view.left );
-        var bottom = Math.floor( windowHeight * view.bottom );
-        var width = Math.floor( windowWidth * view.width );
-        var height = Math.floor( windowHeight * view.height );
+        var left = Math.floor( window.innerWidth * view.left );
+        var bottom = Math.floor( window.innerHeight * view.bottom );
+        var width = Math.floor( window.innerWidth * view.width );
+        var height = Math.floor( window.innerHeight * view.height );
         renderer.setViewport( left, bottom, width, height );
         renderer.setScissor( left, bottom, width, height );
         renderer.setScissorTest( true );
@@ -265,20 +297,6 @@ function hideColor2Choose() {
 function displayResult() {
     $('#counter').hide();
 
-    // const n = arena.colors.length;
-    // ball1.score = 0;
-    // ball2.score = 0;
-
-    // for (let i = 0; i < n; i++) {
-    //     if (arena.colors[i] == ball1.num) {
-    //         ball1.score += 1;
-    //     }
-    //     else if (arena.colors[i] == ball2.num) {
-    //         ball2.score += 1;
-    //     }
-    // }
-
-    // console.log(s1, s2);
     if (ball1.score > ball2.score) {
         $('#instructions1').show();
     }
