@@ -27,8 +27,12 @@ function createBall(color, radius, position, direction, num) {
     return ball;
 }
 
-function createPower(type, mesh) {
-    let power = new Object();
-    power.type = type;
-    power.mesh = mesh;
+function createBomb(type, radius, position) {
+    let bomb = new Object();
+    bomb.type = type;
+    bomb.radius = radius;
+    bomb.position = position;
+    bomb.direction = new THREE.Vector3(0, 0, 0.1);
+    bomb.mesh = undefined;
+    return bomb;
 }

@@ -79,7 +79,7 @@ function updateRenderWorld() {
 
     // Creates power ups/traps at random.
     if (powers.length < maxPowers) {
-        createBomb();
+        createPower();
     }
 
     // Updates power ups/traps.
@@ -181,22 +181,33 @@ function createArenaFloorMesh() {
      return floor;
 }
 
-function createBomb() {
-    // Determines if bomb will be made.
-    const random = Math.random();
-    if (random < 0.995) return;
+function createPower() {
+    // Determines if power will be made.
+    const create = Math.random();
+    if (create < 0.5) return;
 
-    // Randomly determine position of bomb.
+    // Randomly determine position of power.
     const x = (Math.random() * 2 - 1) * (arena.width - arena.wallSize);
     const y = (Math.random() * 2 - 1) * (arena.height - arena.wallSize);
     const position = new THREE.Vector3(x, y, ballRadius);
 
-    const geo = new THREE.SphereGeometry(ballRadius / 2, 32, 32);
+    // Randomly determines type of power.
+    const type = Math.random();
+
+    if (type < 0.5) {
+        const bomb = createBomb('bomb', ballRadius / 2, position);
+        bomb.mesh = createBombMesh(bomb);
+        scene.add(bomb.mesh);
+        powers.push(bomb);
+    }
+}
+
+function createBombMesh(bomb) {
+    const geo = new THREE.SphereGeometry(bomb.radius, 32, 32);
     const mat = new THREE.MeshPhongMaterial({color: Colors.bomb});
     const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(position);
-    scene.add(mesh);
-    powers.push(createPower('bomb', mesh));
+    mesh.position.copy(bomb.position);
+    return mesh;
 }
 
 function updateArenaColor() {
@@ -230,7 +241,7 @@ function updatePositions(ball) {
 function updateRotations(ball) {
     const deg = 2;
     const angle = deg * Math.PI / 180;
-    const rotation =  new THREE.Euler(0, 0, 0, 'XYZ');
+    const rotation = new THREE.Euler(0, 0, 0, 'XYZ');
 
     if (ball.keys[1] == 1) {
         rotation.set(0, 0, angle, 'XYZ');
@@ -262,11 +273,51 @@ function updateTile(ball) {
 
 function updatePowers() {
     for (let i = 0; i < powers.length; i++) {
+        let activated;
 
+        // Checks type of power and calls proper update function.
+        if (powers[i].type == 'bomb') {
+            activated = updateBomb(powers[i]);
+        }
+
+        // Removes current power from powers array.
+        if (activated) {
+            powers.splice(i, 1);
+        }
     }
 }
 
-function updateBomb() {
+function updateBomb(bomb) {
+    // Activates bomb if ball runs over it.
+    if (intersectBomb(bomb, ball1)) {
+        activateBomb(bomb, ball1);
+        return true;
+    }
+    else if (intersectBomb(bomb, ball2)) {
+        activateBomb(bomb, ball2);
+        returne true;
+    }
+
+    // Changes direction of motion of bomb.
+    if ((bomb.position.z < (1 / 3) * ballRadius) ||
+        (bomb.position.z > (5 / 3) * ballRadius)) {
+        bomb.direction.multiplyScalar(-1);
+    }
+
+    // Changes position of bomb.
+    bomb.position.add(bomb.direction);
+    bomb.mesh.position.add(bomb.direction);
+
+    return false;
+}
+
+function intersectBomb(bomb, ball) {
+    const bombPos = new THREE.Vector2(bomb.position.x, bomb.position.y);
+    const ballPos = new THREE.Vector2(ball.position.x, ball.position.y);
+    return bombPos.distanceTo(ballPos) < bomb.mesh.radius
+}
+
+function activateBomb(bomb, ball1) {
 
 }
 
