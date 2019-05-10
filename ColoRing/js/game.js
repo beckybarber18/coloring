@@ -9,6 +9,7 @@ const Colors = {
 let camera, scene, renderer, views, gameState,
     windowWidth, windowHeight,
     arena, ball1, ball2, world,
+    initialPosition, initialDirection,
     ballRadius = 3
 
 init();
@@ -22,17 +23,16 @@ function init() {
     // Creates arena object.
     arena = createArena(50, 75, 5, 5);
 
-    // Creates ball1 object.
-    let ball1pos = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
+    // Creates ball objects.
+    initialPosition = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
         -arena.height + 2 * arena.wallSize, ballRadius);
-    let ball1dir = new THREE.Vector3(1, 0, 0);
-    ball1 = createBall(Colors.ball1, ballRadius, ball1pos, ball1dir, 1);
+    initialDirection = new THREE.Vector3(1, 0, 0);
 
-    // Creates ball2 object.
-    let ball2pos = new THREE.Vector3(arena.width - 2 * arena.wallSize,
-        arena.height - 2 * arena.wallSize, ballRadius);
-    let ball2dir = new THREE.Vector3(-1, 0, 0);
-    ball2 = createBall(Colors.ball2, ballRadius, ball2pos, ball2dir, 2);
+    ball1 = createBall(Colors.ball1, ballRadius, initialPosition.clone(),
+        initialDirection.clone(), 1);
+    ball2 = createBall(Colors.ball2, ballRadius,
+        initialPosition.clone().multiplyScalar(-1),
+        initialDirection.clone().multiplyScalar(-1), 2);
 
     // Specifies different view windows
     views = createViews();
@@ -59,8 +59,6 @@ function animate() {
 
     switch(gameState) {
         case 'start':
-            createRenderWorld();
-            createPhysicsWorld();
             gameState = 'play';
             countdown();
             break;

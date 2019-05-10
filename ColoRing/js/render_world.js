@@ -50,6 +50,23 @@ function updateRenderWorld() {
     updateTile(ball2);
 }
 
+function resetRenderWorld() {
+    ball1.position = initialPosition.clone();
+    ball1.physical.position = initialPosition.clone();
+    ball1.direction = initialDirection.clone();
+
+    ball2.position = initialPosition.clone().multiplyScalar(-1);
+    ball2.position.z = ball2.radius;
+    ball2.physical.position = initialPosition.clone();
+    ball2.physical.position.z = ball2.radius;
+    ball2.direction = initialDirection.clone().multiplyScalar(-1);
+
+    for (let i = 0; i < arena.floor.length; i++) {
+        arena.floor[index].material.color.set(Colors.floor);
+        arena.colors[index] = 0;
+    }
+}
+
 function createLights() {
     const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9);
 

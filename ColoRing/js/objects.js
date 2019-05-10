@@ -15,6 +15,7 @@ function createBall(color, radius, position, direction, num) {
     ball.color = color;
     ball.radius = radius;
     ball.position = position;
+    ball.position.z = radius;
     ball.direction = direction;
     ball.num = num;
     ball.score = 0;
