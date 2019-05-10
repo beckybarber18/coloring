@@ -17,8 +17,6 @@ function createRenderWorld() {
         camera.position.fromArray( view.eye );
         view.camera = camera;
 
-        // console.log(camera);
-
         var renderScene = new THREE.RenderPass( scene, camera );
 
         let vec = new THREE.Vector2( window.innerWidth, window.innerHeight )
@@ -27,7 +25,7 @@ function createRenderWorld() {
         bloomPass.strength = params.bloomStrength;
         bloomPass.radius = params.bloomRadius;
 
-        
+
         composer = new THREE.EffectComposer( renderer );
         composer.setSize( window.innerWidth, window.innerHeight );
         composer.addPass( renderScene );
@@ -36,8 +34,6 @@ function createRenderWorld() {
         composers.push(composer);
 
     }
-
-    //console.log(composers);
 
     ball1.camera = views[0].camera;
     ball2.camera = views[1].camera;
@@ -233,8 +229,8 @@ function updatePositions(ball) {
 
     // Updates camera position.
     const pos = ball.position.clone()
-    pos.sub(ball.direction.clone().normalize().multiplyScalar(3 * ballRadius));
-    pos.z += 5 * ballRadius;
+    pos.sub(ball.direction.clone().normalize().multiplyScalar(cameraX * ballRadius));
+    pos.z += cameraZ * ballRadius;
     ball.camera.position.copy(pos);
 }
 
@@ -257,18 +253,16 @@ function updateRotations(ball) {
 }
 
 function updateTile(ball) {
-    const x = Math.round((ball.position.x + arena.width) / arena.tileSize);
-    const y = Math.round((ball.position.y + arena.height) / arena.tileSize);
-    const index = y + ((arena.height / arena.tileSize) * 2 + 1) * x;
+    const i = index(ball.position.x, ball.position.y);
 
     // deal with scores
-    let oldColor = arena.tileColors[index];
+    let oldColor = arena.tileColors[i];
     if (oldColor == 1) ball1.score -= 1;
     else if (oldColor == 2) ball2.score -= 1;
     ball.score += 1;
 
-    arena.floor[index].material.color.set(ball.color);
-    arena.tileColors[index] = ball.num;
+    arena.floor[i].material.color.set(ball.color);
+    arena.tileColors[i] = ball.num;
 }
 
 function updatePowers() {
@@ -288,7 +282,6 @@ function updatePowers() {
 }
 
 function updateBomb(bomb) {
-
     // Activates bomb if ball runs over it.
     if (intersectBomb(bomb, ball1)) {
         activateBomb(bomb, ball1);
@@ -315,13 +308,32 @@ function updateBomb(bomb) {
 function intersectBomb(bomb, ball) {
     const bombPos = new THREE.Vector2(bomb.position.x, bomb.position.y);
     const ballPos = new THREE.Vector2(ball.position.x, ball.position.y);
-    return bombPos.distanceTo(ballPos) < bomb.mesh.radius
+    return bombPos.distanceTo(ballPos) < bomb.radius + ball.radius;
 }
 
-function activateBomb(bomb, ball1) {
+function activateBomb(bomb, ball) {
+    scene.remove(bomb.mesh);
 
+    const i = index(bomb.position.x, bomb.position.y);
+    const width = (arena.height / arena.tileSize) * 2 + 1;
+
+    arena.floor[i - width - 1].material.color.set(ball.color);
+    arena.floor[i - width].material.color.set(ball.color);
+    arena.floor[i - width + 1].material.color.set(ball.color);
+    arena.floor[i - 1].material.color.set(ball.color);
+    arena.floor[i].material.color.set(ball.color);
+    arena.floor[i + 1].material.color.set(ball.color);
+    arena.floor[i + width - 1].material.color.set(ball.color);
+    arena.floor[i + width].material.color.set(ball.color);
+    arena.floor[i + width + 1].material.color.set(ball.color);
 }
 
 function updateFreeze() {
 
+}
+
+function index(x, y) {
+    const floorx = Math.round((x + arena.width) / arena.tileSize);
+    const floory = Math.round((y + arena.height) / arena.tileSize);
+    return floory + ((arena.height / arena.tileSize) * 2 + 1) * floorx;
 }
