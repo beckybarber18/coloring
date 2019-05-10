@@ -31,9 +31,17 @@ function createBall(color, radius, position, direction, num) {
 function createPower(type, position) {
     let power = new Object();
     power.type = type;
-    power.size = ballRadius / 2;
+    power.size = ballRadius / 3;
     power.position = position;
     power.direction = new THREE.Vector3(0, 0, 0.1);
     power.mesh = undefined;
     return power;
+}
+
+function createStar(color, radius, position) {
+    let star = new Object();
+    star.color = color;
+    star.radius = radius;
+    star.position = position;
+    return star;
 }

@@ -186,10 +186,10 @@ function createViews() {
             fov: 75
         },
         {
-            left: 0.425,
-            bottom: 0.80,
-            width: 0.15,
-            height: 0.2,
+            left: 0.4,
+            bottom: 0.75,
+            width: 0.2,
+            height: 0.25,
             eye: [0, 0, 100],
             rotation: [0, 0, 0],
             fov: 60

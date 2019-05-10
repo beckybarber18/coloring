@@ -4,7 +4,7 @@
 		<title>ColoRing</title>
 		<style>
 			body {
-				margin: 0; 
+				margin: 0;
 				padding: 0;
 				font-family: 'Avenir';
                 font-size: 20px;
@@ -38,7 +38,7 @@
 			#counter {
                 position: absolute;
                 color: white;
-                top: 160px;
+                top: 200px;
             }
 		</style>
 	</head>
@@ -68,7 +68,7 @@
 			<br><br>
 			Press the space bar to play again.
 		</div>
-		
+
 		<div id='instructions2'>
 			Player 2 wins!
 			<br><br>
@@ -80,10 +80,10 @@
 				<br><br>
 				Press the space bar to play again.
 			</div>
-		
+
 		<div id='counter'>
 		</div>
-		
+
 		<script src="js/three.js"></script>
 		<!-- <script src="js/shaders/CopyShader.js"></script>
 		<script src="js/shaders/ConvolutionShader.js"></script>
@@ -124,24 +124,24 @@
                 this.css("position", "absolute");
                 this.css("top", Math.max(0, (wh - h)/2) + "px");
                 return this;
-            }            
-            
+            }
+
             jQuery.fn.centerh = function () {
                 ww = window.innerWidth;
                 w = this.outerWidth();
                 this.css("position", "absolute");
                 this.css("left", Math.max(0, (ww - w)/2) + "px");
                 return this;
-            }            
-            
+            }
+
             jQuery.fn.center = function () {
                 this.centerv();
                 this.centerh();
                 return this;
-			} 
-			
+			}
+
 			$(document).ready(function() {
-	
+
 				// Prepare the instructions.
 				$('#chooseColor1').center();
 				//$('#chooseColor1').show();
@@ -156,7 +156,7 @@
 				$('#instructions3').hide();
 				$('#counter').centerh();
 			})
-	
+
 		</script>
 		<script src="js/game.js"></script>
 	</body>

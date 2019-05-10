@@ -62,16 +62,16 @@ function createRenderWorld() {
 
         let starZ = Math.random() * largeNum + 12;
         let starPos = new THREE.Vector3(starX,starY,starZ);
-        let star = new createStar('white', .1, starPos);
+        let star = createStar('white', 0.1, starPos);
         scene.add(createStarMesh(star));
     }
-    
+
     // Initialiazes powers array.
     powers = [];
 }
 
 function generateRandomCoord(largeNum) {
-    
+
     let sRand = Math.random();
     let sign = 1;
     if (sRand < 0.5) sign = -1;
@@ -195,8 +195,6 @@ function createArenaMesh() {
     line.material.transparent = true;
     line.material.linewidth = 1;
 
-    //console.log(line);
-
     return line;
 }
 
@@ -240,7 +238,6 @@ function createPowers() {
     }
     else {
         const freeze = createPower('freeze', position);
-        console.log(freeze.size);
         freeze.mesh = createFreezeMesh(freeze);
         scene.add(freeze.mesh);
         powers.push(freeze);
@@ -382,7 +379,22 @@ function activateBomb(bomb, ball) {
 function activateFreeze(bomb, ball) {
     scene.remove(bomb.mesh);
 
+    // Stops ball from moving.
     ball.canMove = false;
+
+    // Waits until time is up before letting ball move again.
+    let seconds = 5;
+    tick();
+
+    function tick() {
+        seconds--;
+        if( seconds > 0 ) {
+            setTimeout(tick, 1000);
+        } else {
+            ball.canMove = true;
+        }
+    }
+
 }
 
 function index(x, y) {
