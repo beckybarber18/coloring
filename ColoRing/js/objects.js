@@ -27,6 +27,14 @@ function createBall(color, radius, position, direction, num) {
     return ball;
 }
 
+function createStar(color, radius, position) {
+    let star = new Object();
+    star.color = color;
+    star.radius = radius;
+    star.position = position;
+    return star;
+}
+
 function createBomb(type, radius, position) {
     let bomb = new Object();
     bomb.type = type;

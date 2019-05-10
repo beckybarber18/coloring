@@ -51,9 +51,35 @@ function createRenderWorld() {
 
     // Creates arena floor.
     arena.floor = createArenaFloorMesh();
+    scene.add(arena.floor);
 
+    const numStars = 400;
+    const largeNum = 100;
+
+    for (let i = 0; i < numStars; i++) {
+
+        let starX = generateRandomCoord(largeNum);
+        let starY = generateRandomCoord(largeNum);
+        if (Math.abs(starX) < arena.width/2 && Math.abs(starY) < arena.height/2) continue;
+        
+        let starZ = Math.random() * largeNum + 12;
+        let starPos = new THREE.Vector3(starX,starY,starZ);
+        let star = new createStar('white', .1, starPos);
+        scene.add(createStarMesh(star));
+    }
+    
     // Initialiazes powers array.
     powers = [];
+}
+
+function generateRandomCoord(largeNum) {
+    
+    let sRand = Math.random();
+    let sign = 1;
+    if (sRand < 0.5) sign = -1;
+
+    let mag = Math.random() * largeNum;
+    return mag * sign;
 }
 
 function updateRenderWorld() {
@@ -124,6 +150,14 @@ function createBallMesh(ball) {
     const mat = new THREE.MeshPhongMaterial({color: ball.color});
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.copy(ball.position);
+    return mesh;
+}
+
+function createStarMesh(star) {
+    const geo = new THREE.SphereGeometry(star.radius, 32, 32);
+    const mat = new THREE.MeshPhongMaterial({color: star.color, emissive: star.color, specular: star.color});
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(star.position);
     return mesh;
 }
 
