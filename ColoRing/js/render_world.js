@@ -101,7 +101,7 @@ function resetRenderWorld() {
 }
 
 function createLights() {
-    const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9);
+    const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, 1);
 
     const shadowLight = new THREE.DirectionalLight(0xffffff, .9);
     shadowLight.position.set(150, 350, 350);
@@ -155,7 +155,14 @@ function createArenaMesh() {
         dummy.mergeMesh(mesh2);
     }
 
-    return new THREE.Mesh(dummy, mat);
+    var wireframe = new THREE.WireframeGeometry( dummy );
+
+    var line = new THREE.LineSegments( wireframe );
+    line.material.depthTest = false;
+    line.material.opacity = 1;
+    line.material.transparent = true;
+
+    return line;
 }
 
 function createArenaFloorMesh() {
