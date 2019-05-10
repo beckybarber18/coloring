@@ -61,7 +61,7 @@ function createRenderWorld() {
         let starX = generateRandomCoord(largeNum);
         let starY = generateRandomCoord(largeNum);
         if (Math.abs(starX) < arena.width/2 && Math.abs(starY) < arena.height/2) continue;
-        
+
         let starZ = Math.random() * largeNum + 12;
         let starPos = new THREE.Vector3(starX,starY,starZ);
         let star = new createStar('white', .1, starPos);
@@ -195,6 +195,9 @@ function createArenaMesh() {
     line.material.depthTest = false;
     line.material.opacity = 1;
     line.material.transparent = true;
+    line.material.linewidth = 1;
+
+    //console.log(line);
 
     return line;
 }
