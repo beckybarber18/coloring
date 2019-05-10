@@ -25,14 +25,14 @@ function init() {
     // Creates ball1 object.
     let ball1pos = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
         -arena.height + 2 * arena.wallSize, ballRadius);
-    let ball1dir = new THREE.Vector3(1,0,0);
-    ball1 = createBall(Colors.ball1, ballRadius, ball1pos, ball1dir);
+    let ball1dir = new THREE.Vector3(1, 0, 0);
+    ball1 = createBall(Colors.ball1, ballRadius, ball1pos, ball1dir, 1);
 
     // Creates ball2 object.
     let ball2pos = new THREE.Vector3(arena.width - 2 * arena.wallSize,
         arena.height - 2 * arena.wallSize, ballRadius);
-    let ball2dir = new THREE.Vector3(-1,0,0);
-    ball2 = createBall(Colors.ball2, ballRadius, ball2pos, ball2dir);
+    let ball2dir = new THREE.Vector3(-1, 0, 0);
+    ball2 = createBall(Colors.ball2, ballRadius, ball2pos, ball2dir, 2);
 
     // Specifies different view windows
     views = createViews();
@@ -58,19 +58,17 @@ function init() {
 function animate() {
 
     switch(gameState) {
-        case 'play':
-            updatePhysicsWorld();
-            updateRenderWorld();
-            render();
-            break;
-
         case 'start':
-            ball1.score = 0;
-            ball2.score = 0;
             createRenderWorld();
             createPhysicsWorld();
             gameState = 'play';
             countdown();
+            break;
+
+        case 'play':
+            updatePhysicsWorld();
+            updateRenderWorld();
+            render();
             break;
 
         case 'end':
@@ -204,14 +202,16 @@ function onKeyUp(event) {
 function displayResult() {
     $('#counter').hide();
 
-    // calculate scores
-    for (let i = 0; i < arena.floor.length; i++) {
-        if (arena.floor[i].material.color === ball1.color) {
-            console.log(arena.floor[i].material.color);
-            ball1.score++;
+    const n = arena.colors.length;
+    ball1.score = 0;
+    ball2.score = 0;
+
+    for (let i = 0; i < n; i++) {
+        if (arena.colors[i] == ball1.num) {
+            ball1.score += 1;
         }
-        else if (arena.floor[i].material.color === ball2.color) {
-            ball2.score++;
+        else if (arena.colors[i] == ball2.num) {
+            ball2.score += 1;
         }
     }
 
@@ -246,7 +246,7 @@ function hideResult() {
 
 function countdown() {
     $('#counter').show();
-    var seconds = 60;
+    var seconds = 10;
     function tick() {
         var counter = document.getElementById("counter");
         seconds--;

@@ -79,7 +79,8 @@ function createBallMesh(ball) {
 
 function createArenaMesh() {
     const dummy = new THREE.Geometry();
-    const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize, arena.wallSize);
+    const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize,
+        arena.wallSize);
     const mat = new THREE.MeshPhongMaterial({color: Colors.arena});
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
@@ -107,14 +108,17 @@ function createArenaMesh() {
 
 function createArenaFloorMesh() {
     let floor = [];
-    const geo = new THREE.BoxGeometry(arena.tileSize, arena.tileSize, arena.tileSize / 2);
+    const geo = new THREE.BoxGeometry(arena.tileSize, arena.tileSize,
+        arena.tileSize / 2);
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.tileSize) {
         for (let y = -arena.height; y < arena.height + 1; y += arena.tileSize) {
-            const mat = new THREE.MeshPhongMaterial({color: Colors.floor, flatShading: true});
+            const mat = new THREE.MeshPhongMaterial({color: Colors.floor,
+                flatShading: true});
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.set(x, y, -arena.tileSize / 4);
             floor.push(mesh);
+            arena.colors.push(0);
             scene.add(mesh);
         }
      }
@@ -157,4 +161,5 @@ function updateTile(ball) {
     const y = Math.round((ball.position.y + arena.height) / arena.tileSize);
     const index = y + ((arena.height / arena.tileSize) * 2 + 1) * x;
     arena.floor[index].material.color.set(ball.color);
+    arena.colors[index] = ball.num;
 }
