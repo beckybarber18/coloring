@@ -15,7 +15,7 @@
 				height: 100%
 			}
 
-			#instructions1 {
+			#instructions1, #instructions2, #instructions3 {
                 background-color: white;
                 color: black;
                 text-align: center;
@@ -25,17 +25,7 @@
                 border: 2px solid white;
             }
 
-            #instructions2 {
-                background-color: white;
-                color: black;
-                text-align: center;
-                padding: 32px;
-                margin: 0px;
-                display: inline;
-                border: 2px solid white;
-            }
-
-			#instructions3 {
+            #chooseColor1, #chooseColor2 {
                 background-color: white;
                 color: black;
                 text-align: center;
@@ -48,13 +38,30 @@
 			#counter {
                 position: absolute;
                 color: black;
-                top: 10px;
-                left: 10px;
+                top: 160px;
             }
 		</style>
 	</head>
 	<body>
 		<div id="container"></div>
+
+		<div id='chooseColor1'>
+			Welcome to ColoRing!
+			<br><br>
+			<form action="javascript:hideColor1Choose();">
+			  Player 1, choose your color: <input type="color" id="p1color" value="#ff0000"><br><br>
+			  <input type="submit">
+			</form>
+		</div>
+
+		<div id='chooseColor2'>
+			Welcome to ColoRing!
+			<br><br>
+			<form action="javascript:hideColor2Choose();">
+			  Player 2, choose your color: <input type="color" id="p2color" value="#ff0000"><br><br>
+			  <input type="submit">
+			</form>
+		</div>
 
 		<div id='instructions1'>
 			Player 1 wins!
@@ -78,6 +85,7 @@
 		</div>
 		
 		<script src="js/three.js"></script>
+		<script src="js/rainbowvis.js"></script>
 		<script src="js/jquery.js"></script>
 		<script src="js/cannon.js"></script>
 		<script src="js/cannon.min.js"></script>
@@ -86,6 +94,14 @@
 		<script src="js/render_world.js"></script>
 		<script src="js/physics_world.js"></script>
 		<script>
+
+			// $.ajax({
+			// type: "POST",
+			// url: "../generate_color_gradient.py",
+			// data: { param: 'fdd043', param: 'e2598b', param: 100}
+			// }).done(function(o) {
+			//     console.log(data);
+			// });
 
 			jQuery.fn.centerv = function () {
                 wh = window.innerHeight;
@@ -112,12 +128,17 @@
 			$(document).ready(function() {
 	
 				// Prepare the instructions.
+				$('#chooseColor1').center();
+				$('#chooseColor1').show();
+				$('#chooseColor2').center();
+				$('#chooseColor2').hide();
 				$('#instructions1').center();
 				$('#instructions1').hide();
 				$('#instructions2').center();
 				$('#instructions2').hide();
 				$('#instructions3').center();
 				$('#instructions3').hide();
+				$('#counter').centerh();
 			})
 	
 		</script>
