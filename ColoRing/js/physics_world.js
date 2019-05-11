@@ -11,8 +11,6 @@ function createPhysicsWorld() {
 
     ball2.physical = createBallPhysical(ball2);
     world.addBody(ball2.physical);
-
-    // createWallPhysical();
 }
 
 function updatePhysicsWorld() {
@@ -49,21 +47,6 @@ function createBallPhysical(ball) {
     physical.position.copy(ball.position);
 
     return physical;
-}
-
-function createWallPhysical() {
-    const plane = new CANNON.Plane();
-    const mass = 0;
-
-    const position = new CANNON.Vec3(0, arena.height - arena.wallSize, 0);
-    const quaternion = new CANNON.Quaternion()
-    quaternion.setFromEuler(90 * TO_DEGREES, 0, 0, 'XYZ');
-
-    const physical = new CANNON.Body({ mass: mass});
-    physical.addShape(plane, position, quaternion)
-    physical.friction = 0;
-
-    world.addBody(physical);
 }
 
 function updateImpulse(ball) {
