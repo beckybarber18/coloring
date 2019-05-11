@@ -50,55 +50,36 @@ function createBallPhysical(ball) {
 }
 
 function updateImpulse(ball) {
-    const factor = ball.keys[0] * ball.physical.mass * 12;
-    const force = new CANNON.Vec3(factor * ball.direction.x,
-        factor * ball.direction.y, 0);
+    const factor = (ball.keys[0] - ball.keys[1]) * ball.physical.mass * 12;
+    const force = new CANNON.Vec3(factor * ball.direction.x, factor * ball.direction.y, 0);
     ball.physical.applyImpulse(force, ball.physical.position);
 }
 
 function handleWallCollisions(ball) {
     // Positive x-axis wall.
     if (ball.position.x < -arena.width + arena.wallSize) {
-        // Updates position.
         ball.position.x = -arena.width + arena.wallSize;
-
-        // Calculates velocity.
-        const normal = new CANNON.Vec3(1, 0, 0);
-        const dot = normal.dot(ball.velocity.clone());
-        const c1 = normal.clone().scale(2 * dot);
-        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
+        ball.velocity = calculateVelocity(new CANNON.Vec3(1, 0, 0), ball);
     }
     // Negative x-axis wall.
     else if (ball.position.x > arena.width - arena.wallSize) {
-        // Updates position.
         ball.position.x = arena.width - arena.wallSize;
-
-        // Calculates velocity.
-        const normal = new CANNON.Vec3(-1, 0, 0);
-        const dot = normal.dot(ball.velocity.clone());
-        const c1 = normal.clone().scale(2 * dot);
-        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
+        ball.velocity = calculateVelocity(new CANNON.Vec3(-1, 0, 0), ball);
     }
     // Positive y-axis wall.
     else if (ball.position.y < -arena.height + arena.wallSize) {
-        // Updates position.
         ball.position.y = -arena.height + arena.wallSize;
-
-        // Calculates velocity.
-        const normal = new CANNON.Vec3(0, 1, 0);
-        const dot = normal.dot(ball.velocity.clone());
-        const c1 = normal.clone().scale(2 * dot);
-        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
+        ball.velocity = calculateVelocity(new CANNON.Vec3(0, 1, 0), ball);
     }
     // Negative y-axis wall.
     else if (ball.position.y > arena.height - arena.wallSize) {
-        // Updates position.
         ball.position.y = arena.height - arena.wallSize;
-
-        // Calculates velocity.
-        const normal = new CANNON.Vec3(0, -1, 0);
-        const dot = normal.dot(ball.velocity.clone());
-        const c1 = normal.clone().scale(2 * dot);
-        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
+        ball.velocity = calculateVelocity(new CANNON.Vec3(0, -1, 0), ball);
     }
+}
+
+function calculateVelocity(normal, ball) {
+    const dot = normal.dot(ball.velocity.clone());
+    const c = normal.clone().scale(2 * dot);
+    return ball.velocity.vsub(c).scale(0.3);
 }

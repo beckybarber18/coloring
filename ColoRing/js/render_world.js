@@ -289,17 +289,15 @@ function createFreezeMesh(freeze) {
 }
 
 function updateWallColor() {
-    let colorIndex;
+    let index;
     if (ball1.score + ball2.score == 0) {
-        colorIndex = parseInt(arena.colors[Math.floor(numArenaColors / 2)]);
+        index = 50;
     }
     else {
-        const perc = ball2.score / (ball1.score + ball2.score);
-        colorIndex = Math.round(perc * numArenaColors);
+        index = Math.round(ball2.score * 100 / (ball1.score + ball2.score));
     }
-
-    const currArenaColor = parseInt(arena.colors[colorIndex]);
-    arena.walls.material.color.set(currArenaColor);
+    const color = parseInt(arena.colors[index]);
+    arena.walls.material.color.set(color);
 }
 
 function updatePositions(ball) {
@@ -334,13 +332,13 @@ function updateRotations(ball) {
     const angle = deg * TO_RADIANS;
     const rotation =  new THREE.Euler(0, 0, 0);
 
-    if (ball.keys[1] == 1) {
+    if (ball.keys[2] == 1) {
         rotation.z += angle;
         ball.mesh.rotateOnWorldAxis(Z_AXIS, angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, angle);
     }
 
-    if (ball.keys[2] == 1) {
+    if (ball.keys[3] == 1) {
         rotation.z -= angle;
         ball.mesh.rotateOnWorldAxis(Z_AXIS, -angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, -angle);

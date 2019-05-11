@@ -4,8 +4,8 @@ const Colors = {
     //arena: 0xf0b7a4,
     //floor: 0xf5e1da,
     floor: 0x000000,
-    //ball1: 0xfdd043,
-    //ball2: 0xe2598b
+    ball1: 0xfdd043,
+    ball2: 0xe2598b,
     bomb: 0x15cda8,
     // bomb: 0x00bd56,
     freeze: 0x0075f6
@@ -60,13 +60,6 @@ function init() {
 
     // just so we dont have to pick a color every time
     gameState = 'start';
-    ball1ColorStr = "fdd043";
-    ball1Color = 0xfdd043;
-
-    ball2ColorStr = "e2598b";
-    ball2Color =  0xe2598b;
-
-
 }
 
 function animate() {
@@ -89,23 +82,19 @@ function animate() {
             initialDir2 = new THREE.Vector3(-1, 0, 0);
 
             // Create ball objects.
-            ball1 = createBall(ball1Color, ballRadius, initialPos1.clone(),
+            ball1 = createBall(Colors.ball1, ballRadius, initialPos1.clone(),
                 initialDir1.clone(), 1);
-            ball2 = createBall(ball2Color, ballRadius, initialPos2.clone(),
+            ball2 = createBall(Colors.ball2, ballRadius, initialPos2.clone(),
                 initialDir2.clone(), 2);
 
             // Specifies different view windows.
             views = createViews();
 
-            // create color gradient
-            numArenaColors = 100;
-
-            const myRainbow = new Rainbow();
-            myRainbow.setNumberRange(1, numArenaColors);
-            myRainbow.setSpectrum(ball1ColorStr, ball2ColorStr);
-            const s = '';
-            for (var i = 1; i <= numArenaColors; i++) {
-                arena.colors.push('0x' + myRainbow.colourAt(i));;
+            // Create color gradient.
+            const rainbow = new Rainbow();
+            rainbow.setSpectrum('fdd043', 'e2598b');
+            for (let i = 0; i < 101; i++) {
+                arena.colors.push('0x' + rainbow.colourAt(i));
             }
 
             createRenderWorld();
@@ -214,20 +203,28 @@ function onKeyDown(event) {
             ball2.keys[0] = 1;
             break;
 
-        case 65: // a
+        case 83: // s
             ball1.keys[1] = 1;
             break;
 
-        case 37: // left
+        case 40: // down
             ball2.keys[1] = 1;
             break;
 
-        case 68: // d
+        case 65: // a
             ball1.keys[2] = 1;
             break;
 
-        case 39: // right
+        case 37: // left
             ball2.keys[2] = 1;
+            break;
+
+        case 68: // d
+            ball1.keys[3] = 1;
+            break;
+
+        case 39: // right
+            ball2.keys[3] = 1;
             break;
     }
 }
@@ -242,20 +239,28 @@ function onKeyUp(event) {
             ball2.keys[0] = 0;
             break;
 
-        case 65: // a
+        case 83: // s
             ball1.keys[1] = 0;
             break;
 
-        case 37: // left
+        case 40: // down
             ball2.keys[1] = 0;
             break;
 
-        case 68: // d
+        case 65: // a
             ball1.keys[2] = 0;
             break;
 
-        case 39: // right
+        case 37: // left
             ball2.keys[2] = 0;
+            break;
+
+        case 68: // d
+            ball1.keys[3] = 0;
+            break;
+
+        case 39: // right
+            ball2.keys[3] = 0;
             break;
     }
 }
