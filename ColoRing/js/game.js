@@ -12,7 +12,10 @@ const Colors = {
 }
 
 
-const TO_DEGREES = Math.PI / 180,
+const   X_AXIS = new THREE.Vector3(1, 0, 0),
+        Y_AXIS = new THREE.Vector3(0, 1, 0),
+        Z_AXIS = new THREE.Vector3(0, 0, 1),
+        TO_RADIANS = Math.PI / 180,
         cameraX = 3.5,
         cameraZ = 4,
         ballRadius = 3,
@@ -174,7 +177,7 @@ function createViews() {
             height: 1.0,
             eye: [initialPos1.x + cameraX * ballRadius, initialPos1.y,
                 initialPos1.z + cameraZ * ballRadius],
-            rotation: [60 * TO_DEGREES, 0 * TO_DEGREES, -90 * TO_DEGREES, 'ZYX'],
+            rotation: [0 * TO_RADIANS, -60 * TO_RADIANS, -90 * TO_RADIANS],
             fov: 75
         },
         {
@@ -184,7 +187,7 @@ function createViews() {
             height: 1.0,
             eye: [initialPos2.x + cameraX * ballRadius, initialPos2.y,
                 initialPos2.z + cameraZ * ballRadius],
-            rotation: [60 * TO_DEGREES, 0 * TO_DEGREES, 90 * TO_DEGREES, 'ZYX'],
+            rotation: [0 * TO_RADIANS, 60 * TO_RADIANS, 90 * TO_RADIANS],
             fov: 75
         },
         {

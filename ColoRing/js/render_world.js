@@ -13,7 +13,13 @@ function createRenderWorld() {
         var view = views[ ii ];
         var camera = new THREE.PerspectiveCamera( view.fov,
             window.innerWidth / window.innerHeight, 1, 10000 );
-        camera.rotation.fromArray( view.rotation );
+
+        // Applies camera rotation.
+        camera.rotateOnWorldAxis(Z_AXIS, view.rotation[2]);
+        camera.rotateOnWorldAxis(Y_AXIS, view.rotation[1]);
+        camera.rotateOnWorldAxis(X_AXIS, view.rotation[0]);
+
+        // camera.rotation.fromArray( view.rotation );
         camera.position.fromArray( view.eye );
         view.camera = camera;
 
@@ -303,11 +309,18 @@ function updatePositions(ball) {
     ball.mesh.position.copy(ball.physical.position);
 
     // Rolls ball (updates rotation).
-    if (ball.position.distanceTo(ball.prevPosition) > 0) {
-        const distance = ball.position.clone().sub(ball.prevPosition).multiplyScalar(0.3);
-        ball.mesh.rotation.x += distance.y;
-        ball.mesh.rotation.y += distance.x;
-    }
+
+    const distance = ball.position.distanceTo(ball.prevPosition);
+    const angle = distance / ball.radius;
+    ball.mesh.rotateOnAxis(Y_AXIS, -angle);
+
+    /*
+    const distance = ball.position.clone().sub(ball.prevPosition);
+    const anglex = distance.x / ball.radius;
+    const angley = distance.y / ball.radius;
+    ball.mesh.rotateOnWorldAxis(X_AXIS, -angley);
+    ball.mesh.rotateOnWorldAxis(Y_AXIS, -anglex);
+    */
 
     // Updates camera position.
     const pos = ball.position.clone()
@@ -318,19 +331,19 @@ function updatePositions(ball) {
 
 function updateRotations(ball) {
     const deg = 2;
-    const angle = deg * Math.PI / 180;
-    const rotation = new THREE.Euler(0, 0, 0, 'XYZ');
+    const angle = deg * TO_RADIANS;
+    const rotation =  new THREE.Euler(0, 0, 0);
 
     if (ball.keys[1] == 1) {
-        rotation.set(0, 0, angle, 'XYZ');
-        ball.mesh.rotation.z += angle;
-        ball.camera.rotation.z += angle;
+        rotation.z += angle;
+        ball.mesh.rotateOnWorldAxis(Z_AXIS, angle);
+        ball.camera.rotateOnWorldAxis(Z_AXIS, angle);
     }
 
     if (ball.keys[2] == 1) {
-        rotation.set(0, 0, rotation.z - angle, 'XYZ');
-        ball.mesh.rotation.z -= angle;
-        ball.camera.rotation.z -= angle;
+        rotation.z -= angle;
+        ball.mesh.rotateOnWorldAxis(Z_AXIS, -angle);
+        ball.camera.rotateOnWorldAxis(Z_AXIS, -angle);
     }
 
     ball.direction.applyEuler(rotation);
@@ -392,18 +405,15 @@ function activateBomb(bomb, ball) {
     // Removes bomb mesh from scene.
     scene.remove(bomb.mesh);
 
+    // Makes surrounding tiles ball color.
     const i = index(bomb.position.x, bomb.position.y);
     const width = (arena.height / arena.tileSize) * 2 + 1;
 
-    updateTileColor(i - width - 1, ball.color);
-    updateTileColor(i - width, ball.color);
-    updateTileColor(i - width + 1, ball.color);
-    updateTileColor(i - 1, ball.color);
-    updateTileColor(i, ball.color);
-    updateTileColor(i + 1, ball.color);
-    updateTileColor(i + width - 1, ball.color);
-    updateTileColor(i + width, ball.color);
-    updateTileColor(i + width + 1, ball.color);
+    for (let x = -2 * width; x < 2 * width + 1; x += width) {
+        for (let y = -2; y < 3; y++) {
+            updateTileColor(i + x + y, ball.color);
+        }
+    }
 }
 
 function activateFreeze(freeze, ball) {
