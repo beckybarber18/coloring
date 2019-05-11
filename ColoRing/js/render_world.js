@@ -316,12 +316,12 @@ function updateRotations(ball) {
 
     if (ball.keys[1] == 1) {
         rotation.set(0, 0, angle, 'XYZ');
-        ball.camera.rotation.y += angle;
+        ball.camera.rotation.z += angle;
     }
 
     if (ball.keys[2] == 1) {
         rotation.set(0, 0, rotation.z - angle, 'XYZ');
-        ball.camera.rotation.y += -angle;
+        ball.camera.rotation.z += -angle;
     }
 
     ball.direction.applyEuler(rotation);
