@@ -144,7 +144,7 @@ function createLights() {
 }
 
 function createBallMesh(ball) {
-    const geo = new THREE.SphereGeometry(ball.radius, 32, 32);
+    const geo = new THREE.SphereGeometry(ball.radius, 16, 16);
     const mat = new THREE.LineBasicMaterial({color: ball.color});
     const wireframe = new THREE.WireframeGeometry(geo);
 

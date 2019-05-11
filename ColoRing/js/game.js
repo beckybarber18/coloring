@@ -6,14 +6,14 @@ const Colors = {
     floor: 0x000000,
     //ball1: 0xfdd043,
     //ball2: 0xe2598b
-    bomb: 0x85ef47,
+    bomb: 0x15cda8,
     // bomb: 0x00bd56,
-    freeze: 0x5ca0d3
+    freeze: 0x0075f6
 }
 
 
 const TO_DEGREES = Math.PI / 180,
-        cameraX = 4,
+        cameraX = 3.5,
         cameraZ = 4,
         ballRadius = 3,
         maxPowers = 3,
