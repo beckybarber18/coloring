@@ -44,11 +44,11 @@ function createRenderWorld() {
     scene.add(ball2.mesh);
 
     // Creates arena.
-    arena.walls = createArenaMesh();
+    arena.walls = createWallMesh();
     scene.add(arena.walls);
 
     // Creates arena floor.
-    arena.floor = createArenaFloorMesh();
+    arena.floor = createFloorMesh();
     scene.add(arena.floor);
 
     const numStars = 400;
@@ -95,7 +95,7 @@ function updateRenderWorld() {
     updateTile(ball2);
 
     // Updates the color of the arena walls.
-    updateArenaColor();
+    updateWallColor();
 
     // Creates power ups/traps at random.
     if (powers.length < maxPowers) {
@@ -116,11 +116,11 @@ function resetRenderWorld() {
     ball2.direction = initialDir2.clone();
 
     for (let i = 0; i < arena.floor.length; i++) {
-        arena.floor[index].material.color.set(Colors.floor);
-        arena.tileColors[index] = 0;
+        updateTileColor(i, Colors.floor);
+        arena.tileColors[i] = 0;
     }
 
-    arena.walls = updateArenaColor();
+    arena.walls = updateWallColor();
     scene.add(arena.walls);
 }
 
@@ -145,10 +145,17 @@ function createLights() {
 
 function createBallMesh(ball) {
     const geo = new THREE.SphereGeometry(ball.radius, 32, 32);
-    const mat = new THREE.MeshPhongMaterial({color: ball.color});
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(ball.position);
-    return mesh;
+    const mat = new THREE.LineBasicMaterial({color: ball.color});
+    const wireframe = new THREE.WireframeGeometry(geo);
+
+    const line = new THREE.LineSegments(wireframe, mat);
+    line.material.depthTest = false;
+    line.material.opacity = 1;
+    line.material.transparent = true;
+    line.material.linewidth = 1;
+    line.position.copy(ball.position);
+
+    return line;
 }
 
 function createStarMesh(star) {
@@ -159,37 +166,37 @@ function createStarMesh(star) {
     return mesh;
 }
 
-function createArenaMesh() {
+function createWallMesh() {
     const dummy = new THREE.Geometry();
     const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize,
-        arena.wallSize);
+        arena.wallHeight);
 
-    let currArenaColor = parseInt(arena.colors[Math.floor(numArenaColors/2)]);
-    const mat = new THREE.MeshPhongMaterial({color: currArenaColor});
+    const color = parseInt(arena.colors[Math.floor(numArenaColors / 2)]);
+    const mat = new THREE.LineBasicMaterial({color: color});
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
         const mesh1 = new THREE.Mesh(geo);
-        mesh1.position.set(x, -arena.height, arena.wallSize / 2);
+        mesh1.position.set(x, -arena.height, arena.wallHeight / 2);
         dummy.mergeMesh(mesh1);
 
         const mesh2 = new THREE.Mesh(geo);
-        mesh2.position.set(x, arena.height, arena.wallSize / 2);
+        mesh2.position.set(x, arena.height, arena.wallHeight / 2);
         dummy.mergeMesh(mesh2);
     }
 
     for (let y = -arena.height; y < arena.height + 1; y += arena.wallSize) {
         const mesh1 = new THREE.Mesh(geo);
-        mesh1.position.set(-arena.width, y, arena.wallSize / 2);
+        mesh1.position.set(-arena.width, y, arena.wallHeight / 2);
         dummy.mergeMesh(mesh1);
 
         const mesh2 = new THREE.Mesh(geo);
-        mesh2.position.set(arena.width, y, arena.wallSize / 2);
+        mesh2.position.set(arena.width, y, arena.wallHeight / 2);
         dummy.mergeMesh(mesh2);
     }
 
-    var wireframe = new THREE.WireframeGeometry( dummy );
+    const wireframe = new THREE.WireframeGeometry(dummy);
 
-    var line = new THREE.LineSegments( wireframe );
+    const line = new THREE.LineSegments(wireframe, mat);
     line.material.depthTest = false;
     line.material.opacity = 1;
     line.material.transparent = true;
@@ -198,7 +205,7 @@ function createArenaMesh() {
     return line;
 }
 
-function createArenaFloorMesh() {
+function createFloorMesh() {
     let floor = [];
     const geo = new THREE.BoxGeometry(arena.tileSize, arena.tileSize,
         arena.tileSize / 2);
@@ -220,7 +227,7 @@ function createArenaFloorMesh() {
 function createPowers() {
     // Determines if power will be made.
     const create = Math.random();
-    if (create < 0.5) return;
+    if (create < powerProb) return;
 
     // Randomly determine position of power.
     const x = (Math.random() * 2 - 1) * (arena.width - arena.wallSize);
@@ -230,7 +237,7 @@ function createPowers() {
     // Randomly determines type of power.
     const type = Math.random();
 
-    if (type < 0.5) {
+    if (type < 0.75) {
         const bomb = createPower('bomb', position);
         bomb.mesh = createBombMesh(bomb);
         scene.add(bomb.mesh);
@@ -245,35 +252,48 @@ function createPowers() {
 }
 
 function createBombMesh(bomb) {
-    const geo = new THREE.SphereGeometry(bomb.size, 32, 32);
-    const mat = new THREE.MeshPhongMaterial({color: Colors.bomb});
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(bomb.position);
-    return mesh;
+    const geo = new THREE.SphereGeometry(bomb.size, 6, 6);
+    const mat = new THREE.LineBasicMaterial({color: Colors.bomb});
+    const wireframe = new THREE.WireframeGeometry(geo);
+
+    const line = new THREE.LineSegments(wireframe, mat);
+    line.material.depthTest = false;
+    line.material.opacity = 1;
+    line.material.transparent = true;
+    line.material.linewidth = 1;
+    line.position.copy(bomb.position);
+
+    return line;
 }
 
 function createFreezeMesh(freeze) {
     const side = 2 * freeze.size;
     const geo = new THREE.BoxGeometry(side, side, side);
-    const mat = new THREE.MeshPhongMaterial({color: Colors.freeze});
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(freeze.position);
-    return mesh;
+    const mat = new THREE.LineBasicMaterial({color: Colors.freeze});
+    const wireframe = new THREE.WireframeGeometry(geo);
+
+    const line = new THREE.LineSegments(wireframe, mat);
+    line.material.depthTest = false;
+    line.material.opacity = 1;
+    line.material.transparent = true;
+    line.material.linewidth = 1;
+    line.position.copy(freeze.position);
+
+    return line;
 }
 
-function updateArenaColor() {
+function updateWallColor() {
     let colorIndex;
     if (ball1.score + ball2.score == 0) {
-        colorIndex = parseInt(arena.colors[Math.floor(numArenaColors/2)]);
+        colorIndex = parseInt(arena.colors[Math.floor(numArenaColors / 2)]);
     }
     else {
-        let perc = ball2.score/(ball1.score + ball2.score);
+        const perc = ball2.score / (ball1.score + ball2.score);
         colorIndex = Math.round(perc * numArenaColors);
     }
 
     const currArenaColor = parseInt(arena.colors[colorIndex]);
     arena.walls.material.color.set(currArenaColor);
-
 }
 
 function updatePositions(ball) {
@@ -316,7 +336,7 @@ function updateTile(ball) {
     else if (oldColor == 2) ball2.score -= 1;
     ball.score += 1;
 
-    arena.floor[i].material.color.set(ball.color);
+    updateTileColor(i, ball.color);
     arena.tileColors[i] = ball.num;
 }
 
@@ -339,7 +359,7 @@ function updatePowers() {
             if (powers[i].type == 'bomb') activateBomb(powers[i], ball1);
             else if (powers[i].type == 'freeze') activateFreeze(powers[i], ball2);
 
-            // Removes power.
+            // Removes power from powers array.
             powers.splice(i, 1);
         }
         else if (intersectPower(powers[i], ball2)) {
@@ -347,7 +367,7 @@ function updatePowers() {
             if (powers[i].type == 'bomb') activateBomb(powers[i], ball2);
             else if (powers[i].type == 'freeze') activateFreeze(powers[i], ball1);
 
-            // Removes power.
+            // Removes power from powers array.
             powers.splice(i, 1);
         }
     }
@@ -360,41 +380,51 @@ function intersectPower(power, ball) {
 }
 
 function activateBomb(bomb, ball) {
+    // Removes bomb mesh from scene.
     scene.remove(bomb.mesh);
 
     const i = index(bomb.position.x, bomb.position.y);
     const width = (arena.height / arena.tileSize) * 2 + 1;
 
-    arena.floor[i - width - 1].material.color.set(ball.color);
-    arena.floor[i - width].material.color.set(ball.color);
-    arena.floor[i - width + 1].material.color.set(ball.color);
-    arena.floor[i - 1].material.color.set(ball.color);
-    arena.floor[i].material.color.set(ball.color);
-    arena.floor[i + 1].material.color.set(ball.color);
-    arena.floor[i + width - 1].material.color.set(ball.color);
-    arena.floor[i + width].material.color.set(ball.color);
-    arena.floor[i + width + 1].material.color.set(ball.color);
+    updateTileColor(i - width - 1, ball.color);
+    updateTileColor(i - width, ball.color);
+    updateTileColor(i - width + 1, ball.color);
+    updateTileColor(i - 1, ball.color);
+    updateTileColor(i, ball.color);
+    updateTileColor(i + 1, ball.color);
+    updateTileColor(i + width - 1, ball.color);
+    updateTileColor(i + width, ball.color);
+    updateTileColor(i + width + 1, ball.color);
 }
 
-function activateFreeze(bomb, ball) {
-    scene.remove(bomb.mesh);
+function activateFreeze(freeze, ball) {
+    // Removes freeze mesh from scene.
+    scene.remove(freeze.mesh);
 
     // Stops ball from moving.
     ball.canMove = false;
 
     // Waits until time is up before letting ball move again.
-    let seconds = 5;
+    ball.seconds = 5;
     tick();
 
     function tick() {
-        seconds--;
-        if( seconds > 0 ) {
+        ball.seconds--;
+        if (ball.seconds > 0) {
             setTimeout(tick, 1000);
         } else {
             ball.canMove = true;
         }
     }
+}
 
+function updateTileColor(i, color) {
+    const height = 2 * (arena.height / arena.tileSize) + 1;
+    if (i < height) return;
+    if (i > arena.floor.length - height - 1) return;
+    if (i % height == 0) return;
+    if (i % height == 2 * arena.width) return;
+    arena.floor[i].material.color.set(color);
 }
 
 function index(x, y) {

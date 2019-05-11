@@ -11,6 +11,8 @@ function createPhysicsWorld() {
 
     ball2.physical = createBallPhysical(ball2);
     world.addBody(ball2.physical);
+
+    // createWallPhysical();
 }
 
 function updatePhysicsWorld() {
@@ -31,7 +33,7 @@ function updatePhysicsWorld() {
     if (ball2.canMove) {
         updateImpulse(ball2);
     }
-    
+
     // Handles wall collisions.
     handleWallCollisions(ball1.physical);
     handleWallCollisions(ball2.physical);
@@ -49,6 +51,21 @@ function createBallPhysical(ball) {
     return physical;
 }
 
+function createWallPhysical() {
+    const plane = new CANNON.Plane();
+    const mass = 0;
+
+    const position = new CANNON.Vec3(0, arena.height - arena.wallSize, 0);
+    const quaternion = new CANNON.Quaternion()
+    quaternion.setFromEuler(90 * TO_DEGREES, 0, 0, 'XYZ');
+
+    const physical = new CANNON.Body({ mass: mass});
+    physical.addShape(plane, position, quaternion)
+    physical.friction = 0;
+
+    world.addBody(physical);
+}
+
 function updateImpulse(ball) {
     const factor = ball.keys[0] * ball.physical.mass * 12;
     const force = new CANNON.Vec3(factor * ball.direction.x,
@@ -57,25 +74,48 @@ function updateImpulse(ball) {
 }
 
 function handleWallCollisions(ball) {
-    // TODO: Decrease velocity of ball (rather then set to negative velocity)
-    if(ball.position.x < -arena.width + arena.wallSize) {
+    // Positive x-axis wall.
+    if (ball.position.x < -arena.width + arena.wallSize) {
+        // Updates position.
         ball.position.x = -arena.width + arena.wallSize;
-        let v = ball.velocity;
-        ball.velocity.set(-v.x, -v.y, -v.z);
+
+        // Calculates velocity.
+        const normal = new CANNON.Vec3(1, 0, 0);
+        const dot = normal.dot(ball.velocity.clone());
+        const c1 = normal.clone().scale(2 * dot);
+        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
     }
-    else if(ball.position.x > arena.width - arena.wallSize) {
+    // Negative x-axis wall.
+    else if (ball.position.x > arena.width - arena.wallSize) {
+        // Updates position.
         ball.position.x = arena.width - arena.wallSize;
-        let v = ball.velocity;
-        ball.velocity.set(-v.x, -v.y, -v.z);
+
+        // Calculates velocity.
+        const normal = new CANNON.Vec3(-1, 0, 0);
+        const dot = normal.dot(ball.velocity.clone());
+        const c1 = normal.clone().scale(2 * dot);
+        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
     }
-    else if(ball.position.y < -arena.height + arena.wallSize) {
+    // Positive y-axis wall.
+    else if (ball.position.y < -arena.height + arena.wallSize) {
+        // Updates position.
         ball.position.y = -arena.height + arena.wallSize;
-        let v = ball.velocity;
-        ball.velocity.set(-v.x, -v.y, -v.z);
+
+        // Calculates velocity.
+        const normal = new CANNON.Vec3(0, 1, 0);
+        const dot = normal.dot(ball.velocity.clone());
+        const c1 = normal.clone().scale(2 * dot);
+        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
     }
-    else if(ball.position.y > arena.height - arena.wallSize) {
+    // Negative y-axis wall.
+    else if (ball.position.y > arena.height - arena.wallSize) {
+        // Updates position.
         ball.position.y = arena.height - arena.wallSize;
-        let v = ball.velocity;
-        ball.velocity.set(-v.x, -v.y, -v.z);
+
+        // Calculates velocity.
+        const normal = new CANNON.Vec3(0, -1, 0);
+        const dot = normal.dot(ball.velocity.clone());
+        const c1 = normal.clone().scale(2 * dot);
+        ball.velocity = ball.velocity.vsub(c1).scale(0.3);
     }
 }

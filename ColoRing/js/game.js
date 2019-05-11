@@ -6,16 +6,18 @@ const Colors = {
     floor: 0x000000,
     //ball1: 0xfdd043,
     //ball2: 0xe2598b
-    bomb: 0xffffff,
-    freeze: 0xb7fbff
+    bomb: 0x85ef47,
+    // bomb: 0x00bd56,
+    freeze: 0x5ca0d3
 }
 
 
 const TO_DEGREES = Math.PI / 180,
-        cameraX = 1.5,
-        cameraZ = 1.5,
+        cameraX = 4,
+        cameraZ = 4,
         ballRadius = 3,
-        maxPowers = 3;
+        maxPowers = 3,
+        powerProb = 0.975;
 
 let camera, scene, renderer, composers = [], views, gameState,
     windowWidth, windowHeight,
@@ -73,7 +75,7 @@ function animate() {
             break;
         case 'start':
             // Creates arena object.
-            arena = createArena(50, 75, 12, 5);
+            arena = createArena(50, 75, 5, 10, 5);
 
             // Set initial positions and directions of ball objects.
             initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
@@ -172,7 +174,7 @@ function createViews() {
             height: 1.0,
             eye: [initialPos1.x + cameraX * ballRadius, initialPos1.y,
                 initialPos1.z + cameraZ * ballRadius],
-            rotation: [90 * TO_DEGREES, -90 * TO_DEGREES, 0],
+            rotation: [60 * TO_DEGREES, 0 * TO_DEGREES, -90 * TO_DEGREES, 'ZYX'],
             fov: 75
         },
         {
@@ -182,7 +184,7 @@ function createViews() {
             height: 1.0,
             eye: [initialPos2.x + cameraX * ballRadius, initialPos2.y,
                 initialPos2.z + cameraZ * ballRadius],
-            rotation: [90 * TO_DEGREES, 90 * TO_DEGREES, 0],
+            rotation: [60 * TO_DEGREES, 0 * TO_DEGREES, 90 * TO_DEGREES, 'ZYX'],
             fov: 75
         },
         {

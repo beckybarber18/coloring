@@ -1,8 +1,9 @@
-function createArena(height, width, wallSize, tileSize) {
+function createArena(height, width, wallSize, wallHeight, tileSize) {
     let arena = new Object();
     arena.height = height;
     arena.width = width;
     arena.wallSize = wallSize;
+    arena.wallHeight = wallHeight
     arena.tileSize = tileSize;
     arena.walls = undefined;
     arena.floor = undefined;
@@ -25,6 +26,7 @@ function createBall(color, radius, position, direction, num) {
     ball.physical = undefined;
     ball.camera = undefined;
     ball.canMove = true;
+    ball.seconds = 0;
     return ball;
 }
 
