@@ -298,9 +298,16 @@ function updateWallColor() {
 
 function updatePositions(ball) {
     // Updates ball position.
+    ball.prevPosition.copy(ball.position);
     ball.position.copy(ball.physical.position);
-    ball.mesh.position.copy(ball.position);
-    ball.mesh.quaternion.copy(ball.physical.quaternion);
+    ball.mesh.position.copy(ball.physical.position);
+
+    // Rolls ball (updates rotation).
+    if (ball.position.distanceTo(ball.prevPosition) > 0) {
+        const distance = ball.position.clone().sub(ball.prevPosition).multiplyScalar(0.3);
+        ball.mesh.rotation.x += distance.y;
+        ball.mesh.rotation.y += distance.x;
+    }
 
     // Updates camera position.
     const pos = ball.position.clone()
@@ -316,12 +323,14 @@ function updateRotations(ball) {
 
     if (ball.keys[1] == 1) {
         rotation.set(0, 0, angle, 'XYZ');
+        ball.mesh.rotation.z += angle;
         ball.camera.rotation.z += angle;
     }
 
     if (ball.keys[2] == 1) {
         rotation.set(0, 0, rotation.z - angle, 'XYZ');
-        ball.camera.rotation.z += -angle;
+        ball.mesh.rotation.z -= angle;
+        ball.camera.rotation.z -= angle;
     }
 
     ball.direction.applyEuler(rotation);
@@ -405,7 +414,7 @@ function activateFreeze(freeze, ball) {
     ball.canMove = false;
 
     // Waits until time is up before letting ball move again.
-    ball.seconds = 5;
+    ball.seconds = 4;
     tick();
 
     function tick() {
@@ -423,7 +432,7 @@ function updateTileColor(i, color) {
     if (i < height) return;
     if (i > arena.floor.length - height - 1) return;
     if (i % height == 0) return;
-    if (i % height == 2 * arena.width) return;
+    if (i % height == height - 1) return;
     arena.floor[i].material.color.set(color);
 }
 
