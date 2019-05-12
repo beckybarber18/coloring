@@ -150,7 +150,7 @@ function createLights() {
 }
 
 function createBallMesh(ball) {
-    const geo = new THREE.SphereGeometry(ball.radius, 16, 16);
+    const geo = new THREE.SphereGeometry(ball.radius, 9, 12);
     const mat = new THREE.LineBasicMaterial({color: ball.color});
     const wireframe = new THREE.WireframeGeometry(geo);
 
@@ -344,17 +344,18 @@ function updatePositions(ball) {
     ball.mesh.position.copy(ball.physical.position);
 
     // Rolls ball (updates rotation).
+    /*
     const distance = ball.position.distanceTo(ball.prevPosition);
     const angle = distance / ball.radius;
     ball.mesh.rotateOnAxis(Y_AXIS, -angle);
-
-    /*
-    const distance = ball.position.clone().sub(ball.prevPosition);
-    const anglex = distance.x / ball.radius;
-    const angley = distance.y / ball.radius;
-    ball.mesh.rotateOnWorldAxis(X_AXIS, -angley);
-    ball.mesh.rotateOnWorldAxis(Y_AXIS, -anglex);
     */
+
+    const velocity_vector = ball.position.clone().sub(ball.prevPosition);
+    const distance = velocity_vector.length();
+    const angle = distance / ball.radius;
+    const rotation_vector = new THREE.Vector3(velocity_vector.y, -velocity_vector.x ,0);
+    rotation_vector.normalize();
+    ball.mesh.rotateOnWorldAxis(rotation_vector, angle);
 
     // Updates camera position.
     const pos = ball.position.clone()
@@ -370,13 +371,13 @@ function updateRotations(ball) {
 
     if (ball.keys[2] == 1) {
         rotation.z += angle;
-        ball.mesh.rotateOnWorldAxis(Z_AXIS, angle);
+        // ball.mesh.rotateOnWorldAxis(Z_AXIS, angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, angle);
     }
 
     if (ball.keys[3] == 1) {
         rotation.z -= angle;
-        ball.mesh.rotateOnWorldAxis(Z_AXIS, -angle);
+        // ball.mesh.rotateOnWorldAxis(Z_AXIS, -angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, -angle);
     }
 

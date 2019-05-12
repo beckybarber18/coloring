@@ -1,7 +1,7 @@
 const Colors = {
     background: 0x000000,
     floor: 0x000000,
-    ball1: 0xfdd043,
+    ball1: 0x0055ff,
     ball2: 0xe2598b,
     bomb: 0x15cda8,
     freeze: 0x0075f6,
@@ -22,13 +22,13 @@ let scene, renderer, composers = [], views, gameState,
     windowWidth, windowHeight,
     arena, numArenaColors, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
-    ball1Color, ball2Color,
-    ball1ColorStr, ball2ColorStr,
+    ball1ColorStr = '0055ff',
+    ball2ColorStr = 'e2598b',
     powers;
 
 const params = {
-    exposure: 1.5,
-    bloomStrength: 1.75,
+    exposure: 1,
+    bloomStrength: 1.6,
     bloomThreshold: 0,
     bloomRadius: 0.5
 };
@@ -86,7 +86,7 @@ function animate() {
 
             // Create color gradient.
             const rainbow = new Rainbow();
-            rainbow.setSpectrum('fdd043', 'e2598b');
+            rainbow.setSpectrum(ball1ColorStr, ball2ColorStr);
             for (let i = 0; i < 101; i++) {
                 arena.colors.push('0x' + rainbow.colourAt(i));
             }
