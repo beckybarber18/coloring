@@ -1,16 +1,12 @@
 const Colors = {
-    //background: 0xfff8f3,
     background: 0x000000,
-    //arena: 0xf0b7a4,
-    //floor: 0xf5e1da,
     floor: 0x000000,
     ball1: 0xfdd043,
     ball2: 0xe2598b,
     bomb: 0x15cda8,
-    // bomb: 0x00bd56,
-    freeze: 0x0075f6
+    freeze: 0x0075f6,
+    cross: 0xff5959
 }
-
 
 const   X_AXIS = new THREE.Vector3(1, 0, 0),
         Y_AXIS = new THREE.Vector3(0, 1, 0),
@@ -19,10 +15,10 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
         cameraX = 3.5,
         cameraZ = 4,
         ballRadius = 3,
-        maxPowers = 3,
+        maxPowers = 5,
         powerProb = 0.975;
 
-let camera, scene, renderer, composers = [], views, gameState,
+let scene, renderer, composers = [], views, gameState,
     windowWidth, windowHeight,
     arena, numArenaColors, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
@@ -36,8 +32,6 @@ const params = {
     bloomThreshold: 0,
     bloomRadius: 0.5
 };
-
-
 
 init();
 animate();
@@ -116,15 +110,15 @@ function animate() {
     }
 
     requestAnimationFrame(animate);
-    for ( var ii = 0; ii < composers.length; ++ ii ) {
-        var view = views[ ii ];
-        var left = Math.floor( window.innerWidth * view.left );
-        var bottom = Math.floor( window.innerHeight * view.bottom );
-        var width = Math.floor( window.innerWidth * view.width );
-        var height = Math.floor( window.innerHeight * view.height );
+
+    for ( let ii = 0; ii < composers.length; ++ ii ) {
+        const view = views[ ii ];
+        const left = Math.floor( window.innerWidth * view.left );
+        const bottom = Math.floor( window.innerHeight * view.bottom );
+        const width = Math.floor( window.innerWidth * view.width );
+        const height = Math.floor( window.innerHeight * view.height );
         renderer.setViewport( left, bottom, width, height );
         renderer.setScissor( left, bottom, width, height );
-
         composers[ii].render();
     }
 
@@ -132,13 +126,13 @@ function animate() {
 
 function render() {
     updateSize();
-    for ( var ii = 0; ii < views.length; ++ ii ) {
-        var view = views[ ii ];
-        var camera = view.camera;
-        var left = Math.floor( window.innerWidth * view.left );
-        var bottom = Math.floor( window.innerHeight * view.bottom );
-        var width = Math.floor( window.innerWidth * view.width );
-        var height = Math.floor( window.innerHeight * view.height );
+    for ( let ii = 0; ii < views.length; ++ ii ) {
+        const view = views[ ii ];
+        const camera = view.camera;
+        const left = Math.floor( window.innerWidth * view.left );
+        const bottom = Math.floor( window.innerHeight * view.bottom );
+        const width = Math.floor( window.innerWidth * view.width );
+        const height = Math.floor( window.innerHeight * view.height );
         renderer.setViewport( left, bottom, width, height );
         renderer.setScissor( left, bottom, width, height );
         renderer.setScissorTest( true );
@@ -153,6 +147,10 @@ function updateSize() {
     if ( windowWidth != window.innerWidth || windowHeight != window.innerHeight ) {
         windowWidth = window.innerWidth;
         windowHeight = window.innerHeight;
+        views[2].width = 250 / windowWidth;
+        views[2].height = 175 / windowHeight;
+        views[2].left = (1 - views[2].width) / 2;
+        views[2].bottom = 1 - views[2].height;
         renderer.setSize( windowWidth, windowHeight );
     }
 }
@@ -180,10 +178,10 @@ function createViews() {
             fov: 75
         },
         {
-            left: 0.4,
-            bottom: 0.75,
-            width: 0.2,
-            height: 0.25,
+            left: (1 - 250 / window.innerWidth) / 2,
+            bottom: 1 - 175 / window.innerHeight,
+            width: 250 / window.innerWidth,
+            height: 175 / window.innerHeight,
             eye: [0, 0, 100],
             rotation: [0, 0, 0],
             fov: 60

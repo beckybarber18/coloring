@@ -177,7 +177,7 @@ function createWallMesh() {
     const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize,
         arena.wallHeight);
 
-    const color = parseInt(arena.colors[Math.floor(numArenaColors / 2)]);
+    const color = parseInt(arena.colors[50]);
     const mat = new THREE.LineBasicMaterial({color: color});
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
@@ -243,17 +243,23 @@ function createPowers() {
     // Randomly determines type of power.
     const type = Math.random();
 
-    if (type < 0.75) {
+    if (type < 0.4) {
         const bomb = createPower('bomb', position);
         bomb.mesh = createBombMesh(bomb);
         scene.add(bomb.mesh);
         powers.push(bomb);
     }
-    else {
+    else if (type < 0.6) {
         const freeze = createPower('freeze', position);
         freeze.mesh = createFreezeMesh(freeze);
         scene.add(freeze.mesh);
         powers.push(freeze);
+    }
+    else {
+        const cross = createPower('cross', position);
+        cross.mesh = createCrossMesh(cross);
+        scene.add(cross.mesh);
+        powers.push(cross);
     }
 }
 
@@ -288,6 +294,37 @@ function createFreezeMesh(freeze) {
     return line;
 }
 
+function createCrossMesh(cross) {
+    const side = 2 / 3 * cross.size;
+    const dummy = new THREE.Geometry();
+    const boxes = [];
+    const geo = new THREE.BoxGeometry(side, side, side);
+    const mat = new THREE.LineBasicMaterial({color: Colors.cross});
+
+    for (let i = 0; i < 5; i++) {
+        boxes.push(new THREE.Mesh(geo));
+    }
+
+    boxes[1].position.set(0, 0, side);
+    boxes[2].position.set(0, 0, -side);
+    boxes[3].position.set(side, 0, 0);
+    boxes[4].position.set(-side, 0, 0);
+
+    for (let i = 0; i < 5; i++) {
+        dummy.mergeMesh(boxes[i]);
+    }
+
+    const wireframe = new THREE.WireframeGeometry(dummy);
+    const line = new THREE.LineSegments(wireframe, mat);
+    line.material.depthTest = false;
+    line.material.opacity = 1;
+    line.material.transparent = true;
+    line.material.linewidth = 1;
+    line.position.copy(cross.position);
+
+    return line;
+}
+
 function updateWallColor() {
     let index;
     if (ball1.score + ball2.score == 0) {
@@ -307,7 +344,6 @@ function updatePositions(ball) {
     ball.mesh.position.copy(ball.physical.position);
 
     // Rolls ball (updates rotation).
-
     const distance = ball.position.distanceTo(ball.prevPosition);
     const angle = distance / ball.radius;
     ball.mesh.rotateOnAxis(Y_AXIS, -angle);
@@ -378,16 +414,20 @@ function updatePowers() {
             // Activates power for ball1.
             if (powers[i].type == 'bomb') activateBomb(powers[i], ball1);
             else if (powers[i].type == 'freeze') activateFreeze(powers[i], ball2);
+            else if (powers[i].type == 'cross') activateCross(powers[i], ball1);
 
             // Removes power from powers array.
+            scene.remove(powers[i].mesh);
             powers.splice(i, 1);
         }
         else if (intersectPower(powers[i], ball2)) {
             // Activates power for ball2.
             if (powers[i].type == 'bomb') activateBomb(powers[i], ball2);
             else if (powers[i].type == 'freeze') activateFreeze(powers[i], ball1);
+            else if (powers[i].type == 'cross') activateCross(powers[i], ball2);
 
-            // Removes power from powers array.
+            // Removes power mesh from scene and power from powers array.
+            scene.remove(powers[i].mesh);
             powers.splice(i, 1);
         }
     }
@@ -400,9 +440,6 @@ function intersectPower(power, ball) {
 }
 
 function activateBomb(bomb, ball) {
-    // Removes bomb mesh from scene.
-    scene.remove(bomb.mesh);
-
     // Makes surrounding tiles ball color.
     const i = index(bomb.position.x, bomb.position.y);
     const width = (arena.height / arena.tileSize) * 2 + 1;
@@ -415,9 +452,6 @@ function activateBomb(bomb, ball) {
 }
 
 function activateFreeze(freeze, ball) {
-    // Removes freeze mesh from scene.
-    scene.remove(freeze.mesh);
-
     // Stops ball from moving.
     ball.canMove = false;
 
@@ -432,6 +466,24 @@ function activateFreeze(freeze, ball) {
         } else {
             ball.canMove = true;
         }
+    }
+}
+
+function activateCross(cross, ball) {
+    const height = 2 * (arena.height / arena.tileSize) + 1;
+    const width = 2 * (arena.width / arena.tileSize) + 1;
+    const i = index(cross.position.x, cross.position.y);
+    const x = i % height;
+    const y = Math.floor(i / height);
+
+    // Vertical line
+    for (let j = -x; j < height - x; j++) {
+        updateTileColor(i + j, ball.color);
+    }
+
+    // Horizontal line
+    for (let j = -y; j < width - y; j++) {
+        updateTileColor(i + j * height, ball.color);
     }
 }
 
