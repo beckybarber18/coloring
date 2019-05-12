@@ -28,7 +28,7 @@ let scene, renderer, composers = [], views, gameState,
 
 const params = {
     exposure: 1.5,
-    bloomStrength: 2,
+    bloomStrength: 1.75,
     bloomThreshold: 0,
     bloomRadius: 0.5
 };
