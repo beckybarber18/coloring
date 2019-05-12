@@ -358,8 +358,7 @@ function updatePositions(ball) {
 }
 
 function updateRotations(ball) {
-    const deg = 4;
-    const angle = deg * TO_RADIANS;
+    const angle = turning * TO_RADIANS;
     const rotation =  new THREE.Euler(0, 0, 0);
 
     if (ball.keys[2] == 1) {

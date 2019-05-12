@@ -9,13 +9,32 @@ const Colors = {
 }
 
 const palettes = [
-
+    {
+        ball1: 0xffba5a,
+        ball2: 0xe2598b,
+        ball1str: 'ffba5a',
+        ball2str: 'e2598b'
+    },
+    {
+        ball1: 0x6effbf,
+        ball2: 0x8158fc,
+        ball1str: '6effbf',
+        ball2str: '8158fc'
+    },
+    {
+        ball1: 0x207dff,
+        ball2: 0xdf0054,
+        ball1str: '207dff',
+        ball2str: 'df0054'
+    }
 ];
 
 const   X_AXIS = new THREE.Vector3(1, 0, 0),
         Y_AXIS = new THREE.Vector3(0, 1, 0),
         Z_AXIS = new THREE.Vector3(0, 0, 1),
         TO_RADIANS = Math.PI / 180,
+        turning = 3,
+        speed = 10,
         cameraX = 3.5,
         cameraZ = 4,
         ballRadius = 3,
@@ -24,13 +43,13 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
 
 let scene, renderer, composers = [], views, gameState,
     windowWidth, windowHeight,
-    arena, numArenaColors, ball1, ball2, world,
+    arena, palette, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
     powers;
 
 const params = {
-    exposure: 1,
-    bloomStrength: 1.6,
+    exposure: 0.8,
+    bloomStrength: 1.75,
     bloomThreshold: 0,
     bloomRadius: 0.5
 };
@@ -69,6 +88,9 @@ function animate() {
             // Creates arena object.
             arena = createArena(50, 75, 5, 10, 5);
 
+            // Sets palette
+            palette = palettes[2];
+
             // Set initial positions and directions of ball objects.
             initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
                 -arena.height + 2 * arena.wallSize, ballRadius);
@@ -78,9 +100,9 @@ function animate() {
             initialDir2 = new THREE.Vector3(-1, 0, 0);
 
             // Create ball objects.
-            ball1 = createBall(Colors.ball1, ballRadius, initialPos1.clone(),
+            ball1 = createBall(palette.ball1, ballRadius, initialPos1.clone(),
                 initialDir1.clone(), 1);
-            ball2 = createBall(Colors.ball2, ballRadius, initialPos2.clone(),
+            ball2 = createBall(palette.ball2, ballRadius, initialPos2.clone(),
                 initialDir2.clone(), 2);
 
             // Specifies different view windows.
@@ -88,7 +110,7 @@ function animate() {
 
             // Create color gradient.
             const rainbow = new Rainbow();
-            rainbow.setSpectrum(ball1ColorStr, ball2ColorStr);
+            rainbow.setSpectrum(palette.ball1str, palette.ball2str);
             for (let i = 0; i < 101; i++) {
                 arena.colors.push('0x' + rainbow.colourAt(i));
             }

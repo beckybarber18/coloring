@@ -50,7 +50,7 @@ function createBallPhysical(ball) {
 }
 
 function updateImpulse(ball) {
-    const factor = (ball.keys[0] - ball.keys[1]) * ball.physical.mass * 12;
+    const factor = (ball.keys[0] - ball.keys[1]) * ball.physical.mass * speed;
     const force = new CANNON.Vec3(factor * ball.direction.x, factor * ball.direction.y, 0);
     ball.physical.applyImpulse(force, ball.physical.position);
 }
