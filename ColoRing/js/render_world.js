@@ -410,6 +410,11 @@ function updatePowers() {
         powers[i].position.add(powers[i].direction);
         powers[i].mesh.position.add(powers[i].direction);
 
+        // Changes rotation of power.
+        powers[i].mesh.rotation.x += 0.05;
+		powers[i].mesh.rotation.y += 0.05;
+        powers[i].mesh.rotation.z += 0.05;
+
         if (intersectPower(powers[i], ball1)) {
             // Activates power for ball1.
             if (powers[i].type == 'bomb') activateBomb(powers[i], ball1);
