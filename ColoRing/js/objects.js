@@ -46,4 +46,5 @@ function createStar(color, radius, position) {
     star.radius = radius;
     star.position = position;
     return star;
+    
 }
