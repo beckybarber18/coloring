@@ -8,6 +8,10 @@ const Colors = {
     cross: 0xff5959
 }
 
+const palettes = [
+
+];
+
 const   X_AXIS = new THREE.Vector3(1, 0, 0),
         Y_AXIS = new THREE.Vector3(0, 1, 0),
         Z_AXIS = new THREE.Vector3(0, 0, 1),
@@ -22,8 +26,6 @@ let scene, renderer, composers = [], views, gameState,
     windowWidth, windowHeight,
     arena, numArenaColors, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
-    ball1ColorStr = '0055ff',
-    ball2ColorStr = 'e2598b',
     powers;
 
 const params = {
