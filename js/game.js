@@ -139,7 +139,6 @@ function animate() {
             // Sets color of wall mesh
             const color = parseInt(arena.colors[50])
             arena.walls.material.color.set(color);
-            console.log(arena.walls);
 
             countdown();
             state = 'play';
