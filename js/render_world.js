@@ -1,10 +1,5 @@
 function createRenderWorld() {
 
-    // Create the scene object.
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color( Colors.background );
-	scene.fog = new THREE.Fog( Colors.background, 0, 750 );
-
     // Creates lights.
     createLights();
 
@@ -413,6 +408,8 @@ function updatePowers() {
             else if (powers[i].type == 'cross') activateCross(powers[i], ball1);
 
             // Removes power from powers array.
+            powers[i].geometry.dispose();
+            powers[i].material.dispose();
             scene.remove(powers[i].mesh);
             powers.splice(i, 1);
         }
