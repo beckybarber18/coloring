@@ -344,18 +344,11 @@ function updatePositions(ball) {
     ball.mesh.position.copy(ball.physical.position);
 
     // Rolls ball (updates rotation).
-    /*
-    const distance = ball.position.distanceTo(ball.prevPosition);
+    const velocity = ball.position.clone().sub(ball.prevPosition);
+    const distance = velocity.length();
     const angle = distance / ball.radius;
-    ball.mesh.rotateOnAxis(Y_AXIS, -angle);
-    */
-
-    const velocity_vector = ball.position.clone().sub(ball.prevPosition);
-    const distance = velocity_vector.length();
-    const angle = distance / ball.radius;
-    const rotation_vector = new THREE.Vector3(velocity_vector.y, -velocity_vector.x ,0);
-    rotation_vector.normalize();
-    ball.mesh.rotateOnWorldAxis(rotation_vector, angle);
+    const rotation = new THREE.Vector3(velocity.y, -velocity.x ,0).normalize();
+    ball.mesh.rotateOnWorldAxis(rotation, angle);
 
     // Updates camera position.
     const pos = ball.position.clone()
@@ -365,19 +358,16 @@ function updatePositions(ball) {
 }
 
 function updateRotations(ball) {
-    const deg = 2;
-    const angle = deg * TO_RADIANS;
+    const angle = turning * TO_RADIANS;
     const rotation =  new THREE.Euler(0, 0, 0);
 
     if (ball.keys[2] == 1) {
         rotation.z += angle;
-        // ball.mesh.rotateOnWorldAxis(Z_AXIS, angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, angle);
     }
 
     if (ball.keys[3] == 1) {
         rotation.z -= angle;
-        // ball.mesh.rotateOnWorldAxis(Z_AXIS, -angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, -angle);
     }
 
