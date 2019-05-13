@@ -33,6 +33,7 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
         Y_AXIS = new THREE.Vector3(0, 1, 0),
         Z_AXIS = new THREE.Vector3(0, 0, 1),
         TO_RADIANS = Math.PI / 180,
+        time = 60,
         turning = 3,
         speed = 10,
         cameraX = 3.5,
@@ -451,7 +452,7 @@ function hideResult() {
 
 function countdown() {
     $('#counter').show();
-    var seconds = 10;
+    let seconds = time;
     function tick() {
         var counter = document.getElementById("counter");
         seconds--;
