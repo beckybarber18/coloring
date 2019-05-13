@@ -93,13 +93,8 @@ function updateRenderWorld() {
 
 function resetRenderWorld() {
     // Resets balls
-    ball1.position.copy(initialPos1);
-    ball1.prevPosition.copy(initialPos1);
-    ball1.direction.copy(initialDir1);
-
-    ball2.position.copy(initialPos2);
-    ball2.prevPosition.copy(initialPos2);
-    ball2.direction.copy(initialDir2);
+    resetBall(ball1, initialPos1, initialDir1);
+    resetBall(ball2, initialPos2, initialDir2);
 
     // Resets camera positions
     ball1.camera.position.fromArray( views[0].eye );
@@ -118,18 +113,31 @@ function resetRenderWorld() {
     ball2.camera.rotateOnWorldAxis(X_AXIS, 90 * TO_RADIANS);
     ball2.camera.rotateOnWorldAxis(Y_AXIS, -30 * TO_RADIANS);
 
-    // Resets score
-    ball1.score = 0;
-    ball2.score = 0;
-
-    // Resets canMove
-    ball1.canMove = true;
-    ball2.canMove = true;
-
     // Resets floor colors
     for (let i = 0; i < arena.floor.length; i++) {
         updateTileColor(i, Colors.floor);
         arena.tileColors[i] = 0;
+    }
+}
+
+function resetBall(ball, initialPos, initialDir) {
+    // Resets positions
+    ball.position.copy(initialPos);
+    ball.prevPosition.copy(initialPos);
+    ball.direction.copy(initialDir);
+
+    // Resets score
+    ball.score = 0;
+
+    // Resets canMove
+    ball.canMove = true;
+
+    // Removes ice cube
+    if (ball.freeze !== undefined) {
+        ball.freeze.geometry.dispose();
+        ball.freeze.material.dispose();
+        gameScene.remove(ball.freeze);
+        ball.freeze = undefined;
     }
 }
 
@@ -486,6 +494,13 @@ function activateBomb(bomb, ball) {
 }
 
 function activateFreeze(freeze, ball) {
+    if (!ball.canMove) {
+        ball.freeze.geometry.dispose();
+        ball.freeze.material.dispose();
+        gameScene.remove(ball.freeze);
+        ball.freeze = undefined;
+    }
+
     // Stops ball from moving.
     ball.canMove = false;
 
@@ -500,7 +515,7 @@ function activateFreeze(freeze, ball) {
     gameScene.add(ball.freeze);
 
     // Waits until time is up before letting ball move again
-    ball.seconds = 4;
+    ball.seconds = 3;
     tick();
 
     function tick() {
@@ -513,6 +528,7 @@ function activateFreeze(freeze, ball) {
             ball.freeze.geometry.dispose();
             ball.freeze.material.dispose();
             gameScene.remove(ball.freeze);
+            ball.freeze = undefined;
         }
     }
 }
