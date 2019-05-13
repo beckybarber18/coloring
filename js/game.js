@@ -41,9 +41,11 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
         maxPowers = 5,
         powerProb = 0.975;
 
-let scene, renderer, composers = [], views, gameState,
-    windowWidth, windowHeight,
-    arena, palette, ball1, ball2, world,
+let renderer, state, windowWidth, windowHeight,
+    menuScene, menuCamera, menuComposer, mouse, raycaster,
+    options, intersected = [], oldColor = [],
+    gameScene, views, gameComposers,
+    stars, arena, palette, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
     powers;
 
@@ -66,30 +68,37 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Key event listeners.
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    // Creates mouse vector.
+    mouse = new THREE.Vector2()
 
-    // Set the initial game state.
-    // gameState = 'beforeStart';
+    // Menu event listeners.
+    document.addEventListener( 'mousemove', onDocumentMouseMove );
+    document.addEventListener( 'click', onClick );
 
-    // just so we dont have to pick a color every time
-    gameState = 'start';
+    // Creates start menu.
+    createMenuScreen();
+
+    // Creates stars.
+
+    // Go to menu screne.
+    state = 'menu';
 }
 
 function animate() {
 
-    switch(gameState) {
-        case 'beforeStart':
-            displayColor1Choose();
-            // gameState = 'start';
+    switch(state) {
+        case 'menu':
+            renderMenu();
+            // $('#logo').show();
+            $('#instructions').show();
             break;
         case 'start':
+            // Hides menu text.
+            // $('#logo').hide();
+            $('#instructions').hide();
+
             // Creates arena object.
             arena = createArena(50, 75, 5, 10, 5);
-
-            // Sets palette
-            palette = palettes[2];
 
             // Set initial positions and directions of ball objects.
             initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
@@ -99,14 +108,14 @@ function animate() {
                 arena.height - 2 * arena.wallSize, ballRadius);
             initialDir2 = new THREE.Vector3(-1, 0, 0);
 
+            // Specifies different view windows.
+            views = createViews();
+
             // Create ball objects.
             ball1 = createBall(palette.ball1, ballRadius, initialPos1.clone(),
                 initialDir1.clone(), 1);
             ball2 = createBall(palette.ball2, ballRadius, initialPos2.clone(),
                 initialDir2.clone(), 2);
-
-            // Specifies different view windows.
-            views = createViews();
 
             // Create color gradient.
             const rainbow = new Rainbow();
@@ -117,15 +126,15 @@ function animate() {
 
             createRenderWorld();
             createPhysicsWorld();
-
-            gameState = 'play';
             countdown();
+
+            state = 'play';
             break;
 
         case 'play':
             updatePhysicsWorld();
             updateRenderWorld();
-            render();
+            renderGame();
             break;
 
         case 'end':
@@ -134,22 +143,11 @@ function animate() {
     }
 
     requestAnimationFrame(animate);
-
-    for ( let ii = 0; ii < composers.length; ++ ii ) {
-        const view = views[ ii ];
-        const left = Math.floor( window.innerWidth * view.left );
-        const bottom = Math.floor( window.innerHeight * view.bottom );
-        const width = Math.floor( window.innerWidth * view.width );
-        const height = Math.floor( window.innerHeight * view.height );
-        renderer.setViewport( left, bottom, width, height );
-        renderer.setScissor( left, bottom, width, height );
-        composers[ii].render();
-    }
-
 }
 
-function render() {
+function renderGame() {
     updateSize();
+
     for ( let ii = 0; ii < views.length; ++ ii ) {
         const view = views[ ii ];
         const camera = view.camera;
@@ -163,18 +161,63 @@ function render() {
         renderer.setClearColor( view.background );
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
-        renderer.render( scene, camera );
+        renderer.render( gameScene, camera );
+        gameComposers[ii].render();
     }
+}
+
+function renderMenu() {
+    updateSize();
+
+    // Updates camera when resizing.
+    menuCamera.aspect = windowWidth / windowHeight;
+    menuCamera.updateProjectionMatrix();
+
+    // Finds intersection of mouse.
+    raycaster.setFromCamera( mouse, menuCamera );
+	const intersects = raycaster.intersectObjects( menuScene.children );
+
+    // Highlights pair of balls that mouse intersects with.
+	if ( intersects.length > 0 ) {
+		if (intersected[0] !== undefined) {
+            intersected[0].material.color.set(oldColor[0]);
+            intersected[1].material.color.set(oldColor[1]);
+        }
+
+        intersected[0] = intersects[0].object;
+        intersected[1] = intersected[0].pair;
+        oldColor[0] = intersected[0].material.color.clone();
+        oldColor[1] = intersected[1].material.color.clone();
+
+        intersected[0].material.color.set(0xffffff);
+        intersected[1].material.color.set(0xffffff);
+	}
+    else {
+        if ( intersected[0] !== undefined ) {
+            for (let i = 0; i < intersected.length; i++) {
+                intersected[i].material.color.set(oldColor[i]);
+                intersected[i] = undefined;
+                oldColor[i] = undefined;
+            }
+        }
+    }
+
+    renderer.render( menuScene, menuCamera );
+    menuComposer.render()
 }
 
 function updateSize() {
     if ( windowWidth != window.innerWidth || windowHeight != window.innerHeight ) {
         windowWidth = window.innerWidth;
         windowHeight = window.innerHeight;
-        views[2].width = 250 / windowWidth;
-        views[2].height = 175 / windowHeight;
-        views[2].left = (1 - views[2].width) / 2;
-        views[2].bottom = 1 - views[2].height;
+
+        if (views !== undefined) {
+            views[2].width = 250 / windowWidth;
+            views[2].height = 175 / windowHeight;
+            views[2].left = (1 - views[2].width) / 2;
+            views[2].bottom = 1 - views[2].height;
+        }
+
         renderer.setSize( windowWidth, windowHeight );
     }
 }
@@ -213,6 +256,19 @@ function createViews() {
     ]
 
     return canvases;
+}
+
+function onDocumentMouseMove(event) {
+	event.preventDefault();
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+}
+
+function onClick(event) {
+    if (intersected[0] !== undefined) {
+        palette = palettes[intersected[0].palette];
+        state = 'start';
+    }
 }
 
 function onKeyDown(event) {
@@ -323,8 +379,7 @@ function hideColor2Choose() {
     let colorString = '0x' + ball2ColorStr.substring(1, ball2ColorStr.length);
     ball2Color = parseInt(colorString);
 
-    //console.log(colorString, ball2Color);
-    gameState = 'start';
+    state = 'start';
     // KeyboardJS.unbind.key('space',
                              // function(){hideColorChoose()});
 }
@@ -357,7 +412,8 @@ function hideResult() {
     }
     ball1.score = 1;
     ball2.score = 1;
-    gameState = 'start';
+    state = 'start';
+
     KeyboardJS.unbind.key('space',
                              function(){hideResult()});
 }
@@ -372,7 +428,7 @@ function countdown() {
         if( seconds > 0 ) {
             setTimeout(tick, 1000);
         } else {
-            gameState = 'end';
+            state = 'end';
         }
     }
     tick();

@@ -1,17 +1,17 @@
 function createRenderWorld() {
-
-    // Create the scene object.
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color( Colors.background );
-	scene.fog = new THREE.Fog( Colors.background, 0, 750 );
+    // Create the game scene.
+    gameScene = new THREE.Scene();
+    gameScene.background = new THREE.Color( Colors.background );
+	gameScene.fog = new THREE.Fog( Colors.background, 0, 750 );
 
     // Creates lights.
     createLights();
 
     // Creates cameras.
+    gameComposers = [];
     for ( var ii = 0; ii < views.length; ++ ii ) {
-        var view = views[ ii ];
-        var camera = new THREE.PerspectiveCamera( view.fov,
+        const view = views[ ii ];
+        const camera = new THREE.PerspectiveCamera( view.fov,
             window.innerWidth / window.innerHeight, 1, 10000 );
 
         // Applies camera rotation.
@@ -23,10 +23,10 @@ function createRenderWorld() {
         camera.position.fromArray( view.eye );
         view.camera = camera;
 
-        var renderScene = new THREE.RenderPass( scene, camera );
+        const renderScene = new THREE.RenderPass( gameScene, camera );
 
-        let vec = new THREE.Vector2( window.innerWidth, window.innerHeight )
-        var bloomPass = new THREE.UnrealBloomPass(vec, 1.5, 0.4, 0.85 );
+        const vec = new THREE.Vector2( window.innerWidth, window.innerHeight )
+        const bloomPass = new THREE.UnrealBloomPass(vec, 1.5, 0.4, 0.85 );
         bloomPass.threshold = params.bloomThreshold;
         bloomPass.strength = params.bloomStrength;
         bloomPass.radius = params.bloomRadius;
@@ -35,7 +35,7 @@ function createRenderWorld() {
         composer.setSize( window.innerWidth, window.innerHeight );
         composer.addPass( renderScene );
         composer.addPass( bloomPass );
-        composers.push(composer);
+        gameComposers.push(composer);
 
     }
 
@@ -44,18 +44,18 @@ function createRenderWorld() {
 
     // Creates the balls.
     ball1.mesh = createBallMesh(ball1);
-    scene.add(ball1.mesh);
+    gameScene.add(ball1.mesh);
 
     ball2.mesh = createBallMesh(ball2);
-    scene.add(ball2.mesh);
+    gameScene.add(ball2.mesh);
 
     // Creates arena.
     arena.walls = createWallMesh();
-    scene.add(arena.walls);
+    gameScene.add(arena.walls);
 
     // Creates arena floor.
     arena.floor = createFloorMesh();
-    scene.add(arena.floor);
+    gameScene.add(arena.floor);
 
     const numStars = 400;
     const largeNum = 100;
@@ -69,7 +69,7 @@ function createRenderWorld() {
         let starZ = Math.random() * largeNum + 12;
         let starPos = new THREE.Vector3(starX,starY,starZ);
         let star = createStar('white', 0.1, starPos);
-        scene.add(createStarMesh(star));
+        gameScene.add(createStarMesh(star));
     }
 
     // Initialiazes powers array.
@@ -127,7 +127,7 @@ function resetRenderWorld() {
     }
 
     arena.walls = updateWallColor();
-    scene.add(arena.walls);
+    gameScene.add(arena.walls);
 }
 
 function createLights() {
@@ -145,8 +145,8 @@ function createLights() {
     shadowLight.shadow.mapSize.width = 4096;
     shadowLight.shadow.mapSize.height = 4096;
 
-    scene.add(hemisphereLight);
-    scene.add(shadowLight);
+    gameScene.add(hemisphereLight);
+    gameScene.add(shadowLight);
 }
 
 function createBallMesh(ball) {
@@ -161,6 +161,8 @@ function createBallMesh(ball) {
     line.material.linewidth = 1;
     line.position.copy(ball.position);
 
+    // Disposes geometry
+    geo.dispose();
     return line;
 }
 
@@ -208,6 +210,10 @@ function createWallMesh() {
     line.material.transparent = true;
     line.material.linewidth = 1;
 
+    // Disposes geometries
+    geo.dispose();
+    dummy.dispose();
+
     return line;
 }
 
@@ -224,7 +230,7 @@ function createFloorMesh() {
             mesh.position.set(x, y, -arena.tileSize / 4);
             floor.push(mesh);
             arena.tileColors.push(0);
-            scene.add(mesh);
+            gameScene.add(mesh);
         }
      }
      return floor;
@@ -246,19 +252,19 @@ function createPowers() {
     if (type < 0.4) {
         const bomb = createPower('bomb', position);
         bomb.mesh = createBombMesh(bomb);
-        scene.add(bomb.mesh);
+        gameScene.add(bomb.mesh);
         powers.push(bomb);
     }
     else if (type < 0.6) {
         const freeze = createPower('freeze', position);
         freeze.mesh = createFreezeMesh(freeze);
-        scene.add(freeze.mesh);
+        gameScene.add(freeze.mesh);
         powers.push(freeze);
     }
     else {
         const cross = createPower('cross', position);
         cross.mesh = createCrossMesh(cross);
-        scene.add(cross.mesh);
+        gameScene.add(cross.mesh);
         powers.push(cross);
     }
 }
@@ -275,6 +281,8 @@ function createBombMesh(bomb) {
     line.material.linewidth = 1;
     line.position.copy(bomb.position);
 
+    // Disposes geometry
+    geo.dispose();
     return line;
 }
 
@@ -291,6 +299,8 @@ function createFreezeMesh(freeze) {
     line.material.linewidth = 1;
     line.position.copy(freeze.position);
 
+    // Disposes geometry
+    geo.dispose();
     return line;
 }
 
@@ -322,6 +332,9 @@ function createCrossMesh(cross) {
     line.material.linewidth = 1;
     line.position.copy(cross.position);
 
+    // Disposes geometry
+    geo.dispose();
+    dummy.dispose();
     return line;
 }
 
@@ -344,18 +357,11 @@ function updatePositions(ball) {
     ball.mesh.position.copy(ball.physical.position);
 
     // Rolls ball (updates rotation).
-    /*
-    const distance = ball.position.distanceTo(ball.prevPosition);
+    const velocity = ball.position.clone().sub(ball.prevPosition);
+    const distance = velocity.length();
     const angle = distance / ball.radius;
-    ball.mesh.rotateOnAxis(Y_AXIS, -angle);
-    */
-
-    const velocity_vector = ball.position.clone().sub(ball.prevPosition);
-    const distance = velocity_vector.length();
-    const angle = distance / ball.radius;
-    const rotation_vector = new THREE.Vector3(velocity_vector.y, -velocity_vector.x ,0);
-    rotation_vector.normalize();
-    ball.mesh.rotateOnWorldAxis(rotation_vector, angle);
+    const rotation = new THREE.Vector3(velocity.y, -velocity.x ,0).normalize();
+    ball.mesh.rotateOnWorldAxis(rotation, angle);
 
     // Updates camera position.
     const pos = ball.position.clone()
@@ -365,19 +371,16 @@ function updatePositions(ball) {
 }
 
 function updateRotations(ball) {
-    const deg = 2;
-    const angle = deg * TO_RADIANS;
+    const angle = turning * TO_RADIANS;
     const rotation =  new THREE.Euler(0, 0, 0);
 
     if (ball.keys[2] == 1) {
         rotation.z += angle;
-        // ball.mesh.rotateOnWorldAxis(Z_AXIS, angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, angle);
     }
 
     if (ball.keys[3] == 1) {
         rotation.z -= angle;
-        // ball.mesh.rotateOnWorldAxis(Z_AXIS, -angle);
         ball.camera.rotateOnWorldAxis(Z_AXIS, -angle);
     }
 
@@ -425,7 +428,7 @@ function updatePowers() {
             // Removes power from powers array.
             powers[i].mesh.geometry.dispose();
             powers[i].mesh.material.dispose();
-            scene.remove(powers[i].mesh);
+            gameScene.remove(powers[i].mesh);
             powers.splice(i, 1);
         }
         else if (intersectPower(powers[i], ball2)) {
@@ -434,8 +437,8 @@ function updatePowers() {
             else if (powers[i].type == 'freeze') activateFreeze(powers[i], ball1);
             else if (powers[i].type == 'cross') activateCross(powers[i], ball2);
 
-            // Removes power mesh from scene and power from powers array.
-            scene.remove(powers[i].mesh);
+            // Removes power mesh from gameScene and power from powers array.
+            gameScene.remove(powers[i].mesh);
             powers.splice(i, 1);
         }
     }
