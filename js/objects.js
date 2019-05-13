@@ -27,6 +27,7 @@ function createBall(radius, position, direction, num) {
     ball.physical = undefined;
     ball.camera = undefined;
     ball.canMove = true;
+    ball.freeze = undefined;
     return ball;
 }
 
