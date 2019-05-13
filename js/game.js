@@ -46,7 +46,7 @@ let renderer, state, windowWidth, windowHeight,
     menuScene, menuCamera, menuComposer, mouse, raycaster,
     options, intersected = [], oldColor = [],
     gameScene, views, gameComposers,
-    stars, arena, palette, ball1, ball2, world,
+    arena, palette, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
     powers;
 

@@ -7,6 +7,7 @@ function createArena(height, width, wallSize, wallHeight, tileSize) {
     arena.tileSize = tileSize;
     arena.walls = undefined;
     arena.floor = undefined;
+    arena.stars = undefined;
     arena.colors = undefined;
     arena.tileColors = [];
     return arena;
@@ -37,12 +38,4 @@ function createPower(type, position) {
     power.direction = new THREE.Vector3(0, 0, 0.1);
     power.mesh = undefined;
     return power;
-}
-
-function createStar(color, radius, position) {
-    let star = new Object();
-    star.color = color;
-    star.radius = radius;
-    star.position = position;
-    return star;
 }
