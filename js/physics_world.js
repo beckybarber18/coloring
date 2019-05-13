@@ -37,6 +37,15 @@ function updatePhysicsWorld() {
     handleWallCollisions(ball2.physical);
 }
 
+function resetPhysicsWorld() {
+    ball1.physical.position.copy(initialPos1);
+    ball2.physical.position.copy(initialPos2);
+
+    const velocity = new CANNON.Vec3(0, 0, 0);
+    ball1.physical.velocity.copy(velocity);
+    ball2.physical.velocity.copy(velocity);
+}
+
 function createBallPhysical(ball) {
     const ballShape = new CANNON.Sphere(ball.radius);
     const mass = 1;

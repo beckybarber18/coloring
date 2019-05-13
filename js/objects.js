@@ -7,14 +7,14 @@ function createArena(height, width, wallSize, wallHeight, tileSize) {
     arena.tileSize = tileSize;
     arena.walls = undefined;
     arena.floor = undefined;
-    arena.colors = [];
+    arena.colors = undefined;
     arena.tileColors = [];
     return arena;
 }
 
-function createBall(color, radius, position, direction, num) {
+function createBall(radius, position, direction, num) {
     let ball = new Object();
-    ball.color = color;
+    ball.color = undefined;
     ball.radius = radius;
     ball.position = position;
     ball.prevPosition = position.clone();
@@ -26,7 +26,6 @@ function createBall(color, radius, position, direction, num) {
     ball.physical = undefined;
     ball.camera = undefined;
     ball.canMove = true;
-    ball.seconds = 0;
     return ball;
 }
 
