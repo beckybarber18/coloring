@@ -115,12 +115,12 @@ function animate() {
         case 'menu':
             // Renders menu scene. (state change occurs in onClick function)
             renderMenu();
-            //$('#logo').show();
+            $('#logo').hide();
             //$('#instructions').show();
             break;
         case 'start':
             // Hides menu text
-            // $('#logo').hide();
+            $('#logo').hide();
             $('#instructions').hide();
 
             // Sets color of ball meshes
