@@ -75,10 +75,6 @@ function init() {
     document.addEventListener( 'mousemove', onDocumentMouseMove );
     document.addEventListener( 'click', onClick );
 
-    // Key event listeners.
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
-
     // Creates start menu.
     createMenuScreen();
 
@@ -383,7 +379,6 @@ function hideColor2Choose() {
     let colorString = '0x' + ball2ColorStr.substring(1, ball2ColorStr.length);
     ball2Color = parseInt(colorString);
 
-    //console.log(colorString, ball2Color);
     state = 'start';
     // KeyboardJS.unbind.key('space',
                              // function(){hideColorChoose()});
@@ -418,6 +413,7 @@ function hideResult() {
     ball1.score = 1;
     ball2.score = 1;
     state = 'start';
+
     KeyboardJS.unbind.key('space',
                              function(){hideResult()});
 }
