@@ -61,6 +61,11 @@ function init() {
 
     container = document.getElementById( 'container' );
 
+    // Create the scene.
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color( Colors.background );
+	scene.fog = new THREE.Fog( Colors.background, 0, 750 );
+
     // Create the renderer.
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -81,7 +86,7 @@ function animate() {
 
     switch(gameState) {
         case 'beforeStart':
-            displayColor1Choose();
+            // displayColor1Choose();
             // gameState = 'start';
             break;
         case 'start':
@@ -126,6 +131,18 @@ function animate() {
             updatePhysicsWorld();
             updateRenderWorld();
             render();
+
+            for ( let ii = 0; ii < composers.length; ++ ii ) {
+                const view = views[ ii ];
+                const left = Math.floor( window.innerWidth * view.left );
+                const bottom = Math.floor( window.innerHeight * view.bottom );
+                const width = Math.floor( window.innerWidth * view.width );
+                const height = Math.floor( window.innerHeight * view.height );
+                renderer.setViewport( left, bottom, width, height );
+                renderer.setScissor( left, bottom, width, height );
+                composers[ii].render();
+            }
+
             break;
 
         case 'end':
@@ -135,16 +152,7 @@ function animate() {
 
     requestAnimationFrame(animate);
 
-    for ( let ii = 0; ii < composers.length; ++ ii ) {
-        const view = views[ ii ];
-        const left = Math.floor( window.innerWidth * view.left );
-        const bottom = Math.floor( window.innerHeight * view.bottom );
-        const width = Math.floor( window.innerWidth * view.width );
-        const height = Math.floor( window.innerHeight * view.height );
-        renderer.setViewport( left, bottom, width, height );
-        renderer.setScissor( left, bottom, width, height );
-        composers[ii].render();
-    }
+
 
 }
 
