@@ -163,7 +163,6 @@ function createBallMesh(ball) {
 
     // Disposes geometry
     geo.dispose();
-
     return line;
 }
 
@@ -284,7 +283,6 @@ function createBombMesh(bomb) {
 
     // Disposes geometry
     geo.dispose();
-
     return line;
 }
 
@@ -303,7 +301,6 @@ function createFreezeMesh(freeze) {
 
     // Disposes geometry
     geo.dispose();
-
     return line;
 }
 
@@ -338,7 +335,6 @@ function createCrossMesh(cross) {
     // Disposes geometry
     geo.dispose();
     dummy.dispose();
-
     return line;
 }
 
