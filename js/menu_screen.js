@@ -13,6 +13,20 @@ function createMenuScreen() {
         window.innerWidth / window.innerHeight, 1, 10000 );
     menuCamera.position.set(0, 0, 20);
 
+    // Applies bloom filter.
+    const renderScene = new THREE.RenderPass( menuScene, menuCamera );
+
+    const vec = new THREE.Vector2( window.innerWidth, window.innerHeight )
+    const bloomPass = new THREE.UnrealBloomPass(vec, 1.5, 0.4, 0.85 );
+    bloomPass.threshold = params.bloomThreshold;
+    bloomPass.strength = params.bloomStrength;
+    bloomPass.radius = params.bloomRadius;
+
+    menuComposer = new THREE.EffectComposer( renderer );
+    menuComposer.setSize( window.innerWidth, window.innerHeight );
+    menuComposer.addPass( renderScene );
+    menuComposer.addPass( bloomPass );
+
     // Creates raycaster.
     raycaster = new THREE.Raycaster();
 
@@ -61,7 +75,5 @@ function createMenuScreen() {
     for (let i = 0; i < options.length; i += 2) {
         options[i].position.set(-9.5 + i * 4, 0, 0);
         options[i + 1].position.set(-6.5 + i * 4, 0, 0);
-        console.log(-9.5 + i * 4);
-        console.log(-6.5 + i * 4);
     }
 }

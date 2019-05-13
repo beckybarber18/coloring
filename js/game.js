@@ -42,9 +42,9 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
         powerProb = 0.975;
 
 let renderer, state, windowWidth, windowHeight,
-    menuScene, menuCamera, mouse, raycaster,
+    menuScene, menuCamera, menuComposer, mouse, raycaster,
     options, intersected = [], oldColor = [],
-    gameScene, composers = [], views,
+    gameScene, views, gameComposers,
     stars, arena, palette, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
     powers;
@@ -93,8 +93,14 @@ function animate() {
     switch(state) {
         case 'menu':
             renderMenu();
+            // $('#logo').show();
+            $('#instructions').show();
             break;
         case 'start':
+            // Hides menu text.
+            // $('#logo').hide();
+            $('#instructions').hide();
+
             // Creates arena object.
             arena = createArena(50, 75, 5, 10, 5);
 
@@ -106,14 +112,14 @@ function animate() {
                 arena.height - 2 * arena.wallSize, ballRadius);
             initialDir2 = new THREE.Vector3(-1, 0, 0);
 
+            // Specifies different view windows.
+            views = createViews();
+
             // Create ball objects.
             ball1 = createBall(palette.ball1, ballRadius, initialPos1.clone(),
                 initialDir1.clone(), 1);
             ball2 = createBall(palette.ball2, ballRadius, initialPos2.clone(),
                 initialDir2.clone(), 2);
-
-            // Specifies different view windows.
-            views = createViews();
 
             // Create color gradient.
             const rainbow = new Rainbow();
@@ -160,16 +166,22 @@ function renderGame() {
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
         renderer.render( gameScene, camera );
-        composers[ii].render();
+        gameComposers[ii].render();
     }
 }
 
 function renderMenu() {
-    // updateSize();
+    updateSize();
 
+    // Updates camera when resizing.
+    menuCamera.aspect = windowWidth / windowHeight;
+    menuCamera.updateProjectionMatrix();
+
+    // Finds intersection of mouse.
     raycaster.setFromCamera( mouse, menuCamera );
 	const intersects = raycaster.intersectObjects( menuScene.children );
 
+    // Highlights pair of balls that mouse intersects with.
 	if ( intersects.length > 0 ) {
 		if (intersected[0] !== undefined) {
             intersected[0].material.color.set(oldColor[0]);
@@ -193,18 +205,23 @@ function renderMenu() {
             }
         }
     }
-    
+
     renderer.render( menuScene, menuCamera );
+    menuComposer.render()
 }
 
 function updateSize() {
     if ( windowWidth != window.innerWidth || windowHeight != window.innerHeight ) {
         windowWidth = window.innerWidth;
         windowHeight = window.innerHeight;
-        views[2].width = 250 / windowWidth;
-        views[2].height = 175 / windowHeight;
-        views[2].left = (1 - views[2].width) / 2;
-        views[2].bottom = 1 - views[2].height;
+
+        if (views !== undefined) {
+            views[2].width = 250 / windowWidth;
+            views[2].height = 175 / windowHeight;
+            views[2].left = (1 - views[2].width) / 2;
+            views[2].bottom = 1 - views[2].height;
+        }
+
         renderer.setSize( windowWidth, windowHeight );
     }
 }

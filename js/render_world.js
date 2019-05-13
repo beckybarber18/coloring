@@ -8,9 +8,10 @@ function createRenderWorld() {
     createLights();
 
     // Creates cameras.
+    gameComposers = [];
     for ( var ii = 0; ii < views.length; ++ ii ) {
-        var view = views[ ii ];
-        var camera = new THREE.PerspectiveCamera( view.fov,
+        const view = views[ ii ];
+        const camera = new THREE.PerspectiveCamera( view.fov,
             window.innerWidth / window.innerHeight, 1, 10000 );
 
         // Applies camera rotation.
@@ -22,10 +23,10 @@ function createRenderWorld() {
         camera.position.fromArray( view.eye );
         view.camera = camera;
 
-        var renderScene = new THREE.RenderPass( gameScene, camera );
+        const renderScene = new THREE.RenderPass( gameScene, camera );
 
-        let vec = new THREE.Vector2( window.innerWidth, window.innerHeight )
-        var bloomPass = new THREE.UnrealBloomPass(vec, 1.5, 0.4, 0.85 );
+        const vec = new THREE.Vector2( window.innerWidth, window.innerHeight )
+        const bloomPass = new THREE.UnrealBloomPass(vec, 1.5, 0.4, 0.85 );
         bloomPass.threshold = params.bloomThreshold;
         bloomPass.strength = params.bloomStrength;
         bloomPass.radius = params.bloomRadius;
@@ -34,7 +35,7 @@ function createRenderWorld() {
         composer.setSize( window.innerWidth, window.innerHeight );
         composer.addPass( renderScene );
         composer.addPass( bloomPass );
-        composers.push(composer);
+        gameComposers.push(composer);
 
     }
 
