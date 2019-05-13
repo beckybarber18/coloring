@@ -34,8 +34,8 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
         Z_AXIS = new THREE.Vector3(0, 0, 1),
         TO_RADIANS = Math.PI / 180,
         time = 60,
-        turning = 3,
-        speed = 10,
+        turning = 3.5,
+        speed = 8,
         cameraX = 3.5,
         cameraZ = 4,
         ballRadius = 3,
@@ -436,7 +436,8 @@ function displayResult() {
     }
     KeyboardJS.bind.key('space',
                              function(){
-                                 hideResult()
+                                 hideResult();
+                                 state = 'reset';
                              });
 }
 
