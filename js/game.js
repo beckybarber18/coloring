@@ -230,9 +230,10 @@ function updateSize() {
 
         // Recalculate centers
         $('#menu').center();
-        $('.logo').centerh();
-        $('.instructions').centerh();
-        $('#counter').centerh();
+        $('.logo').positionLogo();
+        $('.instructions').resizeInstructions();
+        $('.instructions').center();
+        $('#counter').centerCounter();
         $('#instructions1').center();
         $('#instructions2').center();
         $('#instructions3').center();
@@ -435,8 +436,7 @@ function displayResult() {
     }
     KeyboardJS.bind.key('space',
                              function(){
-                                 hideResult();
-                                 state = 'reset';
+                                 hideResult()
                              });
 }
 
@@ -452,7 +452,7 @@ function hideResult() {
     }
     ball1.score = 1;
     ball2.score = 1;
-    state = 'start';
+    state = 'menu';
 
     KeyboardJS.unbind.key('space',
                              function(){hideResult()});
