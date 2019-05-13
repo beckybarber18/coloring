@@ -41,9 +41,11 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
         maxPowers = 5,
         powerProb = 0.975;
 
-let scene, renderer, composers = [], views, gameState,
-    windowWidth, windowHeight,
-    arena, palette, ball1, ball2, world,
+let renderer, state, windowWidth, windowHeight,
+    menuScene, menuCamera, mouse, raycaster,
+    options, intersected = [], oldColor = [],
+    gameScene, composers = [], views,
+    stars, arena, palette, ball1, ball2, world,
     initialPos1, initialDir1, initialPos2, initialDir2,
     powers;
 
@@ -61,40 +63,40 @@ function init() {
 
     container = document.getElementById( 'container' );
 
-    // Create the scene.
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color( Colors.background );
-	scene.fog = new THREE.Fog( Colors.background, 0, 750 );
-
     // Create the renderer.
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    // Creates mouse vector.
+    mouse = new THREE.Vector2()
+
+    // Menu event listeners.
+    document.addEventListener( 'mousemove', onDocumentMouseMove );
+    document.addEventListener( 'click', onClick );
+
     // Key event listeners.
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
-    // Set the initial game state.
-    // gameState = 'beforeStart';
+    // Creates start menu.
+    createMenuScreen();
 
-    // just so we dont have to pick a color every time
-    gameState = 'start';
+    // Creates stars.
+
+    // Go to menu screne.
+    state = 'menu';
 }
 
 function animate() {
 
-    switch(gameState) {
-        case 'beforeStart':
-            // displayColor1Choose();
-            // gameState = 'start';
+    switch(state) {
+        case 'menu':
+            renderMenu();
             break;
         case 'start':
             // Creates arena object.
             arena = createArena(50, 75, 5, 10, 5);
-
-            // Sets palette
-            palette = palettes[2];
 
             // Set initial positions and directions of ball objects.
             initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
@@ -122,27 +124,15 @@ function animate() {
 
             createRenderWorld();
             createPhysicsWorld();
-
-            gameState = 'play';
             countdown();
+
+            state = 'play';
             break;
 
         case 'play':
             updatePhysicsWorld();
             updateRenderWorld();
-            render();
-
-            for ( let ii = 0; ii < composers.length; ++ ii ) {
-                const view = views[ ii ];
-                const left = Math.floor( window.innerWidth * view.left );
-                const bottom = Math.floor( window.innerHeight * view.bottom );
-                const width = Math.floor( window.innerWidth * view.width );
-                const height = Math.floor( window.innerHeight * view.height );
-                renderer.setViewport( left, bottom, width, height );
-                renderer.setScissor( left, bottom, width, height );
-                composers[ii].render();
-            }
-
+            renderGame();
             break;
 
         case 'end':
@@ -151,13 +141,11 @@ function animate() {
     }
 
     requestAnimationFrame(animate);
-
-
-
 }
 
-function render() {
+function renderGame() {
     updateSize();
+
     for ( let ii = 0; ii < views.length; ++ ii ) {
         const view = views[ ii ];
         const camera = view.camera;
@@ -171,8 +159,42 @@ function render() {
         renderer.setClearColor( view.background );
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
-        renderer.render( scene, camera );
+        renderer.render( gameScene, camera );
+        composers[ii].render();
     }
+}
+
+function renderMenu() {
+    // updateSize();
+
+    raycaster.setFromCamera( mouse, menuCamera );
+	const intersects = raycaster.intersectObjects( menuScene.children );
+
+	if ( intersects.length > 0 ) {
+		if (intersected[0] !== undefined) {
+            intersected[0].material.color.set(oldColor[0]);
+            intersected[1].material.color.set(oldColor[1]);
+        }
+
+        intersected[0] = intersects[0].object;
+        intersected[1] = intersected[0].pair;
+        oldColor[0] = intersected[0].material.color.clone();
+        oldColor[1] = intersected[1].material.color.clone();
+
+        intersected[0].material.color.set(0xffffff);
+        intersected[1].material.color.set(0xffffff);
+	}
+    else {
+        if ( intersected[0] !== undefined ) {
+            for (let i = 0; i < intersected.length; i++) {
+                intersected[i].material.color.set(oldColor[i]);
+                intersected[i] = undefined;
+                oldColor[i] = undefined;
+            }
+        }
+    }
+    
+    renderer.render( menuScene, menuCamera );
 }
 
 function updateSize() {
@@ -221,6 +243,19 @@ function createViews() {
     ]
 
     return canvases;
+}
+
+function onDocumentMouseMove(event) {
+	event.preventDefault();
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+}
+
+function onClick(event) {
+    if (intersected[0] !== undefined) {
+        palette = palettes[intersected[0].palette];
+        state = 'start';
+    }
 }
 
 function onKeyDown(event) {
@@ -332,7 +367,7 @@ function hideColor2Choose() {
     ball2Color = parseInt(colorString);
 
     //console.log(colorString, ball2Color);
-    gameState = 'start';
+    state = 'start';
     // KeyboardJS.unbind.key('space',
                              // function(){hideColorChoose()});
 }
@@ -365,7 +400,7 @@ function hideResult() {
     }
     ball1.score = 1;
     ball2.score = 1;
-    gameState = 'start';
+    state = 'start';
     KeyboardJS.unbind.key('space',
                              function(){hideResult()});
 }
@@ -380,7 +415,7 @@ function countdown() {
         if( seconds > 0 ) {
             setTimeout(tick, 1000);
         } else {
-            gameState = 'end';
+            state = 'end';
         }
     }
     tick();
