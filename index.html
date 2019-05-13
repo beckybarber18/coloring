@@ -21,24 +21,6 @@
 				color: white;
 			}
 
-			canvas {
-				width: 100%;
-				height: 100%
-			}
-
-			#instructions {
-                background-color: transparent;
-                color: white;
-                text-align: center;
-                padding: 0;
-                margin-top: 190px;
-            }
-
-			#logo {
-                background-color: transparent;
-                top: 0px;
-            }
-
 			#instructions1, #instructions2, #instructions3 {
                 background-color: black;
                 color: white;
@@ -46,7 +28,7 @@
                 padding: 32px;
                 margin: 0px;
                 display: inline;
-                border: 2px solid white;
+                border: 2px solid black;
             }
 
 			#counter {
@@ -55,28 +37,43 @@
                 top: 200px;
 				font-size: 40px;
             }
+
+			.container {
+				position: fixed;
+				width: 100%;
+				height: 100%;
+				align: center;
+			}
+
+			.logo {
+				position: absolute;
+				height: 25%;
+				/* top: 75px; */
+			}
+
+			.instructions {
+				text-align: center;
+				position: absolute;
+				/* bottom: 40px; */
+			}
 		</style>
 	</head>
 	<body>
-		<div id="container"></div>
+		<div id='menu' class='container'>
+			<img src="images/logo.png" class='logo'>
 
-		<!--
-		<div id='logo'>
-			<img src="images/logo.png" style="width: 1,078px; height: 300px;">
+			<p class='instructions'>
+				<!-- INSTRUCTIONS<br><br> -->
+				Cover more of the ring than your opponent in 60 seconds.<br><br>
+				CONTROLS<br>
+				Player 1 (left) :  WASD  //  Player 2 (right) :  arrows<br><br>
+				POWER UPS<br>
+				Green bombs cover the surrounding tiles in your color.<br>
+				Blue ice cubes freeze your opponent for a few seconds.<br>
+				Red crosses cover a horizontal and vertical line of tiles in your color.<br><br>
+				Start the game by choosing your color palette below!
+			</p>
 		</div>
-	-->
-		<div id='instructions'>
-			INSTRUCTIONS<p>
-			Cover as much of the arena in your color as possible.<br>
-			Player 1 (left) controls the ball using the WASD keys. <br>
-			Player 2 (right) constrols the ball using the arrow keys.<p>
-			Watch out for power ups!<br>
-			Green bombs cover the surrounding tiles in your color.<br>
-			Blue ice cubes freeze your opponent for a few seconds.<br>
-			Red crosses cover a horizontal and vertical line of tiles in your color.<p>
-			Start the game by choosing your color palette above!
-		</div>
-
 		<div id='instructions1'>
 			Player 1 wins!
 			<br><br>
@@ -124,15 +121,7 @@
 		<script src="js/render_world.js"></script>
 		<script src="js/physics_world.js"></script>
 		<script>
-
-			// $.ajax({
-			// type: "POST",
-			// url: "../generate_color_gradient.py",
-			// data: { param: 'fdd043', param: 'e2598b', param: 100}
-			// }).done(function(o) {
-			//     console.log(data);
-			// });
-
+		
 			jQuery.fn.centerv = function () {
                 wh = window.innerHeight;
                 h = this.outerHeight();
@@ -147,6 +136,13 @@
                 this.css("position", "absolute");
                 this.css("left", Math.max(0, (ww - w)/2) + "px");
                 return this;
+			}
+			
+			jQuery.fn.centerCounter = function () {
+                ww = window.innerWidth;
+                this.css("position", "absolute");
+                this.css("left", Math.max(0, (ww - 40)/2) + "px");
+                return this;
             }
 
             jQuery.fn.center = function () {
@@ -155,18 +151,43 @@
                 return this;
 			}
 
+			jQuery.fn.resizeInstructions = function () {
+				wh = window.innerHeight;
+				this.css("font-size", wh/45 + "px");
+                return this;
+			}
+
+			jQuery.fn.positionInstructions = function () {
+				this.centerh();
+				wh = window.innerHeight;
+				h = this.outerHeight();
+				this.css("top", Math.max(0, (wh - h)*5/6) + "px");
+                return this;
+			}
+
+			jQuery.fn.positionLogo = function () {
+				this.centerh();
+				wh = window.innerHeight;
+				h = this.outerHeight();
+				this.css("top", Math.max(0, (wh - h)/7) + "px");
+                return this;
+			}
+
 			$(document).ready(function() {
 
-				// Prepare the instructions.]
-				$('#instructions').center();
-				$('#instructions').hide();
+				// Prepare the instructions.
+				$('#menu').center();
+				$('.logo').positionLogo();
+				$('.instructions').center();
+				$('#menu').show();
 				$('#instructions1').center();
 				$('#instructions1').hide();
 				$('#instructions2').center();
 				$('#instructions2').hide();
 				$('#instructions3').center();
 				$('#instructions3').hide();
-				$('#counter').centerh();
+				$('#counter').centerCounter();
+				$('.instructions').resizeInstructions();
 			})
 
 		</script>

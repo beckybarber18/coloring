@@ -71,9 +71,11 @@ function createMenuScreen() {
     // Dispose geometry.
     geo.dispose();
 
+    const y_coord = 0;
+
     // Position balls.
     for (let i = 0; i < options.length; i += 2) {
-        options[i].position.set(-9.5 + i * 4, 0, 0);
-        options[i + 1].position.set(-6.5 + i * 4, 0, 0);
+        options[i].position.set(-9.5 + i * 4, y_coord, 0);
+        options[i + 1].position.set(-6.5 + i * 4, y_coord, 0);
     }
 }
