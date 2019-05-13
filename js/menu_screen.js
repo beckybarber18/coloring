@@ -9,9 +9,9 @@ function createMenuScreen() {
     menuScene.add(hemisphereLight);
 
     // Creates camera.
-    menuCamera = new THREE.PerspectiveCamera( 60,
+    menuCamera = new THREE.PerspectiveCamera( 45,
         window.innerWidth / window.innerHeight, 1, 10000 );
-    menuCamera.position.z = 15;
+    menuCamera.position.set(0, 0, 20);
 
     // Creates raycaster.
     raycaster = new THREE.Raycaster();
@@ -20,6 +20,8 @@ function createMenuScreen() {
     options = [];
     const geo = new THREE.SphereGeometry(1, 9, 12);
     const wireframe = new THREE.WireframeGeometry(geo);
+
+    geo.dispose();
 
     for (let i = 0; i < palettes.length; i++) {
         const dummy = new THREE.Geometry();
@@ -31,7 +33,6 @@ function createMenuScreen() {
         line1.material.opacity = 1;
         line1.material.transparent = true;
         line1.material.linewidth = 1;
-        line1.position.set(-1.2, 0, 0);
         line1.palette = i;
 
         const line2 = new THREE.LineSegments(wireframe, mat2);
@@ -39,7 +40,6 @@ function createMenuScreen() {
         line2.material.opacity = 1;
         line2.material.transparent = true;
         line2.material.linewidth = 1;
-        line2.position.set(1.2, 0, 0);
         line2.palette = i;
 
         line1.pair = line2;
@@ -49,10 +49,19 @@ function createMenuScreen() {
         menuScene.add(line2);
         options.push(line1);
         options.push(line2);
+
+        // Dispose dummy.
+        dummy.dispose();
     }
 
+    // Dispose geometry.
+    geo.dispose();
+
     // Position balls.
-    for (let i = 0; i < options.length; i++) {
-        options[i].position.set(-7 + i * 4, 0, 0);
+    for (let i = 0; i < options.length; i += 2) {
+        options[i].position.set(-9.5 + i * 4, 0, 0);
+        options[i + 1].position.set(-6.5 + i * 4, 0, 0);
+        console.log(-9.5 + i * 4);
+        console.log(-6.5 + i * 4);
     }
 }

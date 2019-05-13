@@ -193,7 +193,7 @@ function renderMenu() {
             }
         }
     }
-
+    
     renderer.render( menuScene, menuCamera );
 }
 
