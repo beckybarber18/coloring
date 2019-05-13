@@ -82,7 +82,27 @@ function init() {
     // Creates start menu.
     createMenuScreen();
 
-    // Creates stars.
+    // Creates render world and physical world.
+    // Creates arena object.
+    arena = createArena(50, 75, 5, 10, 5);
+
+    // Set initial positions and directions of ball objects.
+    initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
+        -arena.height + 2 * arena.wallSize, ballRadius);
+    initialDir1 = new THREE.Vector3(1, 0, 0);
+    initialPos2 = new THREE.Vector3(arena.width - 2 * arena.wallSize,
+        arena.height - 2 * arena.wallSize, ballRadius);
+    initialDir2 = new THREE.Vector3(-1, 0, 0);
+
+    // Creates ball objects.
+    ball1 = createBall(ballRadius, initialPos1.clone(), initialDir1.clone(), 1);
+    ball2 = createBall(ballRadius, initialPos2.clone(), initialDir2.clone(), 2);
+
+    // Specifies different view windows.
+    views = createViews();
+
+    createRenderWorld();
+    createPhysicsWorld();
 
     // Go to menu screne.
     state = 'menu';
@@ -92,46 +112,35 @@ function animate() {
 
     switch(state) {
         case 'menu':
+            // Renders menu scene. (state change occurs in onClick function)
             renderMenu();
             // $('#logo').show();
             $('#instructions').show();
             break;
         case 'start':
-            // Hides menu text.
+            // Hides menu text
             // $('#logo').hide();
             $('#instructions').hide();
 
-            // Creates arena object.
-            arena = createArena(50, 75, 5, 10, 5);
+            // Sets color of ball meshes
+            ball1.mesh.material.color.set(ball1.color);
+            ball2.mesh.material.color.set(ball2.color);
 
-            // Set initial positions and directions of ball objects.
-            initialPos1 = new THREE.Vector3(-arena.width + 2 * arena.wallSize,
-                -arena.height + 2 * arena.wallSize, ballRadius);
-            initialDir1 = new THREE.Vector3(1, 0, 0);
-            initialPos2 = new THREE.Vector3(arena.width - 2 * arena.wallSize,
-                arena.height - 2 * arena.wallSize, ballRadius);
-            initialDir2 = new THREE.Vector3(-1, 0, 0);
-
-            // Specifies different view windows.
-            views = createViews();
-
-            // Create ball objects.
-            ball1 = createBall(palette.ball1, ballRadius, initialPos1.clone(),
-                initialDir1.clone(), 1);
-            ball2 = createBall(palette.ball2, ballRadius, initialPos2.clone(),
-                initialDir2.clone(), 2);
-
-            // Create color gradient.
+            // Creates color gradient
             const rainbow = new Rainbow();
             rainbow.setSpectrum(palette.ball1str, palette.ball2str);
+
+            arena.colors = [];
             for (let i = 0; i < 101; i++) {
                 arena.colors.push('0x' + rainbow.colourAt(i));
             }
 
-            createRenderWorld();
-            createPhysicsWorld();
-            countdown();
+            // Sets color of wall mesh
+            const color = parseInt(arena.colors[50])
+            arena.walls.material.color.set(color);
+            console.log(arena.walls);
 
+            countdown();
             state = 'play';
             break;
 
@@ -144,6 +153,12 @@ function animate() {
         case 'end':
             displayResult();
             break;
+
+        case 'reset':
+            resetPhysicsWorld();
+            resetRenderWorld();
+            state = 'menu';
+            break;
     }
 
     requestAnimationFrame(animate);
@@ -155,16 +170,8 @@ function renderGame() {
     for ( let ii = 0; ii < views.length; ++ ii ) {
         const view = views[ ii ];
         const camera = view.camera;
-        const left = Math.floor( window.innerWidth * view.left );
-        const bottom = Math.floor( window.innerHeight * view.bottom );
-        const width = Math.floor( window.innerWidth * view.width );
-        const height = Math.floor( window.innerHeight * view.height );
-        renderer.setViewport( left, bottom, width, height );
-        renderer.setScissor( left, bottom, width, height );
-        renderer.setScissorTest( true );
-        renderer.setClearColor( view.background );
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
+        updateView(camera, view.left, view.bottom, view.width, view.height,
+            view.background);
         renderer.render( gameScene, camera );
         gameComposers[ii].render();
     }
@@ -173,11 +180,10 @@ function renderGame() {
 function renderMenu() {
     updateSize();
 
-    // Updates camera when resizing.
-    menuCamera.aspect = windowWidth / windowHeight;
-    menuCamera.updateProjectionMatrix();
+    // Updates viewport and camera
+    updateView(menuCamera, 0, 0, 1, 1, Colors.background);
 
-    // Finds intersection of mouse.
+    // Finds intersection of mouse
     raycaster.setFromCamera( mouse, menuCamera );
 	const intersects = raycaster.intersectObjects( menuScene.children );
 
@@ -226,6 +232,19 @@ function updateSize() {
     }
 }
 
+function updateView(camera, l, b, w, h, bg) {
+    const left = Math.floor( window.innerWidth * l );
+    const bottom = Math.floor( window.innerHeight * b );
+    const width = Math.floor( window.innerWidth * w );
+    const height = Math.floor( window.innerHeight * h );
+    renderer.setViewport( left, bottom, width, height );
+    renderer.setScissor( left, bottom, width, height );
+    renderer.setScissorTest( true );
+    renderer.setClearColor( bg );
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+}
+
 function createViews() {
     let canvases = [
         {
@@ -270,7 +289,12 @@ function onDocumentMouseMove(event) {
 
 function onClick(event) {
     if (intersected[0] !== undefined) {
+        // Sets color palette based on click
         palette = palettes[intersected[0].palette];
+        ball1.color = palette.ball1;
+        ball2.color = palette.ball2;
+
+        // Changes state of game
         state = 'start';
     }
 }
@@ -401,7 +425,10 @@ function displayResult() {
         $('#instructions3').show();
     }
     KeyboardJS.bind.key('space',
-                             function(){hideResult()});
+                             function(){
+                                 hideResult();
+                                 state = 'reset';
+                             });
 }
 
 function hideResult() {
@@ -424,7 +451,7 @@ function hideResult() {
 
 function countdown() {
     $('#counter').show();
-    var seconds = 60;
+    var seconds = 10;
     function tick() {
         var counter = document.getElementById("counter");
         seconds--;
