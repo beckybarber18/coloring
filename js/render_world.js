@@ -387,6 +387,11 @@ function updatePositions(ball) {
     pos.sub(ball.direction.clone().normalize().multiplyScalar(cameraX * ballRadius));
     pos.z += cameraZ * ballRadius;
     ball.camera.position.copy(pos);
+
+    // Updates freeze cube
+    if (!ball.canMove) {
+        ball.freeze.position.copy(ball.position);
+    }
 }
 
 function updateRotations(ball) {
@@ -484,7 +489,17 @@ function activateFreeze(freeze, ball) {
     // Stops ball from moving.
     ball.canMove = false;
 
-    // Waits until time is up before letting ball move again.
+    // Creates ice cube around frozen ball
+    const side = 2 * ball.radius;
+    const geo = new THREE.BoxGeometry(side, side, side);
+    const mat = new THREE.MeshPhongMaterial({ color: Colors.freeze });
+    mat.transparent = true;
+    mat.opacity = 0.4;
+    ball.freeze = new THREE.Mesh(geo, mat);
+    ball.freeze.position.copy(ball.position);
+    gameScene.add(ball.freeze);
+
+    // Waits until time is up before letting ball move again
     ball.seconds = 4;
     tick();
 
@@ -493,7 +508,11 @@ function activateFreeze(freeze, ball) {
         if (ball.seconds > 0) {
             setTimeout(tick, 1000);
         } else {
+            // Allows ball to move and removes ice cube
             ball.canMove = true;
+            ball.freeze.geometry.dispose();
+            ball.freeze.material.dispose();
+            gameScene.remove(ball.freeze);
         }
     }
 }
@@ -531,7 +550,6 @@ function index(x, y) {
     const floory = Math.round((y + arena.height) / arena.tileSize);
     return floory + ((arena.height / arena.tileSize) * 2 + 1) * floorx;
 }
-
 
 function generateRandomCoord(largeNum) {
     const sRand = Math.random();
