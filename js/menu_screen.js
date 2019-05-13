@@ -73,8 +73,7 @@ function createMenuScreen() {
 
     // Position balls.
     for (let i = 0; i < options.length; i += 2) {
-        options[i].position.set(-9.5 + i * 4, 6, 0);
-        options[i + 1].position.set(-6.5 + i * 4, 6, 0);
-        //options[i].position.set(window.innerWidth, window.inherHeight, 0);
+        options[i].position.set(-9.5 + i * 4, 0, 0);
+        options[i + 1].position.set(-6.5 + i * 4, 0, 0);
     }
 }
