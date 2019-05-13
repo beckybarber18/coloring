@@ -120,7 +120,7 @@ function animate() {
             break;
         case 'start':
             // Hides menu text
-            $('#logo').hide();
+            //$('#logo').hide();
             $('#instructions').hide();
 
             // Sets color of ball meshes
