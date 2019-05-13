@@ -436,7 +436,8 @@ function displayResult() {
     }
     KeyboardJS.bind.key('space',
                              function(){
-                                 hideResult()
+                                 hideResult();
+                                 state = 'reset';
                              });
 }
 
