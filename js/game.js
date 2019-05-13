@@ -75,6 +75,10 @@ function init() {
     document.addEventListener( 'mousemove', onDocumentMouseMove );
     document.addEventListener( 'click', onClick );
 
+    // Key event listeners.
+    document.addEventListener( 'keydown', onKeyDown );
+    document.addEventListener( 'keyup', onKeyUp );
+
     // Creates start menu.
     createMenuScreen();
 
