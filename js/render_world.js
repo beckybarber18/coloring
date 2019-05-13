@@ -515,7 +515,7 @@ function activateFreeze(freeze, ball) {
     gameScene.add(ball.freeze);
 
     // Waits until time is up before letting ball move again
-    ball.seconds = 4;
+    ball.seconds = 3;
     tick();
 
     function tick() {
