@@ -97,8 +97,10 @@ function updateRenderWorld() {
     updatePositions(ball2);
 
     // Updates tile colors.
-    updateTile(ball1);
-    updateTile(ball2);
+    const pos1 = index(ball1.position.x, ball1.position.y);
+    const pos2 = index(ball2.position.x, ball2.position.y);
+    updateTile(pos1, ball1);
+    updateTile(pos2, ball2);
 
     // Updates the color of the arena walls.
     updateWallColor();
@@ -187,6 +189,7 @@ function createBallMesh(ball) {
 
     // Disposes geometry
     geo.dispose();
+
     return line;
 }
 
@@ -195,6 +198,7 @@ function createStarMesh(star) {
     const mat = new THREE.MeshPhongMaterial({color: star.color, emissive: star.color, specular: star.color});
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.copy(star.position);
+
     return mesh;
 }
 
@@ -410,15 +414,14 @@ function updateRotations(ball) {
     ball.direction.applyEuler(rotation);
 }
 
-function updateTile(ball) {
-    const i = index(ball.position.x, ball.position.y);
-
+function updateTile(i, ball) {
     // Count scores
-    let oldColor = arena.tileColors[i];
-    if (oldColor == 1) ball1.score -= 1;
-    else if (oldColor == 2) ball2.score -= 1;
-    ball.score += 1;
+    const oldColor = arena.tileColors[i];
+    if (oldColor == 1) ball1.score--;
+    else if (oldColor == 2) ball2.score--;
+    ball.score++;
 
+    // Updates color
     updateTileColor(i, ball.color);
     arena.tileColors[i] = ball.num;
 }
@@ -480,7 +483,7 @@ function activateBomb(bomb, ball) {
 
     for (let x = -2 * width; x < 2 * width + 1; x += width) {
         for (let y = -2; y < 3; y++) {
-            updateTileColor(i + x + y, ball.color);
+            updateTile(i + x + y, ball);
         }
     }
 }
@@ -512,12 +515,12 @@ function activateCross(cross, ball) {
 
     // Vertical line
     for (let j = -x; j < height - x; j++) {
-        updateTileColor(i + j, ball.color);
+        updateTile(i + j, ball);
     }
 
     // Horizontal line
     for (let j = -y; j < width - y; j++) {
-        updateTileColor(i + j * height, ball.color);
+        updateTile(i + j * height, ball);
     }
 }
 
@@ -527,6 +530,7 @@ function updateTileColor(i, color) {
     if (i > arena.floor.length - height - 1) return;
     if (i % height == 0) return;
     if (i % height == height - 1) return;
+
     arena.floor[i].material.color.set(color);
 }
 
