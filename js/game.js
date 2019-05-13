@@ -23,9 +23,9 @@ const palettes = [
     },
     {
         ball1: 0x207dff,
-        ball2: 0xdf0054,
+        ball2: 0xff5982,
         ball1str: '207dff',
-        ball2str: 'df0054'
+        ball2str: 'ff5982'
     }
 ];
 
