@@ -113,21 +113,45 @@ function updateRenderWorld() {
 }
 
 function resetRenderWorld() {
-    ball1.position = initialPos1.clone();
-    ball1.physical.position = initialPos1.clone();
-    ball1.direction = initialDir1.clone();
+    // Resets balls
+    ball1.position.copy(initialPos1);
+    ball1.prevPosition.copy(initialPos1);
+    ball1.direction.copy(initialDir1);
 
-    ball2.position = initialPos2.clone().multiplyScalar(-1);
-    ball2.physical.position = initialPos2.clone();
-    ball2.direction = initialDir2.clone();
+    ball2.position.copy(initialPos2);
+    ball2.prevPosition.copy(initialPos2);
+    ball2.direction.copy(initialDir2);
 
+    // Resets camera positions
+    ball1.camera.position.fromArray( views[0].eye );
+    ball2.camera.position.fromArray( views[1].eye );
+
+    // Resets camera rotations
+    const vec1 = new THREE.Vector3(0, initialPos1.y,
+        initialPos1.z + cameraZ * ballRadius);
+    ball1.camera.lookAt(vec1);
+    ball1.camera.rotateOnWorldAxis(X_AXIS, 90 * TO_RADIANS);
+    ball1.camera.rotateOnWorldAxis(Y_AXIS, 30 * TO_RADIANS);
+
+    const vec2 = new THREE.Vector3(0, initialPos2.y,
+        initialPos2.z + cameraZ * ballRadius);
+    ball2.camera.lookAt(vec2);
+    ball2.camera.rotateOnWorldAxis(X_AXIS, 90 * TO_RADIANS);
+    ball2.camera.rotateOnWorldAxis(Y_AXIS, -30 * TO_RADIANS);
+
+    // Resets score
+    ball1.score = 0;
+    ball2.score = 0;
+
+    // Resets canMove
+    ball1.canMove = true;
+    ball2.canMove = true;
+
+    // Resets floor colors
     for (let i = 0; i < arena.floor.length; i++) {
         updateTileColor(i, Colors.floor);
         arena.tileColors[i] = 0;
     }
-
-    arena.walls = updateWallColor();
-    gameScene.add(arena.walls);
 }
 
 function createLights() {
@@ -151,7 +175,7 @@ function createLights() {
 
 function createBallMesh(ball) {
     const geo = new THREE.SphereGeometry(ball.radius, 9, 12);
-    const mat = new THREE.LineBasicMaterial({color: ball.color});
+    const mat = new THREE.LineBasicMaterial();
     const wireframe = new THREE.WireframeGeometry(geo);
 
     const line = new THREE.LineSegments(wireframe, mat);
@@ -179,8 +203,7 @@ function createWallMesh() {
     const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize,
         arena.wallHeight);
 
-    const color = parseInt(arena.colors[50]);
-    const mat = new THREE.LineBasicMaterial({color: color});
+    const mat = new THREE.LineBasicMaterial();
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
         const mesh1 = new THREE.Mesh(geo);
@@ -390,7 +413,7 @@ function updateRotations(ball) {
 function updateTile(ball) {
     const i = index(ball.position.x, ball.position.y);
 
-    // deal with scores
+    // Count scores
     let oldColor = arena.tileColors[i];
     if (oldColor == 1) ball1.score -= 1;
     else if (oldColor == 2) ball2.score -= 1;
