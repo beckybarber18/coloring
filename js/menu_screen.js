@@ -8,10 +8,12 @@ function createMenuScreen() {
     const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.5);
     menuScene.add(hemisphereLight);
 
+    const camera_y = 0;
+    console.log(window.innerHeight)
     // Creates camera.
     menuCamera = new THREE.PerspectiveCamera( 45,
         window.innerWidth / window.innerHeight, 1, 10000 );
-    menuCamera.position.set(0, 0, 20);
+    menuCamera.position.set(0, camera_y, 20);
 
     // Applies bloom filter.
     const renderScene = new THREE.RenderPass( menuScene, menuCamera );
@@ -71,9 +73,11 @@ function createMenuScreen() {
     // Dispose geometry.
     geo.dispose();
 
+    const y_coord = 0;
+
     // Position balls.
     for (let i = 0; i < options.length; i += 2) {
-        options[i].position.set(-9.5 + i * 4, 0, 0);
-        options[i + 1].position.set(-6.5 + i * 4, 0, 0);
+        options[i].position.set(-9.5 + i * 4, y_coord, 0);
+        options[i + 1].position.set(-6.5 + i * 4, y_coord, 0);
     }
 }

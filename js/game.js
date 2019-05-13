@@ -114,9 +114,9 @@ function animate() {
     switch(state) {
         case 'menu':
             // Renders menu scene. (state change occurs in onClick function)
+            //$('#logo').show();
             renderMenu();
-            $('#logo').hide();
-            //$('#instructions').show();
+            $('#instructions').show();
             break;
         case 'start':
             // Hides menu text
