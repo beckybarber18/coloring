@@ -71,7 +71,7 @@ function createMenuScreen() {
     // Dispose geometry.
     geo.dispose();
 
-    const y_coord = 0;
+    const y_coord = -5;
 
     // Position balls.
     for (let i = 0; i < options.length; i += 2) {
