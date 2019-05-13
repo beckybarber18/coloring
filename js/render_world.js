@@ -55,35 +55,12 @@ function createRenderWorld() {
 
     // Creates arena floor.
     arena.floor = createFloorMesh();
-    gameScene.add(arena.floor);
 
-    const numStars = 400;
-    const largeNum = 100;
-
-    for (let i = 0; i < numStars; i++) {
-
-        let starX = generateRandomCoord(largeNum);
-        let starY = generateRandomCoord(largeNum);
-        if (Math.abs(starX) < arena.width/2 && Math.abs(starY) < arena.height/2) continue;
-
-        let starZ = Math.random() * largeNum + 12;
-        let starPos = new THREE.Vector3(starX,starY,starZ);
-        let star = createStar('white', 0.1, starPos);
-        gameScene.add(createStarMesh(star));
-    }
+    // Creates stars.
+    arena.stars = createStarMesh();
 
     // Initialiazes powers array.
     powers = [];
-}
-
-function generateRandomCoord(largeNum) {
-
-    let sRand = Math.random();
-    let sign = 1;
-    if (sRand < 0.5) sign = -1;
-
-    let mag = Math.random() * largeNum;
-    return mag * sign;
 }
 
 function updateRenderWorld() {
@@ -97,8 +74,10 @@ function updateRenderWorld() {
     updatePositions(ball2);
 
     // Updates tile colors.
-    updateTile(ball1);
-    updateTile(ball2);
+    const pos1 = index(ball1.position.x, ball1.position.y);
+    const pos2 = index(ball2.position.x, ball2.position.y);
+    updateTile(pos1, ball1);
+    updateTile(pos2, ball2);
 
     // Updates the color of the arena walls.
     updateWallColor();
@@ -113,21 +92,45 @@ function updateRenderWorld() {
 }
 
 function resetRenderWorld() {
-    ball1.position = initialPos1.clone();
-    ball1.physical.position = initialPos1.clone();
-    ball1.direction = initialDir1.clone();
+    // Resets balls
+    ball1.position.copy(initialPos1);
+    ball1.prevPosition.copy(initialPos1);
+    ball1.direction.copy(initialDir1);
 
-    ball2.position = initialPos2.clone().multiplyScalar(-1);
-    ball2.physical.position = initialPos2.clone();
-    ball2.direction = initialDir2.clone();
+    ball2.position.copy(initialPos2);
+    ball2.prevPosition.copy(initialPos2);
+    ball2.direction.copy(initialDir2);
 
+    // Resets camera positions
+    ball1.camera.position.fromArray( views[0].eye );
+    ball2.camera.position.fromArray( views[1].eye );
+
+    // Resets camera rotations
+    const vec1 = new THREE.Vector3(0, initialPos1.y,
+        initialPos1.z + cameraZ * ballRadius);
+    ball1.camera.lookAt(vec1);
+    ball1.camera.rotateOnWorldAxis(X_AXIS, 90 * TO_RADIANS);
+    ball1.camera.rotateOnWorldAxis(Y_AXIS, 30 * TO_RADIANS);
+
+    const vec2 = new THREE.Vector3(0, initialPos2.y,
+        initialPos2.z + cameraZ * ballRadius);
+    ball2.camera.lookAt(vec2);
+    ball2.camera.rotateOnWorldAxis(X_AXIS, 90 * TO_RADIANS);
+    ball2.camera.rotateOnWorldAxis(Y_AXIS, -30 * TO_RADIANS);
+
+    // Resets score
+    ball1.score = 0;
+    ball2.score = 0;
+
+    // Resets canMove
+    ball1.canMove = true;
+    ball2.canMove = true;
+
+    // Resets floor colors
     for (let i = 0; i < arena.floor.length; i++) {
         updateTileColor(i, Colors.floor);
         arena.tileColors[i] = 0;
     }
-
-    arena.walls = updateWallColor();
-    gameScene.add(arena.walls);
 }
 
 function createLights() {
@@ -151,7 +154,7 @@ function createLights() {
 
 function createBallMesh(ball) {
     const geo = new THREE.SphereGeometry(ball.radius, 9, 12);
-    const mat = new THREE.LineBasicMaterial({color: ball.color});
+    const mat = new THREE.LineBasicMaterial();
     const wireframe = new THREE.WireframeGeometry(geo);
 
     const line = new THREE.LineSegments(wireframe, mat);
@@ -163,15 +166,32 @@ function createBallMesh(ball) {
 
     // Disposes geometry
     geo.dispose();
+
     return line;
 }
 
 function createStarMesh(star) {
-    const geo = new THREE.SphereGeometry(star.radius, 32, 32);
-    const mat = new THREE.MeshPhongMaterial({color: star.color, emissive: star.color, specular: star.color});
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(star.position);
-    return mesh;
+    let stars = [];
+
+    for (let i = 0; i < 400; i++) {
+        const x = generateRandomCoord(100);
+        const y = generateRandomCoord(100);
+
+        if (Math.abs(x) < arena.width / 2 && Math.abs(y) < arena.height/2) continue;
+
+        const z = Math.random() * 100 + 15;
+        const position = new THREE.Vector3(x, y, z);
+
+        const geo = new THREE.SphereGeometry(0.1, 32, 32);
+        const mat = new THREE.MeshPhongMaterial({color: 'white', emissive: 'white', specular: 'white'});
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.copy(position);
+
+        gameScene.add(mesh);
+        stars.push(mesh);
+    }
+
+    return stars;
 }
 
 function createWallMesh() {
@@ -179,8 +199,7 @@ function createWallMesh() {
     const geo = new THREE.BoxGeometry(arena.wallSize, arena.wallSize,
         arena.wallHeight);
 
-    const color = parseInt(arena.colors[50]);
-    const mat = new THREE.LineBasicMaterial({color: color});
+    const mat = new THREE.LineBasicMaterial();
 
     for (let x = -arena.width; x < arena.width + 1; x += arena.wallSize) {
         const mesh1 = new THREE.Mesh(geo);
@@ -368,6 +387,11 @@ function updatePositions(ball) {
     pos.sub(ball.direction.clone().normalize().multiplyScalar(cameraX * ballRadius));
     pos.z += cameraZ * ballRadius;
     ball.camera.position.copy(pos);
+
+    // Updates freeze cube
+    if (!ball.canMove) {
+        ball.freeze.position.copy(ball.position);
+    }
 }
 
 function updateRotations(ball) {
@@ -387,15 +411,14 @@ function updateRotations(ball) {
     ball.direction.applyEuler(rotation);
 }
 
-function updateTile(ball) {
-    const i = index(ball.position.x, ball.position.y);
+function updateTile(i, ball) {
+    // Count scores
+    const oldColor = arena.tileColors[i];
+    if (oldColor == 1) ball1.score--;
+    else if (oldColor == 2) ball2.score--;
+    ball.score++;
 
-    // deal with scores
-    let oldColor = arena.tileColors[i];
-    if (oldColor == 1) ball1.score -= 1;
-    else if (oldColor == 2) ball2.score -= 1;
-    ball.score += 1;
-
+    // Updates color
     updateTileColor(i, ball.color);
     arena.tileColors[i] = ball.num;
 }
@@ -457,7 +480,7 @@ function activateBomb(bomb, ball) {
 
     for (let x = -2 * width; x < 2 * width + 1; x += width) {
         for (let y = -2; y < 3; y++) {
-            updateTileColor(i + x + y, ball.color);
+            updateTile(i + x + y, ball);
         }
     }
 }
@@ -466,7 +489,17 @@ function activateFreeze(freeze, ball) {
     // Stops ball from moving.
     ball.canMove = false;
 
-    // Waits until time is up before letting ball move again.
+    // Creates ice cube around frozen ball
+    const side = 2 * ball.radius;
+    const geo = new THREE.BoxGeometry(side, side, side);
+    const mat = new THREE.MeshPhongMaterial({ color: Colors.freeze });
+    mat.transparent = true;
+    mat.opacity = 0.4;
+    ball.freeze = new THREE.Mesh(geo, mat);
+    ball.freeze.position.copy(ball.position);
+    gameScene.add(ball.freeze);
+
+    // Waits until time is up before letting ball move again
     ball.seconds = 4;
     tick();
 
@@ -475,7 +508,11 @@ function activateFreeze(freeze, ball) {
         if (ball.seconds > 0) {
             setTimeout(tick, 1000);
         } else {
+            // Allows ball to move and removes ice cube
             ball.canMove = true;
+            ball.freeze.geometry.dispose();
+            ball.freeze.material.dispose();
+            gameScene.remove(ball.freeze);
         }
     }
 }
@@ -489,12 +526,12 @@ function activateCross(cross, ball) {
 
     // Vertical line
     for (let j = -x; j < height - x; j++) {
-        updateTileColor(i + j, ball.color);
+        updateTile(i + j, ball);
     }
 
     // Horizontal line
     for (let j = -y; j < width - y; j++) {
-        updateTileColor(i + j * height, ball.color);
+        updateTile(i + j * height, ball);
     }
 }
 
@@ -504,6 +541,7 @@ function updateTileColor(i, color) {
     if (i > arena.floor.length - height - 1) return;
     if (i % height == 0) return;
     if (i % height == height - 1) return;
+
     arena.floor[i].material.color.set(color);
 }
 
@@ -511,4 +549,13 @@ function index(x, y) {
     const floorx = Math.round((x + arena.width) / arena.tileSize);
     const floory = Math.round((y + arena.height) / arena.tileSize);
     return floory + ((arena.height / arena.tileSize) * 2 + 1) * floorx;
+}
+
+function generateRandomCoord(largeNum) {
+    const sRand = Math.random();
+    let sign = 1;
+    if (sRand < 0.5) sign = -1;
+
+    const mag = Math.random() * largeNum;
+    return mag * sign;
 }

@@ -7,14 +7,15 @@ function createArena(height, width, wallSize, wallHeight, tileSize) {
     arena.tileSize = tileSize;
     arena.walls = undefined;
     arena.floor = undefined;
-    arena.colors = [];
+    arena.stars = undefined;
+    arena.colors = undefined;
     arena.tileColors = [];
     return arena;
 }
 
-function createBall(color, radius, position, direction, num) {
+function createBall(radius, position, direction, num) {
     let ball = new Object();
-    ball.color = color;
+    ball.color = undefined;
     ball.radius = radius;
     ball.position = position;
     ball.prevPosition = position.clone();
@@ -26,7 +27,7 @@ function createBall(color, radius, position, direction, num) {
     ball.physical = undefined;
     ball.camera = undefined;
     ball.canMove = true;
-    ball.seconds = 0;
+    ball.freeze = undefined;
     return ball;
 }
 
@@ -38,12 +39,4 @@ function createPower(type, position) {
     power.direction = new THREE.Vector3(0, 0, 0.1);
     power.mesh = undefined;
     return power;
-}
-
-function createStar(color, radius, position) {
-    let star = new Object();
-    star.color = color;
-    star.radius = radius;
-    star.position = position;
-    return star;
 }
