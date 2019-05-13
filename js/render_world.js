@@ -408,8 +408,8 @@ function updatePowers() {
             else if (powers[i].type == 'cross') activateCross(powers[i], ball1);
 
             // Removes power from powers array.
-            powers[i].geometry.dispose();
-            powers[i].material.dispose();
+            powers[i].mesh.geometry.dispose();
+            powers[i].mesh.material.dispose();
             scene.remove(powers[i].mesh);
             powers.splice(i, 1);
         }
