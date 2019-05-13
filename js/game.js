@@ -148,8 +148,6 @@ function animate() {
         case 'play':
             updatePhysicsWorld();
             updateRenderWorld();
-            console.log("ball1: " + ball1.score);
-            console.log("ball2: " + ball2.score);
             renderGame();
             break;
 
