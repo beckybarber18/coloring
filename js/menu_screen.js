@@ -8,12 +8,10 @@ function createMenuScreen() {
     const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.5);
     menuScene.add(hemisphereLight);
 
-    const camera_y = 0;
-    console.log(window.innerHeight)
     // Creates camera.
     menuCamera = new THREE.PerspectiveCamera( 45,
         window.innerWidth / window.innerHeight, 1, 10000 );
-    menuCamera.position.set(0, camera_y, 20);
+    menuCamera.position.set(0, 0, 20);
 
     // Applies bloom filter.
     const renderScene = new THREE.RenderPass( menuScene, menuCamera );
