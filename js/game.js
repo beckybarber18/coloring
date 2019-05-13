@@ -93,8 +93,8 @@ function animate() {
     switch(state) {
         case 'menu':
             renderMenu();
-            // $('#logo').show();
-            $('#instructions').show();
+            //$('#logo').show();
+            //$('#instructions').show();
             break;
         case 'start':
             // Hides menu text.
