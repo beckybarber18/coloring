@@ -116,12 +116,12 @@ function animate() {
             // Renders menu scene. (state change occurs in onClick function)
             //$('#logo').show();
             renderMenu();
-            $('#instructions').show();
+            $('#menu').show();
             break;
         case 'start':
             // Hides menu text
             //$('#logo').hide();
-            $('#instructions').hide();
+            $('#menu').hide();
 
             // Sets color of ball meshes
             ball1.mesh.material.color.set(ball1.color);
@@ -227,6 +227,15 @@ function updateSize() {
             views[2].left = (1 - views[2].width) / 2;
             views[2].bottom = 1 - views[2].height;
         }
+
+        // Recalculate centers
+        $('#menu').center();
+        $('.logo').centerh();
+        $('.instructions').centerh();
+        $('#counter').centerh();
+        $('#instructions1').center();
+        $('#instructions2').center();
+        $('#instructions3').center();
 
         renderer.setSize( windowWidth, windowHeight );
     }
