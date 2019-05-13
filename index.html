@@ -136,6 +136,13 @@
                 this.css("position", "absolute");
                 this.css("left", Math.max(0, (ww - w)/2) + "px");
                 return this;
+			}
+			
+			jQuery.fn.centerCounter = function () {
+                ww = window.innerWidth;
+                this.css("position", "absolute");
+                this.css("left", Math.max(0, (ww - 40)/2) + "px");
+                return this;
             }
 
             jQuery.fn.center = function () {
@@ -157,7 +164,7 @@
 				$('#instructions2').hide();
 				$('#instructions3').center();
 				$('#instructions3').hide();
-				$('#counter').centerh();
+				$('#counter').centerCounter();
 			})
 
 		</script>
