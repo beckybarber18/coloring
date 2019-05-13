@@ -486,6 +486,12 @@ function activateBomb(bomb, ball) {
 }
 
 function activateFreeze(freeze, ball) {
+    if (ball.canMove == false) {
+        ball.freeze.geometry.dispose();
+        ball.freeze.material.dispose();
+        gameScene.remove(ball.freeze);
+    }
+
     // Stops ball from moving.
     ball.canMove = false;
 
