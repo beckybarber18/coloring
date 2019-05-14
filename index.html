@@ -56,9 +56,20 @@
 				position: absolute;
 				/* bottom: 40px; */
 			}
+
+			.loader {
+				position: fixed;
+    			top: 0;
+				left: 0;
+    			width: 100%;
+    			height: 100%;
+    			background: #000000;
+				z-index: 1000;
+			}
 		</style>
 	</head>
 	<body>
+		<div class="loader"></div>
 		<div id='menu' class='container'>
 			<img src="images/logo.png" class='logo'>
 
@@ -176,6 +187,7 @@
 			$(document).ready(function() {
 
 				// Prepare the instructions.
+				$('.loader').hide();
 				$('#menu').center();
 				$('.logo').positionLogo();
 				$('.instructions').center();
