@@ -44,11 +44,10 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
 
 let renderer, state, windowWidth, windowHeight,
     menuScene, menuCamera, menuComposer, mouse, raycaster,
-    options, intersected = [], oldColor = [],
-    gameScene, views, gameComposers,
+    ptions, intersected = [], oldColor = [],
+    gameOn, gameScene, views, gameComposers,
     arena, palette, ball1, ball2, world,
-    initialPos1, initialDir1, initialPos2, initialDir2,
-    powers;
+    initialPos1, initialDir1, initialPos2, initialDir2
 
 const params = {
     exposure: 0.8,
@@ -80,10 +79,12 @@ function init() {
     document.addEventListener( 'keydown', onKeyDown );
     document.addEventListener( 'keyup', onKeyUp );
 
+    // Initializes gameOn
+    gameOn = false;
+
     // Creates start menu.
     createMenuScreen();
 
-    // Creates render world and physical world.
     // Creates arena object.
     arena = createArena(50, 75, 5, 10, 5);
 
@@ -102,6 +103,7 @@ function init() {
     // Specifies different view windows.
     views = createViews();
 
+    // Creates render world and physical world.
     createRenderWorld();
     createPhysicsWorld();
 
@@ -113,34 +115,14 @@ function animate() {
 
     switch(state) {
         case 'menu':
-            // Renders menu scene. (state change occurs in onClick function)
-            //$('#logo').show();
             renderMenu();
             $('#menu').show();
             break;
         case 'start':
             // Hides menu text
-            //$('#logo').hide();
+            setUpRenderWorld();
             $('#menu').hide();
-
-            // Sets color of ball meshes
-            ball1.mesh.material.color.set(ball1.color);
-            ball2.mesh.material.color.set(ball2.color);
-
-            // Creates color gradient
-            const rainbow = new Rainbow();
-            rainbow.setSpectrum(palette.ball1str, palette.ball2str);
-
-            arena.colors = [];
-            for (let i = 0; i < 101; i++) {
-                arena.colors.push('0x' + rainbow.colourAt(i));
-            }
-
-            // Sets color of wall mesh
-            const color = parseInt(arena.colors[50])
-            arena.walls.material.color.set(color);
-
-            setTimeout(countdown, 500);
+            gameOn = true;
             state = 'play';
             break;
 
@@ -151,7 +133,9 @@ function animate() {
             break;
 
         case 'end':
+            $('#counter').hide();
             displayResult();
+            gameOn = false;
             break;
 
         case 'reset':
@@ -234,9 +218,9 @@ function updateSize() {
         $('.instructions').resizeInstructions();
         $('.instructions').center();
         $('#counter').centerCounter();
-        $('#instructions1').center();
-        $('#instructions2').center();
-        $('#instructions3').center();
+        $('#player1').center();
+        $('#player2').center();
+        $('#tie').center();
 
         renderer.setSize( windowWidth, windowHeight );
     }
@@ -298,7 +282,7 @@ function onDocumentMouseMove(event) {
 }
 
 function onClick(event) {
-    if (intersected[0] !== undefined) {
+    if (!gameOn && intersected[0] !== undefined) {
         // Sets color palette based on click
         palette = palettes[intersected[0].palette];
         ball1.color = palette.ball1;
@@ -381,59 +365,17 @@ function onKeyUp(event) {
     }
 }
 
-function displayColor1Choose() {
-
-    $('#counter').hide();
-
-    $('#chooseColor1').show();
-}
-
-function hideColor1Choose() {
-
-    $('#chooseColor1').hide();
-
-    ball1ColorStr = document.getElementById("p1color").value;
-    let colorString = '0x' + ball1ColorStr.substring(1, ball1ColorStr.length);
-    ball1Color = parseInt(colorString);
-
-    displayColor2Choose();
-
-
-}
-
-function displayColor2Choose() {
-
-    $('#counter').hide();
-
-    $('#chooseColor2').show();
-}
-
-function hideColor2Choose() {
-
-    $('#chooseColor1').hide();
-    $('#chooseColor2').hide();
-
-    ball2ColorStr = document.getElementById("p2color").value;
-    let colorString = '0x' + ball2ColorStr.substring(1, ball2ColorStr.length);
-    ball2Color = parseInt(colorString);
-
-    state = 'start';
-    // KeyboardJS.unbind.key('space',
-                             // function(){hideColorChoose()});
-}
-
 function displayResult() {
-    $('#counter').hide();
-
     if (ball1.score > ball2.score) {
-        $('#instructions1').show();
+        $('#player1').show();
     }
     else if (ball1.score < ball2.score) {
-        $('#instructions2').show();
+        $('#player2').show();
     }
     else {
-        $('#instructions3').show();
+        $('#tie').show();
     }
+
     KeyboardJS.bind.key('space',
                              function(){
                                  hideResult();
@@ -443,17 +385,14 @@ function displayResult() {
 
 function hideResult() {
     if (ball1.score > ball2.score) {
-        $('#instructions1').hide();
+        $('#player1').hide();
     }
     else if (ball1.score < ball2.score) {
-        $('#instructions2').hide();
+        $('#player2').hide();
     }
     else {
-        $('#instructions3').hide();
+        $('#tie').hide();
     }
-    ball1.score = 1;
-    ball2.score = 1;
-    state = 'menu';
 
     KeyboardJS.unbind.key('space',
                              function(){hideResult()});
@@ -462,6 +401,8 @@ function hideResult() {
 function countdown() {
     $('#counter').show();
     let seconds = time;
+    tick();
+
     function tick() {
         var counter = document.getElementById("counter");
         seconds--;
@@ -472,5 +413,4 @@ function countdown() {
             state = 'end';
         }
     }
-    tick();
 }

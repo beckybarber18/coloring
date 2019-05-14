@@ -22,7 +22,7 @@
 				color: white;
 			}
 
-			#instructions1, #instructions2, #instructions3 {
+			#player1, #player2, #tie {
                 background-color: black;
                 color: white;
                 text-align: center;
@@ -82,26 +82,25 @@
 				Start the game by choosing your color palette below!
 			</p>
 		</div>
-		<div id='instructions1'>
+		<div id='player1'>
 			Player 1 wins!
 			<br><br>
 			Press the space bar to play again.
 		</div>
 
-		<div id='instructions2'>
+		<div id='player2'>
 			Player 2 wins!
 			<br><br>
 			Press the space bar to play again.
 		</div>
 
-		<div id='instructions3'>
-				It's a tie!
-				<br><br>
-				Press the space bar to play again.
-			</div>
-
-		<div id='counter'>
+		<div id='tie'>
+			It's a tie!
+			<br><br>
+			Press the space bar to play again.
 		</div>
+
+		<div id='counter'></div>
 
 		<script src="js/three.min.js"></script>
 		<script src="js/postprocessing/EffectComposer.js"></script>
@@ -173,19 +172,18 @@
 			}
 
 			$(document).ready(function() {
-
 				// Prepare the instructions.
 				$('.loader').hide();
 				$('#menu').center();
 				$('.logo').positionLogo();
 				$('.instructions').center();
 				$('#menu').show();
-				$('#instructions1').center();
-				$('#instructions1').hide();
-				$('#instructions2').center();
-				$('#instructions2').hide();
-				$('#instructions3').center();
-				$('#instructions3').hide();
+				$('#player1').center();
+				$('#player1').hide();
+				$('#player2').center();
+				$('#player2').hide();
+				$('#tie').center();
+				$('#tie').hide();
 				$('#counter').centerCounter();
 				$('.instructions').resizeInstructions();
 			})
