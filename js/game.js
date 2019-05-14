@@ -33,7 +33,7 @@ const   X_AXIS = new THREE.Vector3(1, 0, 0),
         Y_AXIS = new THREE.Vector3(0, 1, 0),
         Z_AXIS = new THREE.Vector3(0, 0, 1),
         TO_RADIANS = Math.PI / 180,
-        time = 30,
+        time = 31,
         turning = 3.5,
         speed = 8,
         cameraX = 3.5,
@@ -140,7 +140,7 @@ function animate() {
             const color = parseInt(arena.colors[50])
             arena.walls.material.color.set(color);
 
-            countdown();
+            setTimeout(countdown, 500);
             state = 'play';
             break;
 

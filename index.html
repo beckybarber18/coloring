@@ -56,15 +56,26 @@
 				position: absolute;
 				/* bottom: 40px; */
 			}
+
+			.loader {
+				position: fixed;
+    			top: 0;
+				left: 0;
+    			width: 100%;
+    			height: 100%;
+    			background: #000000;
+				z-index: 1000;
+			}
 		</style>
 	</head>
 	<body>
+		<div class="loader"></div>
 		<div id='menu' class='container'>
 			<img src="images/logo.png" class='logo'>
 
 			<p class='instructions'>
 				<!-- INSTRUCTIONS<br><br> -->
-				Cover more of the ring than your opponent in 30 seconds.<br><br>
+				Color more of the ring than your opponent in 30 seconds.<br><br>
 				CONTROLS<br>
 				Player 1 (left) :  WASD  //  Player 2 (right) :  arrows<br><br>
 				POWER UPS<br>
@@ -96,15 +107,6 @@
 		</div>
 
 		<script src="js/three.min.js"></script>
-		<!-- <script src="js/shaders/CopyShader.js"></script>
-		<script src="js/shaders/ConvolutionShader.js"></script>
-		<script src="js/postprocessing/EffectComposer.js"></script>
-		<script src="js/postprocessing/RenderPass.js"></script>
-		<script src="js/postprocessing/ShaderPass.js"></script>
-		<script src="js/postprocessing/BloomPass.js"></script>
-		<script src="js/postprocessing/FilmPass.js"></script>
-		<script src="js/shaders/LuminosityHighPassShader.js"></script>
-		<script src="js/postprocessing/UnrealBloomPass.js"></script> -->
 		<script src="js/postprocessing/EffectComposer.js"></script>
 		<script src="js/postprocessing/RenderPass.js"></script>
 		<script src="js/postprocessing/ShaderPass.js"></script>
@@ -176,6 +178,7 @@
 			$(document).ready(function() {
 
 				// Prepare the instructions.
+				$('.loader').hide();
 				$('#menu').center();
 				$('.logo').positionLogo();
 				$('.instructions').center();
