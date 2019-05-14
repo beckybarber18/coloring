@@ -58,9 +58,27 @@ function createRenderWorld() {
 
     // Creates stars.
     arena.stars = createStarMesh();
+}
 
-    // Initialiazes powers array.
-    powers = [];
+function setUpRenderWorld() {
+    // Sets color of ball meshes
+    ball1.mesh.material.color.set(ball1.color);
+    ball2.mesh.material.color.set(ball2.color);
+
+    // Creates color gradient
+    const rainbow = new Rainbow();
+    rainbow.setSpectrum(palette.ball1str, palette.ball2str);
+    arena.colors = [];
+    for (let i = 0; i < 101; i++) {
+        arena.colors.push('0x' + rainbow.colourAt(i));
+    }
+
+    // Sets color of wall mesh
+    const color = parseInt(arena.colors[50])
+    arena.walls.material.color.set(color);
+
+    // Set timer
+    setTimeout(countdown, 500);
 }
 
 function updateRenderWorld() {
@@ -83,7 +101,7 @@ function updateRenderWorld() {
     updateWallColor();
 
     // Creates power ups/traps at random.
-    if (powers.length < maxPowers) {
+    if (arena.powers.length < maxPowers) {
         createPowers();
     }
 
@@ -118,6 +136,12 @@ function resetRenderWorld() {
         updateTileColor(i, Colors.floor);
         arena.tileColors[i] = 0;
     }
+
+    // Removes power ups
+    for (let i = 0; i < arena.powers.length; i++) {
+        removeMesh(arena.powers[i].mesh);
+    }
+    arena.powers = [];
 }
 
 function resetBall(ball, initialPos, initialDir) {
@@ -134,9 +158,7 @@ function resetBall(ball, initialPos, initialDir) {
 
     // Removes ice cube
     if (ball.freeze !== undefined) {
-        ball.freeze.geometry.dispose();
-        ball.freeze.material.dispose();
-        gameScene.remove(ball.freeze);
+        removeMesh(ball.freeze);
         ball.freeze = undefined;
     }
 }
@@ -178,7 +200,7 @@ function createBallMesh(ball) {
     return line;
 }
 
-function createStarMesh(star) {
+function createStarMesh() {
     let stars = [];
 
     for (let i = 0; i < 400; i++) {
@@ -280,19 +302,19 @@ function createPowers() {
         const bomb = createPower('bomb', position);
         bomb.mesh = createBombMesh(bomb);
         gameScene.add(bomb.mesh);
-        powers.push(bomb);
+        arena.powers.push(bomb);
     }
     else if (type < 0.6) {
         const freeze = createPower('freeze', position);
         freeze.mesh = createFreezeMesh(freeze);
         gameScene.add(freeze.mesh);
-        powers.push(freeze);
+        arena.powers.push(freeze);
     }
     else {
         const cross = createPower('cross', position);
         cross.mesh = createCrossMesh(cross);
         gameScene.add(cross.mesh);
-        powers.push(cross);
+        arena.powers.push(cross);
     }
 }
 
@@ -432,45 +454,43 @@ function updateTile(i, ball) {
 }
 
 function updatePowers() {
-    for (let i = 0; i < powers.length; i++) {
+    for (let i = 0; i < arena.powers.length; i++) {
         let activated;
 
         // Changes direction of motion of power.
-        if ((powers[i].position.z < (1 / 3) * ballRadius) ||
-            (powers[i].position.z > (5 / 3) * ballRadius)) {
-            powers[i].direction.multiplyScalar(-1);
+        if ((arena.powers[i].position.z < (1 / 3) * ballRadius) ||
+            (arena.powers[i].position.z > (5 / 3) * ballRadius)) {
+            arena.powers[i].direction.multiplyScalar(-1);
         }
 
         // Changes position of power.
-        powers[i].position.add(powers[i].direction);
-        powers[i].mesh.position.add(powers[i].direction);
+        arena.powers[i].position.add(arena.powers[i].direction);
+        arena.powers[i].mesh.position.add(arena.powers[i].direction);
 
         // Changes rotation of power.
-        powers[i].mesh.rotation.x += 0.05;
-		powers[i].mesh.rotation.y += 0.05;
-        powers[i].mesh.rotation.z += 0.05;
+        arena.powers[i].mesh.rotation.x += 0.05;
+		arena.powers[i].mesh.rotation.y += 0.05;
+        arena.powers[i].mesh.rotation.z += 0.05;
 
-        if (intersectPower(powers[i], ball1)) {
+        if (intersectPower(arena.powers[i], ball1)) {
             // Activates power for ball1.
-            if (powers[i].type == 'bomb') activateBomb(powers[i], ball1);
-            else if (powers[i].type == 'freeze') activateFreeze(powers[i], ball2);
-            else if (powers[i].type == 'cross') activateCross(powers[i], ball1);
+            if (arena.powers[i].type == 'bomb') activateBomb(arena.powers[i], ball1);
+            else if (arena.powers[i].type == 'freeze') activateFreeze(arena.powers[i], ball2);
+            else if (arena.powers[i].type == 'cross') activateCross(arena.powers[i], ball1);
 
-            // Removes power from powers array.
-            powers[i].mesh.geometry.dispose();
-            powers[i].mesh.material.dispose();
-            gameScene.remove(powers[i].mesh);
-            powers.splice(i, 1);
+            // Removes power from arena.powers array.
+            removeMesh(arena.powers[i].mesh);
+            arena.powers.splice(i, 1);
         }
-        else if (intersectPower(powers[i], ball2)) {
+        else if (intersectPower(arena.powers[i], ball2)) {
             // Activates power for ball2.
-            if (powers[i].type == 'bomb') activateBomb(powers[i], ball2);
-            else if (powers[i].type == 'freeze') activateFreeze(powers[i], ball1);
-            else if (powers[i].type == 'cross') activateCross(powers[i], ball2);
+            if (arena.powers[i].type == 'bomb') activateBomb(arena.powers[i], ball2);
+            else if (arena.powers[i].type == 'freeze') activateFreeze(arena.powers[i], ball1);
+            else if (arena.powers[i].type == 'cross') activateCross(arena.powers[i], ball2);
 
-            // Removes power mesh from gameScene and power from powers array.
-            gameScene.remove(powers[i].mesh);
-            powers.splice(i, 1);
+            // Removes power mesh from gameScene and power from arena.powers array.
+            gameScene.remove(arena.powers[i].mesh);
+            arena.powers.splice(i, 1);
         }
     }
 }
@@ -495,9 +515,7 @@ function activateBomb(bomb, ball) {
 
 function activateFreeze(freeze, ball) {
     if (!ball.canMove) {
-        ball.freeze.geometry.dispose();
-        ball.freeze.material.dispose();
-        gameScene.remove(ball.freeze);
+        removeMesh(ball.freeze);
         ball.freeze = undefined;
     }
 
@@ -525,9 +543,7 @@ function activateFreeze(freeze, ball) {
         } else {
             // Allows ball to move and removes ice cube
             ball.canMove = true;
-            ball.freeze.geometry.dispose();
-            ball.freeze.material.dispose();
-            gameScene.remove(ball.freeze);
+            removeMesh(ball.freeze);
             ball.freeze = undefined;
         }
     }
@@ -574,4 +590,10 @@ function generateRandomCoord(largeNum) {
 
     const mag = Math.random() * largeNum;
     return mag * sign;
+}
+
+function removeMesh(mesh) {
+    mesh.geometry.dispose();
+    mesh.material.dispose();
+    gameScene.remove(mesh);
 }

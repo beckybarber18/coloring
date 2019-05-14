@@ -10,6 +10,7 @@ function createArena(height, width, wallSize, wallHeight, tileSize) {
     arena.stars = undefined;
     arena.colors = undefined;
     arena.tileColors = [];
+    arena.powers = [];
     return arena;
 }
 
